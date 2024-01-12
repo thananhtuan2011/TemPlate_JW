@@ -1,0 +1,272 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.relation_management'"></h5>
+    <p-table
+        #dt1
+        [value]="lstRelation"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getRelation($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex flex-column md:flex-row justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <p-dropdown
+                        optionLabel="name"
+                        optionValue="value"
+                        [options]="typeLists"
+                        [placeholder]="'Lựa chọn'"
+                        [(ngModel)]="getParams.type"
+                        [showClear]="true"
+                    >
+                    </p-dropdown>
+                    <div class="flex flex-row mt-2 md:mt-0">
+                        <button
+                            pButton
+                            [label]="'button.apply' | translate"
+                            class="p-button-warning mb-2 mr-2 ml-0 md:ml-2"
+                            (click)="getRelation()"
+                        ></button>
+                        <button
+                            pButton
+                            [label]="'button.export' | translate"
+                            class="p-button-warning mb-2 mr-2"
+                            icon="pi pi-download"
+                            (click)="getReligions(null, true)"
+                        ></button>
+                        <!-- add button -->
+                        <button
+                            *appHasAccess="{
+                                menu: appConstant.MENU_TYPE.MOIQUANHECON,
+                                action: appConstant.PERMISSION_FUNC.ADD
+                            }"
+                            pButton
+                            [label]="'button.addF7' | translate"
+                            class="mb-2"
+                            icon="pi pi-user-plus"
+                            (click)="isEdit = false; showDialog()"
+                        ></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.id'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.employee_name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.profess_myself'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.name_people_opposite'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.confess_opposite'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.relation'"></span>
+                    </div>
+                </th>
+                <th style="width: 120px" *ngIf="isMobile"></th>
+                <th
+                    style="width: 120px"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td class="w-1">
+                    <span class="p-column-title" [translate]="'label.id'"></span
+                    >{{ user.id }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.employee_name'"
+                    ></span
+                    >{{ user.employeeId + " - " + user.employeeName }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.profess_myself'"
+                    ></span
+                    >{{ user.claimingYourself }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_people_opposite'"
+                    ></span
+                    >{{ user.personOppositeId ? user.personOppositeId : "" }}
+                    {{ " - " + user.personOppositeName }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.confess_opposite'"
+                    ></span
+                    >{{ user.proclaimedOpposite }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.relation'"
+                    ></span
+                    >{{ user.type === 1 ? "Trong công ty" : "Ngoài công ty" }}
+                </td>
+                <td style="width: 120px" *ngIf="isMobile">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MOIQUANHECON,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MOIQUANHECON,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    style="width: 120px"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MOIQUANHECON,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MOIQUANHECON,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Relation found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Relation data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-relation-form
+    #RelationForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getRelation(null, false); isReset = false"
+    [isEdit]="isEdit"
+></app-relation-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_relation_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

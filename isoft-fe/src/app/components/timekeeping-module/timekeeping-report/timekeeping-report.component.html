@@ -1,0 +1,260 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.timekeeping_report_management'"></h5>
+    <p-table
+        #dt1
+        [value]="lstTimekeepingHistory"
+        dataKey="id"
+        [rows]="12"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getTimekeepingHistory($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0 flex-column md:flex-row gap-1"
+                >
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="exportParam.fromDate"
+                        dateFormat="dd/mm/yy"
+                    ></p-calendar>
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="exportParam.toDate"
+                        dateFormat="dd/mm/yy"
+                    ></p-calendar>
+                    <p-dropdown
+                        placeholder="Chọn mục tiêu"
+                        optionLabel="name"
+                        optionValue="id"
+                        [options]="listTarget"
+                        [(ngModel)]="getParams.targetId"
+                    ></p-dropdown>
+                    <button
+                        pButton
+                        [label]="'button.apply' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        (click)="getTimekeepingHistory()"
+                    ></button>
+                    <button
+                        pButton
+                        [label]="'button.export' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getReligions(null, true)"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.numerical_order'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.code'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.employee_name'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.name_target'"></span>
+                    </div>
+                </th>
+                <th style="width: 120px" *ngFor="let date of rangeDateArray">
+                    <div class="flex align-items-center">
+                        <span [translate]="date | date: 'EEE dd/MM'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_of_workdays'" ></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.workflow_total_hour'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.over_time'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.leave_permission'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.leave_no_permission'"></span>
+                    </div>
+                </th>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.sum_work_days'"></span>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user let-i="rowIndex">
+            <tr>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.numerical_order'"
+                    ></span>
+                    {{ i + 1 }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span>
+                    {{ user.userId }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.employee_name'"
+                    ></span>
+                    {{ user.fullName }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code_target'"
+                    ></span>
+                    {{ user.departmentName }}
+                </td>
+                <td style="width: 120px" *ngFor="let date of rangeDateArray">
+                    <span
+                        class="p-column-title"
+                        [translate]="date | date: 'EEE dd/MM'"
+                    ></span>
+                    {{ displaySymbolTimeKeeping(date, i) }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_of_workdays'"
+                    ></span>
+                    {{ user.totalWorkingDay }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.workflow_total_hour'"
+                    ></span>
+                    {{ user.totalWorkingHours }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.over_time'"
+                    ></span>
+                    {{ user.totalOverTimeWorkingHours }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.leave_permission'"
+                    ></span>
+                    {{ user.totalPaidLeave }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.leave_no_permission'"
+                    ></span>
+                    {{ user.totalUnPaidLeave }}
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.sum_work_days'"
+                    ></span>
+                    {{ user.totalPaid }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Timekeeping history found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Timekeeping history data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_timekeeping_history_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'label.confirm' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

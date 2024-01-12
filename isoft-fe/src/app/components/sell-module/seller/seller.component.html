@@ -1,0 +1,91 @@
+<div class="grid m-0 p-0">
+    <div class="relative col-12 p-0">
+        <div class="card card-table p-0 pr-1">
+            <div class="card card-table p-0 pr-1">
+                <!-- Phòng bàn / Hàng hóa-->
+                <p-tabView [(activeIndex)]="activeTableOrGoods">
+                    <p-tabPanel
+                        *ngIf="
+                            !(
+                                floors &&
+                                floors.length === 1 &&
+                                desks &&
+                                desks.length === 1
+                            )
+                        "
+                        [header]="'Phòng bàn'"
+                    >
+                        <app-desk-table
+                            #appDeskTable
+                            [floorTabs]="floorTabs"
+                            (addBill)="addBill($event)"
+                        ></app-desk-table>
+                    </p-tabPanel>
+                    <p-tabPanel
+                        [disabled]="!(billTabs.length === 1)"
+                        [header]="'Hàng hóa'"
+                    >
+                        <app-goods-table
+                            (onProductSelected)="addProduct($event)"
+                            [customers]="customers"
+                        >
+                        </app-goods-table>
+                    </p-tabPanel>
+                </p-tabView>
+            </div>
+        </div>
+    </div>
+    <!--Bill-->
+    <div class="col-12 p-0 relative">
+        <div class="card card-table h-full p-0 pr-1">
+            <p-tabView
+                id="tabBills"
+                class="w-full"
+                [scrollable]="true"
+                (onChange)="onChangeTab($event)"
+            >
+                <p-tabPanel
+                    [selected]="billTab.tabId === selectedBillTabId"
+                    [cache]="false"
+                    *ngFor="let billTab of billTabs; let i = index"
+                    class="w-full"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            [ngStyle]="{
+                                color:
+                                    billTab.tabId === selectedBillTabId
+                                        ? 'var(--primary-color)'
+                                        : 'var(--light-primary-color)'
+                            }"
+                            class="flex align-items-center justify-content-between"
+                        >
+                            <span class="w-4rem">{{
+                                billTab.title | translate
+                            }}</span>
+                            <div
+                                style="z-index: 1"
+                                (click)="closeBill(billTab.tabId)"
+                            >
+                                <i
+                                    class="ml-2 cursor-pointer pi pi-times border-1 p-1 border-solid border-round"
+                                ></i>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <span *ngIf="billTab.tabId != 0">
+                        <app-bill-table
+                            [isSeller]="true"
+                            #appBillTable
+                            [billTab]="billTab"
+                            (onShowSplitMerge)="onShowSplitMerge($event)"
+                            [customers]="customers"
+                            (closeBillTab)="closeBill($event)"
+                            (onSendToCashier)="onSendToCashier($event)"
+                        ></app-bill-table>
+                    </span>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,137 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <form [formGroup]="surchargeForm" class="grid">
+        <div class="col-12 py-2">
+            <h5
+                class="m-0"
+                [translate]="
+                    isEdit ? 'label.edit_surcharge' : 'label.add_surcharge'
+                "
+            ></h5>
+        </div>
+        <!--Code-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label
+                htmlFor="customerTypeForm"
+                [translate]="'label.code'"
+            ></label>
+            <input
+                pInputText
+                id="customerTypeForm"
+                [(ngModel)]="surchargeForm.value.code"
+                formControlName="code"
+                [class.ng-invalid]="checkValidValidator('code')"
+                [class.ng-dirty]="checkValidValidator('code')"
+            />
+        </div>
+        <!--Name-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label
+                htmlFor="customerTypeForm"
+                [translate]="'label.name'"
+            ></label>
+            <input
+                pInputText
+                id="customerTypeForm"
+                [(ngModel)]="surchargeForm.value.name"
+                formControlName="name"
+                [class.ng-invalid]="checkValidValidator('name')"
+                [class.ng-dirty]="checkValidValidator('name')"
+            />
+            <!-- <small *ngIf="checkValidValidator('name')" class="p-error"
+                [innerHTML]="'info.enter_job_name' | translate"></small> -->
+        </div>
+        <!--start time-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label htmlFor="fromDate"
+                >{{ "Thời gian bắt đầu"
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [(ngModel)]="surchargeForm.value.fromDate"
+                formControlName="fromDate"
+                [showTime]="true"
+                dateFormat="dd-mm-yy"
+                appendTo="body"
+                class="w-full"
+                [class.ng-invalid]="checkValidValidator('fromDate')"
+                [class.ng-dirty]="checkValidValidator('fromDate')"
+            ></p-calendar>
+        </div>
+
+        <!--end time-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label htmlFor="toDate"
+                >{{ "Thời gian kết thúc"
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [(ngModel)]="surchargeForm.value.toDate"
+                formControlName="toDate"
+                [showTime]="true"
+                dateFormat="dd-mm-yy"
+                appendTo="body"
+                class="w-full"
+                [class.ng-invalid]="checkValidValidator('toDate')"
+                [class.ng-dirty]="checkValidValidator('toDate')"
+            ></p-calendar>
+        </div>
+        <!--value-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label
+                htmlFor="customerTypeForm"
+                [translate]="'label.value'"
+            ></label>
+            <input
+                pInputText
+                id="customerTypeForm"
+                [(ngModel)]="surchargeForm.value.value"
+                formControlName="value"
+                [class.ng-invalid]="checkValidValidator('value')"
+                [class.ng-dirty]="checkValidValidator('value')"
+            />
+            <!-- <small *ngIf="checkValidValidator('value')" class="p-error"
+                [innerHTML]="'info.enter_value' | translate"></small> -->
+        </div>
+        <!--type-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label [translate]="'label.type'"></label>
+            <p-dropdown
+                [options]="typeSurcharges"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                [placeholder]="'label.empty' | translate"
+                [(ngModel)]="surchargeForm.value.type"
+                formControlName="type"
+                [appendTo]="'body'"
+                [class.ng-invalid]="checkValidValidator('type')"
+                [class.ng-dirty]="checkValidValidator('type')"
+            >
+            </p-dropdown>
+        </div>
+        <!--note-->
+        <div class="field col-12 flex flex-column">
+            <label htmlFor="note" [translate]="'label.note_to_cashier'"></label>
+            <textarea
+                pInputTextarea
+                class="w-full"
+                [(ngModel)]="surchargeForm.value.note"
+                formControlName="note"
+            ></textarea>
+        </div>
+        <div class="col-12 flex justify-content-end">
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+                class="pr-2"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

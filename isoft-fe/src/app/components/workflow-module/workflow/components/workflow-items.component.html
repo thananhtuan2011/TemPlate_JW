@@ -1,0 +1,42 @@
+<div *ngIf="type === 'group'" class="flex align-items-center gap-8">
+    <p-avatarGroup class="border-green">
+        <p-avatar
+            *ngFor="let person of item.supervisorPersons || []"
+            [image]="serverImg + person.avatar"
+            shape="circle"
+            [title]="person.fullName"
+        ></p-avatar>
+    </p-avatarGroup>
+    <i class="text-primary pi pi-pause"
+       *ngIf="item.supervisorPersons && item.participantPersons
+        && item.supervisorPersons.length > 0 && item.participantPersons.length > 0"></i>
+    <p-avatarGroup class="border-blue">
+        <p-avatar
+            *ngFor="let person of item.participantPersons || []"
+            [image]="serverImg + person.avatar"
+            shape="circle"
+            [title]="person.fullName"
+        ></p-avatar>
+    </p-avatarGroup>
+</div>
+
+<div class="flex gap-1" *ngIf="type === 'responsiblePerson'">
+    <p-avatarGroup>
+        <p-avatar
+            *ngFor="let person of item.responsiblePerson || []"
+            [image]="serverImg + person.avatar"
+            shape="circle"
+            [title]="person.fullName"
+        ></p-avatar>
+    </p-avatarGroup>
+</div>
+
+<div *ngIf="type === 'responsibleUserCreated'">
+    <p-avatarGroup>
+        <p-avatar
+            [image]="serverImg + item.responsibleUserCreated?.avatar"
+            shape="circle"
+            [title]="item.responsibleUserCreated?.fullName"
+        ></p-avatar>
+    </p-avatarGroup>
+</div>

@@ -1,0 +1,196 @@
+<p-tabView
+    *ngIf="floorTabs.length > 0"
+    [(activeIndex)]="activeFloor"
+    [scrollable]="true"
+    (onChange)="onChangeFloorTab($event)"
+>
+    <p-tabPanel *ngFor="let tab of floorTabs" [header]="tab.title">
+        <p-dataView
+            #dv
+            [value]="deskFloors"
+            [rows]="8"
+            filterBy="name"
+            [sortField]="sortField"
+            [loading]="loading"
+            [sortOrder]="sortOrder"
+            layout="grid"
+            (onLazyLoad)="getRoomTable($event)"
+            [totalPages]="totalPages"
+            [totalRecords]="totalRecords"
+            [showFirstLastIcon]="false"
+            [first]="first"
+        >
+            <ng-template pTemplate="header">
+                <div
+                    class="flex flex-column md:flex-row md:justify-content-between"
+                >
+                    <p-dropdown
+                        [options]="sortOptions"
+                        [(ngModel)]="sortKey"
+                        placeholder="Sort By Price"
+                        (onChange)="onSortChange($event)"
+                        styleClass="mb-2 md:mb-0"
+                    ></p-dropdown>
+                    <div
+                        class="flex gap-8 justify-content-between align-items-center"
+                    >
+                        <span
+                            class="p-input-icon-left md:mb-0 flex align-items-center"
+                        >
+                            <i class="pi pi-search"></i>
+                            <input
+                                type="search"
+                                pInputText
+                                placeholder="Search by Name"
+                                (input)="dv.filter($event.target.value)"
+                            />
+                        </span>
+                        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-product pTemplate="listItem" scrollHeight="200px">
+                <div class="col-6 md:col-12">
+                    <div class="product-list-item">
+                        <div style="margin-top: -124px">
+                            <i
+                                *ngIf="product.isChoose"
+                                style="font-size: 1.5rem"
+                                class="text-green-700 font-bold pi pi-check-circle mr-4 absolute"
+                            ></i>
+                        </div>
+                        <img
+                            [src]="'assets/layout/images/icon-bell.svg'"
+                            [alt]="product.name"
+                            width="110"
+                            height="110"
+                        />
+                        <div class="product-list-detail">
+                            <div
+                                class="mt-3 text-primary font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                            >
+                                <span [pTooltip]="product.name">{{
+                                    product.name
+                                }}</span>
+                            </div>
+                            <div
+                                class="flex align-items-end cursor-pointer mt-2"
+                                (click)="onEditDesc(product)"
+                            >
+                                <i
+                                    style="font-size: 1.1rem"
+                                    class="text-primary pi pi-comment"
+                                ></i>
+                                <i
+                                    style="max-width: 300px"
+                                    class="font-italic text-sm"
+                                >
+                                    <span
+                                        class="white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                    >
+                                        {{ product.description }}
+                                    </span>
+                                </i>
+                            </div>
+                        </div>
+                        <div
+                            class="product-list-action flex justify-content-center"
+                        >
+                            <p-button
+                                icon="pi pi-shopping-cart"
+                                label="Add new Bill"
+                                [disabled]="product.isChoose"
+                                (click)="onSelectDesk(product)"
+                                [disabled]="product.isChoose"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-product pTemplate="gridItem">
+                <div class="col-4 md:col-3 mt-2">
+                    <div class="product-grid-item card h-full m-1">
+                        <div class="flex justify-content-end h-1rem">
+                            <i
+                                *ngIf="product.isChoose"
+                                style="font-size: 1.25rem"
+                                class="text-green-700 font-bold pi pi-check-circle"
+                            ></i>
+                        </div>
+                        <div class="product-grid-item-content">
+                            <img
+                                [ngClass]="
+                                    !product.isChoose ? 'cursor-pointer' : ''
+                                "
+                                [src]="'assets/layout/images/icon-bell.svg'"
+                                (click)="onSelectDesk(product)"
+                                [alt]="product.name"
+                            />
+                            <div
+                                class="mt-3 text-primary font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                            >
+                                <span [pTooltip]="product.name">{{
+                                    product.name
+                                }}</span>
+                            </div>
+                            <div
+                                class="flex justify-content-center align-items-center cursor-pointer mt-2"
+                                (click)="onEditDesc(product)"
+                            >
+                                <i
+                                    style="max-width: 100px"
+                                    class="font-italic text-sm"
+                                    ><span
+                                        class="white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                        >{{ product.description }}</span
+                                    ></i
+                                >
+                                <i
+                                    style="font-size: 1.1rem"
+                                    class="text-primary pi pi-comment"
+                                ></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <p-paginator
+                    (onPageChange)="getRoomTable($event)"
+                    [rows]="8"
+                    [totalRecords]="totalRecords"
+                    [rowsPerPageOptions]="[4, 8, 12]"
+                ></p-paginator>
+            </ng-template>
+        </p-dataView>
+    </p-tabPanel>
+</p-tabView>
+
+<p-dialog
+    [header]="'label.note' | translate"
+    [(visible)]="displayEditDesc"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <div class="p-inputgroup w-full">
+        <span class="p-inputgroup-addon"><i class="pi pi pi-comment"></i></span>
+        <input
+            type="text"
+            class="p-inputtext-sm w-full"
+            pInputText
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="selectedDesc.description"
+        />
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-check"
+            (click)="onSuccessEditDesc()"
+            label="Ok"
+            styleClass="p-button-text"
+        ></p-button>
+    </ng-template>
+</p-dialog>

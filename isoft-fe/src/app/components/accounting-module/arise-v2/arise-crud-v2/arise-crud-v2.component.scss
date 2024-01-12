@@ -1,0 +1,227 @@
+:host ::ng-deep {
+    #add-ledger {
+        form {
+            position: relative;
+        }
+        .disable-form {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: 1;
+            cursor: not-allowed;
+        }
+
+        .so-du-cuoi {
+            display: flex;
+            width: 100%;
+
+            input:first-child {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+            input:nth-child(2) {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+
+        .orginal-voucher-number-summary {
+            margin-top: 5px;
+            color: green;
+            font-size: 13px;
+            font-weight: 400;
+            .account {
+                font-weight: 700 !important;
+            }
+            .minus {
+                display: inline-block;
+                margin: {
+                    left: 10px;
+                    right: 10px;
+                }
+            }
+        }
+        .card {
+            padding: 0 !important;
+        }
+
+        .field {
+            margin-bottom: 0;
+        }
+
+        .autocomplete-panel-hidden {
+            .p-autocomplete-panel {
+                visibility: hidden;
+            }
+        }
+
+        .p-dropdown,
+        .p-multiselect,
+        .p-inputnumber,
+        .p-inputnumber-input,
+        p-inputMask .p-inputtext,
+        .p-inputtext,
+        .p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+        .w-full,
+        .p-inputgroup > .p-element + .p-inputgroup-addon,
+        .p-inputgroup .p-inputwrapper {
+            height: 24px !important;
+        }
+
+        .p-scroller,
+        .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item,
+        .p-tieredmenu .p-menuitem-link .p-menuitem-text {
+            font-size: 0.875rem !important;
+        }
+
+        .p-autocomplete-panel
+            .p-autocomplete-items:not(.p-autocomplete-virtualscroll) {
+            padding: 0 !important;
+        }
+
+        .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+            padding: 0.75rem;
+        }
+
+        .p-button {
+            height: 12px !important;
+        }
+
+        .p-scroller {
+            min-width: 700px !important;
+            padding: 0 !important;
+            .p-autocomplete-item {
+                height: 35px !important;
+                line-height: 35px !important;
+            }
+        }
+
+        .p-scroller::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background-image: -webkit-gradient(
+                linear,
+                left top,
+                right bottom,
+                color-stop(0.76, var(--light-primary-color)),
+                color-stop(0.52, var(--primary-color-text)),
+                color-stop(0.44, var(--primary-color))
+            );
+        }
+
+        .p-scroller::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .p-scroller::-webkit-scrollbar {
+            width: 10px;
+            background-color: #f5f5f5;
+        }
+
+        .p-scroller::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background-image: -webkit-gradient(
+                linear,
+                left bottom,
+                left top,
+                color-stop(0.76, var(--primary-color)),
+                color-stop(0.52, var(--primary-color-text)),
+                color-stop(0.44, var(--light-primary-color))
+            );
+        }
+
+        .p-scroller::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        button[disabled] {
+            opacity: 0.5 !important;
+            cursor: not-allowed;
+        }
+
+        input[readonly],
+        input[disabled] {
+            background-color: var(--surface-200) !important;
+            cursor: default;
+            color: var(--surface-900);
+            font-weight: 600;
+        }
+
+        .p-inputtext:enabled:focus {
+            box-shadow: none !important;
+        }
+
+        .p-inputgroup-addon {
+            padding: 0 !important;
+        }
+
+        .grid > [class*="col"] {
+            padding: 1px 8px 1px 4px;
+        }
+
+        .p-divider.p-divider-horizontal {
+            padding: 0.1rem 0;
+            margin: 0.5rem 0;
+        }
+
+        .p-inputmask-clear-icon {
+            right: 8px;
+        }
+
+        p-inputMask {
+            min-width: 100px !important;
+        }
+
+        .p-dropdown.p-dropdown-clearable .p-dropdown-label {
+            padding: 0.25rem;
+        }
+
+        .p-inputgroup .p-inputwrapper > .p-component {
+            width: 100% !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .p-autocomplete-clear-icon {
+            right: 4px !important;
+        }
+
+        .p-inputgroup-addon {
+            min-width: 2rem !important;
+        }
+
+        label {
+            margin-top: 4px !important;
+        }
+
+        .p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+        .p-dropdown-panel .p-dropdown-items:not(.p-dropdown-virtualscroll) {
+            padding-top: 6px !important;
+            padding-bottom: 2px !important;
+        }
+
+        p-inputMask .p-inputtext {
+            padding: 4px 0 0 4px !important;
+        }
+
+        .p-inputtext,
+        .p-dropdown.p-dropdown-clearable .p-dropdown-label {
+            padding: 4px !important;
+        }
+
+        .p-dropdown .p-dropdown-trigger {
+            width: 2rem;
+        }
+
+        #internalType {
+            min-width: 60px !important;
+        }
+    }
+}
+
+.explain:first-letter {
+    text-transform: uppercase !important;
+}

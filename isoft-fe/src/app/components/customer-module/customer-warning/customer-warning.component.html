@@ -1,0 +1,209 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.customer_warning_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="false"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCustomerWarning()"
+        [scrollable]="!isMobile"
+        scrollDirection="both"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="param.searchText"
+                        pInputText
+                        type="text"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.refresh' | translate"
+                        class="mb-2"
+                        icon="pi pi-sync"
+                        (click)="getCustomerWarning()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.customer_code'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.customer_name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.phone'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.number_of_purchases'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.latest_purchase'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.latest_contact_time'"></span>
+                    </div>
+                </th>
+                <th
+                    class="w-1"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-workType>
+            <tr>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.customer_code'"
+                    >
+                    </span>
+                    {{ workType.code }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.customer_name'"
+                    >
+                    </span
+                    >{{ workType.name }}
+                </td>
+                <td class="w-2">
+                    <span class="p-column-title" [translate]="'label.phone'">
+                    </span
+                    >{{ workType.phone }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_of_purchases'"
+                    >
+                    </span
+                    >{{ workType.numberPurchases }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.latest_purchase'"
+                    >
+                    </span>
+                    {{ workType.lastPurchasesAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-1 flex md:align-items-center md:justify-content-center">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.latest_contact_time'"
+                    >
+                    </span>
+                    {{ workType.updateHistoryContactAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-1 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CANHBAOMUAHANG,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        title="Sửa"
+                        (click)="onEditCustomerWarning(workType)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-work-type-form
+    [display]="display"
+    [formData]="formData"
+    (onCancel)="onCancelForm($event)"
+></app-work-type-form>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            class="mr-3"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

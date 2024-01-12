@@ -1,0 +1,686 @@
+<div class="grid m-0 p-0">
+    <div class="relative col-12 md:col-6 p-0">
+        <!-- add button -->
+        <!-- onAddRoomTable -->
+        <div
+            class="relative md:absolute flex justify-content-end gap-8 mt-1 md:mt-0"
+            style="z-index: 1; right: 6px; top: 6px"
+        >
+            <p-dropdown
+                id="user"
+                [(ngModel)]="selectedUser"
+                [options]="users"
+                [filter]="true"
+                class="w-auto"
+                showClear="true"
+                [optionLabel]="'username'"
+                [optionValue]="'username'"
+                [placeholder]="'label.empty' | translate"
+            >
+                <ng-template pTemplate="item" let-user>
+                    {{ user.username }} | {{ user.fullName }}
+                </ng-template>
+            </p-dropdown>
+
+            <p-dropdown
+                [(ngModel)]="billTypeSelected"
+                [options]="billTypes"
+                class="w-auto"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                [placeholder]="'label.empty' | translate"
+            >
+            </p-dropdown>
+
+            <button
+                *ngIf="notification"
+                class="p-button-info"
+                pButton
+                [label]="
+                    !isMobile
+                        ? ('HĐ mới' | translate) + ' ' + notification.count
+                        : notification.count
+                "
+                [icon]="isMobile ? 'pi pi-bell' : ''"
+                [disabled]="notification.count === 0"
+                (click)="getNotificationMessage(); displayNotification = true"
+            ></button>
+            <button
+                *ngIf="
+                    !(
+                        floors &&
+                        floors.length === 1 &&
+                        desks &&
+                        desks.length === 1
+                    )
+                "
+                pButton
+                [label]="
+                    !isMobile
+                        ? ('label.add_room_table_shortcut' | translate)
+                        : ''
+                "
+                [icon]="isMobile ? 'pi pi-plus' : ''"
+                (click)="onAddRoomTable()"
+            ></button>
+        </div>
+
+        <div *ngIf="isOnShift" class="card card-table p-0 pr-1 mt-3 md:mt-0">
+            <!-- Phòng bàn / Hàng hóa-->
+            <p-tabView [(activeIndex)]="activeTableOrGoods">
+                <p-tabPanel
+                    *ngIf="
+                        !(
+                            floors &&
+                            floors.length === 1 &&
+                            desks &&
+                            desks.length === 1
+                        )
+                    "
+                    [header]="'Phòng bàn'"
+                >
+                    <app-desk-table
+                        #appDeskTable
+                        [floorTabs]="floorTabs"
+                        (addBill)="addBill($event)"
+                    ></app-desk-table>
+                </p-tabPanel>
+                <p-tabPanel
+                    [disabled]="!(billTabs.length === 1)"
+                    [header]="'Hàng hóa'"
+                >
+                    <app-import-stock-goods-table
+                        #goodsTable
+                        (onProductSelected)="addProduct($event)"
+                        [(selectedBillTab)]="selectedBillTab"
+                        (onChangeFilterCustomer)="onChangeCustomer($event)"
+                        [customers]="customers"
+                    >
+                    </app-import-stock-goods-table>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+    <!--Bill-->
+    <div class="col-12 md:col-6 p-0 relative">
+        <div class="card card-table h-full p-0 pr-1">
+            <p-tabView
+                id="tabBills"
+                class="w-full"
+                [scrollable]="true"
+                (onChange)="onChangeTab($event)"
+            >
+                <p-tabPanel
+                    [selected]="billTab.tabId === selectedBillTabId"
+                    [cache]="false"
+                    *ngFor="let billTab of billTabs; let i = index"
+                    class="w-full"
+                >
+                    <!--custom header bill tabview-->
+                    <ng-template pTemplate="header">
+                        <!-- {{billTab.tabId}} -->
+                        <div
+                            class="flex align-items-center justify-content-between"
+                            [style.color]="
+                                billTab.tabId === selectedBillTabId
+                                    ? 'var(--primary-color)'
+                                    : 'var(--light-primary-color)'
+                            "
+                        >
+                            <div
+                                *ngIf="billTab.isDefault"
+                                style="padding: 0.24rem"
+                            >
+                                <span class="w-5rem">{{
+                                    billTab.title | translate
+                                }}</span>
+                            </div>
+                            <span *ngIf="!billTab.isDefault" class="w-10rem">{{
+                                billTab.title | translate
+                            }}</span>
+                            <div
+                                *ngIf="!billTab.isDefault"
+                                style="z-index: 1"
+                                (click)="closeBill(billTab.tabId)"
+                            >
+                                <i
+                                    class="ml-2 cursor-pointer pi pi-times border-1 p-1 border-solid border-round"
+                                ></i>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <!-- tab default -->
+                    <span
+                        *ngIf="billTab.tabId == 0 && !selectedBillTabId"
+                        class="flex align-items-center flex-column h-full"
+                    >
+                        <img
+                            [src]="'assets/layout/images/order-bill.png'"
+                            width="100%"
+                            height="100%"
+                        />
+                        <div class="grid">
+                            <div class="col-12 md:col-6 p-0">
+                                <img
+                                    [src]="'assets/layout/images/foods.jpg'"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </div>
+                            <div class="col-12 md:col-6 p-0">
+                                <img
+                                    [src]="
+                                        'assets/layout/images/food-delivery.jpg'
+                                    "
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </div>
+                        </div>
+                        <h3
+                            class="font-italic text-primary mt-4 font-bold mb-6"
+                        >
+                            {{ billTab.content | translate }}
+                        </h3>
+                        <h6
+                            class="font-italic text-primary absolute font-bold"
+                            style="bottom: 0"
+                        >
+                            {{ "~~~Chúc bạn một ngày tốt lành~~~" | translate }}
+                        </h6>
+                    </span>
+                    <!--others tab-->
+                    <span *ngIf="billTab.tabId != 0">
+                        <app-import-stock-detail
+                            #appBillTable
+                            [billTab]="billTab"
+                            [users]="users"
+                            [surchargeData]="surchargeData"
+                            [selectedUser]="selectedUser"
+                            [customers]="customers"
+                            (closeBillTab)="closeBill($event)"
+                            (onShowSplitMerge)="onShowSplitMerge($event)"
+                            (onShowPayment)="
+                                onShowPayment($event, true, 'payment')
+                            "
+                            (onSendToChef)="
+                                onShowPayment($event, false, 'sendToChef')
+                            "
+                            (onSaveTemp)="
+                                onShowPayment($event, false, 'saveTemp')
+                            "
+                            (onSaveTempXK)="
+                                onShowPayment($event, false, 'saveTemp', 'XK')
+                            "
+                            (onSaveTempXD)="
+                                onShowPayment($event, false, 'saveTemp', 'XD')
+                            "
+                            (onChangeFilterCustomer)="
+                                onChangeFilterCustomer($event)
+                            "
+                        >
+                        </app-import-stock-detail>
+                    </span>
+
+                    <!-----------------------dialog edit split merge bill---------------------->
+                    <p-dialog
+                        [header]="'label.edit_split_merge_bill' | translate"
+                        [(visible)]="displaySplitMerge"
+                        [modal]="true"
+                        [style]="{ width: '50vw' }"
+                        [draggable]="false"
+                        [resizable]="false"
+                        [closable]="false"
+                        (onHide)="mergeBillTab = {}"
+                    >
+                        <!--split or merge choice-->
+                        <div class="flex gap-8 mb-4">
+                            <div class="field field-radiobutton">
+                                <p-radioButton
+                                    id="splitMergeType1"
+                                    name="splitMergeType"
+                                    value="split"
+                                    [(ngModel)]="mergeBillTab.splitMergeType"
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                </p-radioButton>
+                                <label
+                                    class="mt-2 font-bold"
+                                    for="splitMergeType1"
+                                    [translate]="'label.split_bill'"
+                                ></label>
+                            </div>
+                            <div class="field field-radiobutton">
+                                <p-radioButton
+                                    id="splitMergeType2"
+                                    name="splitMergeType"
+                                    value="merge"
+                                    [(ngModel)]="mergeBillTab.splitMergeType"
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                </p-radioButton>
+                                <label
+                                    class="mt-2 font-bold"
+                                    for="splitMergeType2"
+                                    [translate]="'label.merge_bill'"
+                                ></label>
+                            </div>
+                            <p-dropdown
+                                [options]="floors"
+                                [(ngModel)]="mergeBillTab.mergeFloorId"
+                                optionLabel="name"
+                                optionValue="id"
+                                [filter]="true"
+                                appendTo="body"
+                                (ngModelChange)="onChangeMergeFloors($event)"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                            <p-dropdown
+                                [options]="desksTemp"
+                                [(ngModel)]="mergeBillTab.mergeDeskId"
+                                optionLabel="name"
+                                optionValue="id"
+                                [filter]="true"
+                                appendTo="body"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <!--table goods split merge -->
+                        <div
+                            class="flex align-items-center justify-content-between mb-2"
+                            *ngFor="let goods of mergeGoods"
+                        >
+                            <div class="flex align-items-center gap-8">
+                                <p-inputSwitch
+                                    [(ngModel)]="goods.checked"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (click)="
+                                        switchMergeGoods(goods, goods.checked)
+                                    "
+                                ></p-inputSwitch>
+                                <span
+                                    class="text-primary font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                    >{{ getAccountName(goods) }}</span
+                                >
+                            </div>
+                            <div class="flex justify-content-end gap-8">
+                                <p-inputNumber
+                                    [disabled]="!goods.checked"
+                                    id="totalProduct"
+                                    [(ngModel)]="goods.mergeQuantity"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Số lượng món'"
+                                    class="w-10rem"
+                                    [max]="goods.billQuantity"
+                                    [min]="0"
+                                    [pTooltip]="'Số lượng món'"
+                                >
+                                </p-inputNumber>
+                                <p-inputNumber
+                                    id="price"
+                                    [(ngModel)]="goods.salePrice + goods.taxVat"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Giá gốc'"
+                                    class="w-10rem"
+                                    [disabled]="true"
+                                    [pTooltip]="'Giá gốc'"
+                                >
+                                </p-inputNumber>
+                                <p-inputNumber
+                                    id="discountPrice"
+                                    [(ngModel)]="goods.discountPrice"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Giảm giá'"
+                                    class="w-10rem"
+                                    [disabled]="true"
+                                    [pTooltip]="'Giảm giá'"
+                                >
+                                </p-inputNumber>
+                            </div>
+                        </div>
+                        <!--end table goods split merge-->
+                        <ng-template pTemplate="footer">
+                            <div class="flex justify-content-end gap-8">
+                                <p-button
+                                    styleClass="p-button-outlined"
+                                    icon="pi pi-times"
+                                    (click)="
+                                        mergeBillTab = {};
+                                        displaySplitMerge = false
+                                    "
+                                    [label]="'button.cancel' | translate"
+                                ></p-button>
+                                <p-button
+                                    icon="pi pi-check"
+                                    (click)="onEditSplitMerge()"
+                                    [label]="'button.save' | translate"
+                                ></p-button>
+                            </div>
+                        </ng-template>
+                    </p-dialog>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [header]="'label.add_room_table' | translate"
+    [(visible)]="display"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <app-room-table-form
+        #roomTableForm
+        [display]="true"
+        (onCancel)="display = false"
+        [isEdit]="false"
+    >
+    </app-room-table-form>
+</p-dialog>
+
+<p-dialog
+    [(visible)]="displayNotification"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <div class="flex align-items-center">
+            {{ "label.order_list" | translate }}
+            <button
+                class="p-button-info ml-2"
+                pButton
+                [label]="'label.remove_all' | translate"
+                (click)="deleteNotifications()"
+            ></button>
+        </div>
+    </ng-template>
+    <div class="mb-4 card p-2" *ngFor="let msg of messages">
+        <div class="flex flex-column">
+            <div>
+                <!--send to cashier-->
+                <div
+                    *ngIf="msg.tranType.indexOf('SendToCashier') >= 0"
+                    class="flex align-items-center"
+                >
+                    <div *ngIf="msg.status !== 'Cancel'">
+                        <span
+                            >Đơn số:
+                            <strong style="color: var(--primary-color)"
+                                >{{ msg.displayOrder }} -
+                                {{ msg.deskName }}</strong
+                            >
+                            Số tiền
+                            <strong>{{
+                                msg.totalAmount || 0 | number: "1.0-0"
+                            }}</strong>
+                            của KH:
+                            <strong style="color: var(--primary-color)">{{
+                                msg.customerName?.trim()
+                            }}</strong>
+                            <strong style="color: var(--green-400)">
+                                từ nhân viên {{ msg.userCode.trim() }}</strong
+                            ><br />
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="1 > msg.tranType.indexOf('Paid')"
+                            >
+                                Thanh toán: Chưa</strong
+                            >
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                            >
+                                Thanh toán: Hoàn thành</strong
+                            ><br />
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="1 > msg.tranType.indexOf('SendToChef')"
+                            >
+                                Kho: Không gửi</strong
+                            ></span
+                        ><br />
+                        <i style="color: lightgrey; font-size: 12px">{{
+                            msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                        }}</i>
+                    </div>
+
+                    <div *ngIf="msg.status === 'Cancel'">
+                        <span
+                            >Đơn số:
+                            <strong style="color: var(--primary-color)"
+                                >{{ msg.displayOrder }} -
+                                {{ msg.deskName }}</strong
+                            >
+                            Số tiền
+                            <strong>{{
+                                msg.totalAmount || 0 | number: "1.0-0"
+                            }}</strong>
+                            của KH:
+                            <strong style="color: var(--primary-color)">{{
+                                msg.customerName?.trim()
+                            }}</strong>
+                            đã bị <strong style="color: #ff4d4f"> hủy bỏ</strong
+                            ><br
+                        /></span>
+                        <i style="color: lightgrey; font-size: 12px">{{
+                            msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                        }}</i>
+                    </div>
+                </div>
+                <!--send to chef-->
+                <div *ngIf="msg.tranType.indexOf('SendToChef') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.displayOrder }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{ msg.totalAmount | number: "1.0-0" }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:<strong style="color: var(--green-400)">
+                            Đã gửi</strong
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        >
+                    </span>
+                </div>
+                <!--cooking-->
+                <div *ngIf="msg.tranType.indexOf('Cooking') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.displayOrder }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <span style="color: var(--orange-400)"
+                            >đang tiến hành</span
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        >
+                    </span>
+                </div>
+                <!--cooked-->
+                <div nz-col *ngIf="msg.tranType.indexOf('Cooked') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.displayOrder }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:<strong style="color: var(--green-400)">
+                            Hoàn thành</strong
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        ></span
+                    >
+                </div>
+                <!--userReceived-->
+                <div *ngIf="msg.tranType.indexOf('UserReceived') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.displayOrder }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <strong style="color: var(--green-400)"
+                            >đã nhận đơn </strong
+                        >Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        ></span
+                    >
+                </div>
+                <!--paid-->
+                <div *ngIf="msg.tranType === 'Paid'">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.displayOrder }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <strong style="color: var(--green-400)"
+                            >Không gởi </strong
+                        >Thanh toán:
+                        <strong style="color: var(--green-400)">
+                            Hoàn thành</strong
+                        ></span
+                    ><br />
+                    <i style="color: lightgrey; font-size: 12px">{{
+                        msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                    }}</i>
+                </div>
+            </div>
+            <div class="flex gap-8 mt-2">
+                <button
+                    class="p-button-info"
+                    pButton
+                    *ngIf="msg.status !== 'Cancel' && msg.tranType !== 'Cooked'"
+                    (click)="addBillFromEmployee(msg)"
+                >
+                    Thêm DS
+                </button>
+
+                <button
+                    *ngIf="1 > msg.tranType.indexOf('Paid')"
+                    class="p-button-danger"
+                    pButton
+                    (click)="cancelBill(msg)"
+                >
+                    Hủy
+                </button>
+                <!-- *ngIf="msg.status === 'Cancel'" -->
+                <button
+                    *ngIf="msg.status === 'Cancel' || msg.tranType === 'Paid'"
+                    class="p-button-danger"
+                    pButton
+                    (click)="deleteNotification(msg)"
+                >
+                    Xóa
+                </button>
+                <!-- || msg.tranType.indexOf('UserReceived') >= 0 -->
+                <button
+                    class="p-button-info"
+                    pButton
+                    *ngIf="
+                        msg.tranType.indexOf('Cooked') >= 0 &&
+                        0 > msg.tranType.indexOf('Paid')
+                    "
+                    style="background-color: var(--green-400); border: none"
+                    (click)="receivedBill(msg)"
+                >
+                    Nhận đơn
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- {{messages | json}} -->
+</p-dialog>
+
+<app-till-form
+    #tillForm
+    [display]="isShowOnShiftDialog"
+    [dialogMode]="true"
+    [isEdit]="true"
+    (onCancel)="isShowOnShiftDialog = false"
+    (onSuccess)="onEndOfShiftSuccess()"
+>
+</app-till-form>

@@ -1,0 +1,743 @@
+<div *ngIf="!display && !isShowCustomerForm" class="card card-table">
+    <h5 [translate]="'label.payment_history'"></h5>
+    <p-table
+        #dt1
+        [value]="lstPayment"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        [rows]="10"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[20, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getDailyReport($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="col-12 md:col-2">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="startDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày bắt đầu'"
+                        (onSelect)="getdata()"
+                    ></p-calendar>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="endDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày kết thúc'"
+                        (onSelect)="getdata()"
+                    ></p-calendar>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-dropdown
+                        [options]="customers"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'name'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="getParams.customerId"
+                        [optionValue]="'id'"
+                        [showClear]="true"
+                        [placeholder]="'label.customer_name' | translate"
+                        (onChange)="getDailyReport()"
+                    >
+                    </p-dropdown>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-dropdown
+                        [options]="employees"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'name'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="getParams.userCode"
+                        [optionValue]="'id'"
+                        [showClear]="true"
+                        [placeholder]="'label.employee' | translate"
+                        (onChange)="getDailyReport()"
+                    >
+                    </p-dropdown>
+                </div>
+                <div class="col-12 md:col-2">
+                    <p-dropdown
+                        [options]="lstGoods"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'name'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="getParams.goodId"
+                        [optionValue]="'id'"
+                        [showClear]="true"
+                        [placeholder]="'label.goods' | translate"
+                        (onChange)="getDailyReport()"
+                    >
+                    </p-dropdown>
+                </div>
+                <div class="col-12 grid">
+                    <div class="col-12 md:col-4 flex flex-column px-0 md:pr-2">
+                        <div class="card card-hover">
+                            <div
+                                class="flex justify-content-between align-items-start"
+                            >
+                                <h4
+                                    *ngIf="!isMobile"
+                                    class="block text-green-500 font-bold m-0"
+                                >
+                                    {{ "label.total_revenue" | translate }}
+                                </h4>
+                                <h6
+                                    *ngIf="isMobile"
+                                    class="block text-green-500 font-bold m-0"
+                                >
+                                    {{ "label.total_revenue" | translate }}
+                                </h6>
+                                <div
+                                    class="flex align-items-center justify-content-center bg-green-100 border-round"
+                                    [ngStyle]="{
+                                        width: '2.5rem',
+                                        height: '2.5rem'
+                                    }"
+                                >
+                                    <i
+                                        class="pi pi-dollar text-green-500 text-xl"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div class="text-green-500 font-bold md:text-xl">
+                                {{
+                                    numberWithCommas(
+                                        totalNumberReportHome?.totalAmount
+                                    )
+                                }}
+                            </div>
+                            <img src="assets/layout/images/wave_1.svg" />
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4 flex flex-column px-0 md:pr-2">
+                        <div class="card card-hover">
+                            <div
+                                class="flex justify-content-between align-items-start"
+                            >
+                                <h4
+                                    *ngIf="!isMobile"
+                                    class="block text-orange-500 font-bold m-0"
+                                >
+                                    {{ "label.debt" | translate }}
+                                </h4>
+                                <h6
+                                    *ngIf="isMobile"
+                                    class="block text-orange-500 font-bold m-0"
+                                >
+                                    {{ "label.debt" | translate }}
+                                </h6>
+                                <div
+                                    class="flex align-items-center justify-content-center bg-orange-100 border-round"
+                                    [ngStyle]="{
+                                        width: '2.5rem',
+                                        height: '2.5rem'
+                                    }"
+                                >
+                                    <i
+                                        class="pi pi-dollar text-orange-500 text-xl"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div class="text-orange-500 font-bold md:text-xl">
+                                {{
+                                    numberWithCommas(
+                                        totalNumberReportHome?.totalAmount331
+                                    )
+                                }}
+                            </div>
+                            <img src="assets/layout/images/wave_2.svg" />
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4 flex flex-column px-0">
+                        <div class="card card-hover">
+                            <div
+                                class="flex justify-content-between align-items-start"
+                            >
+                                <h4
+                                    *ngIf="!isMobile"
+                                    class="block text-pink-500 font-bold m-0"
+                                >
+                                    {{ "label.guest_pays" | translate }}
+                                </h4>
+                                <h6
+                                    *ngIf="isMobile"
+                                    class="block text-pink-500 font-bold m-0"
+                                >
+                                    {{ "label.guest_pays" | translate }}
+                                </h6>
+                                <div
+                                    class="flex align-items-center justify-content-center bg-pink-100 border-round"
+                                    [ngStyle]="{
+                                        width: '2.5rem',
+                                        height: '2.5rem'
+                                    }"
+                                >
+                                    <i
+                                        class="pi pi-dollar text-pink-500 text-xl"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div class="text-pink-500 font-bold md:text-xl">
+                                {{
+                                    numberWithCommas(
+                                        totalNumberReportHome?.totalAmountCn
+                                    )
+                                }}
+                            </div>
+                            <img src="assets/layout/images/wave_4.svg" />
+                        </div>
+                    </div>
+                    <!-- <div class="flex align-items-end justify-content-between md:justify-content-start">
+                        <p class="mb-0 font-bold">Số lượng khách: </p>
+                        <p-tag styleClass="flex align-items-center mr-6" severity="info">
+                            <p class="mb-0 font-bold">
+                                {{paymentHistoryOverview?.quantityCustomer || 0}}
+                            </p>
+                        </p-tag>
+                        <p class="mb-0 font-bold">Doanh thu: </p>
+                        <p-tag styleClass="flex align-items-center" severity="warning">
+                            <p class="mb-0 font-bold">{{paymentHistoryOverview?.totalAmount | number}}</p>
+                        </p-tag>
+                    </div> -->
+                    <div class="col-12 flex justify-content-end pt-2">
+                        <button
+                            class="w-auto px-2 p-button-warning mr-2"
+                            pButton
+                            type="button"
+                            [label]="'label.export_excel_summary' | translate"
+                            (click)="exportBill()"
+                        ></button>
+                        <button
+                            class="w-auto px-2 p-button-warning"
+                            pButton
+                            type="button"
+                            [label]="'label.export_excel_detail' | translate"
+                            (click)="exportBillDetail()"
+                        ></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [style]="col.width">
+                    <span [translate]="col.header"></span>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    class="w-2"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr class="hover:bg-white">
+                <ng-container *ngFor="let col of cols">
+                    <td
+                        *ngIf="col.value == 'numerical_order'"
+                        [style]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{ i }}
+                    </td>
+                    <td *ngIf="col.value == 'status'" [style]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{ rowData[col.value] }}
+                    </td>
+                    <td
+                        *ngIf="
+                            col.value != 'status' &&
+                            col.value != 'amountReceivedByCus' &&
+                            col.value != 'amountSendToCus' &&
+                            col.value != 'numerical_order' &&
+                            col.value != 'createdDate' &&
+                            col.value != 'note' &&
+                            col.value != 'customerName' &&
+                            col.value != 'userCode' &&
+                            col.value != 'discountPrice' &&
+                            col.value != 'debt' &&
+                            col.value != 'invoiceNumber' &&
+                            col.value != 'quantityCustomer' &&
+                            col.value != 'displayOrder'
+                        "
+                        [style]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p style="margin-left: auto">
+                            {{ rowData[col.value] | number }}
+                        </p>
+                    </td>
+                    <td
+                        *ngIf="
+                            col.value == 'customerName' ||
+                            col.value == 'userCode'
+                        "
+                        [style]="col.width"
+                    >
+                        <span
+                            class="cursor-pointer text-primary font-bold"
+                            (click)="showCustomerForm(rowData?.customerId)"
+                            >{{ rowData[col.value] }}<span class="text-sm">{{ col.value == 'userCode' ? ' - ' + rowData?.userName : ''}}</span></span
+                        >
+                    </td>
+                    <td
+                        *ngIf="col.value == 'discountPrice'"
+                        [style]="col.width"
+                        class="text-right"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p>{{ rowData[col.value] | number }}</p>
+                    </td>
+                    <td
+                        *ngIf="col.value == 'amountSendToCus'"
+                        [style]="col.width"
+                        class="md:justify-content-end"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{
+                            (rowData["typePay"] === "CN"
+                                ? 0
+                                : rowData["totalAmount"] -
+                                  rowData["amountReceivedByCus"]
+                            ) | number
+                        }}
+                    </td>
+                    <td *ngIf="col.value == 'createdDate'" [style]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{ rowData[col.value] | date: "d/MM/yyyy" }}
+                    </td>
+                    <td
+                        *ngIf="col.value == 'debt'"
+                        [style]="col.width"
+                        class="md:justify-content-end"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{
+                            (rowData["typePay"] !== "CN"
+                                ? 0
+                                : rowData["totalAmount"] -
+                                  rowData["amountReceivedByCus"]
+                            ) | number
+                        }}
+                    </td>
+                    <td
+                        *ngIf="
+                            col.value == 'note' ||
+                            col.value == 'invoiceNumber' ||
+                            col.value == 'quantityCustomer' ||
+                            col.value == 'displayOrder'
+                        "
+                        [style]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        {{ rowData[col.value] }}
+                    </td>
+                    <td
+                        *ngIf="col.value == 'amountReceivedByCus'"
+                        [style]="col.width"
+                        class="md:justify-content-end"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <button
+                            *ngIf="rowData['typePay'] === 'CN'"
+                            pButton
+                            icon="pi pi-wallet"
+                            (click)="onViewGetMoney(rowData.id)"
+                            pTooltip="Chọn NV thu tiền"
+                        ></button>
+
+                        <span *ngIf="rowData['typePay'] !== 'CN'">
+                            {{ rowData["amountReceivedByCus"] | number }}
+                        </span>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile">
+                    <button
+                        pButton
+                        icon="pi pi-copy"
+                        (click)="copyBill(rowData)"
+                    ></button>
+                    <button
+                        pButton
+                        [icon]="rowData.isShowDetail ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                        (click)="onView(rowData)"
+                    ></button>
+                    <button
+                        pButton
+                        icon="pi pi-pencil"
+                        class="p-button-secondary"
+                        (click)="onAdjustBillDetail(rowData.id)"
+                        pTooltip="Điều chỉnh số lượng"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-shopping-cart"
+                        (click)="onPrint(rowData)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-building"
+                        (click)="onPrintXuatKho(rowData)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        pButton
+                        icon="pi pi-copy"
+                        (click)="copyBill(rowData)"
+                        pTooltip="Copy Bill"
+                    ></button>
+                    <button
+                        *ngIf="
+                            rowData.invoiceNumber ===
+                            ('label.no_invoice_yet' | translate)
+                        "
+                        pButton
+                        icon="pi pi-file"
+                        class="p-button-success"
+                        (click)="createInvoice(rowData)"
+                        pTooltip="Xuất hóa đơn"
+                    ></button>
+                    <button
+                        pButton
+                        [icon]="rowData.isShowDetail ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                        (click)="onView(rowData)"
+                        pTooltip="Xem chi tiết Bill"
+                    ></button>
+                    <button
+                        pButton
+                        icon="pi pi-pencil"
+                        class="p-button-secondary"
+                        (click)="onAdjustBillDetail(rowData.id)"
+                        pTooltip="Điều chỉnh số lượng"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-shopping-cart"
+                        pTooltip="In Bill nhỏ"
+                        (click)="onPrint(rowData)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-building"
+                        pTooltip="In phiếu giao hàng"
+                        (click)="onPrintXuatKho(rowData)"
+                    ></button>
+                </td>
+            </tr>
+            <tr *ngIf="rowData.isShowDetail" class="py-2 w-full flex flex-column">
+<!--                {{ rowData | json }}-->
+                <div class="flex gap-1">
+                    <h6 class="m-0 text-primary" [translate]="'label.detal_total'"></h6>
+                    <span>{{rowData.displayOrder }}</span>
+                </div>
+                <p-table
+                    #dt1
+                    [value]="rowData.billDetails"
+                    dataKey="id"
+                    [loading]="loading"
+                    styleClass="p-datatable-gridlines sidebar-custom"
+                    class="w-full"
+                    [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+                    scrollDirection="both"
+                    [scrollable]="!isMobile"
+                    [resizableColumns]="true"
+                    [autoLayout]="true"
+                >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="w-1">
+                                <span [translate]="'label.id'"></span>
+                            </th>
+                            <th class="w-2">
+                                <span [translate]="'label.goods_code'"></span>
+                            </th>
+                            <th class="w-4">
+                                <span [translate]="'label.goods_name'"></span>
+                            </th>
+                            <th class="w-1">
+                                <div style="display: flex; width: 100%; line-height: 26px">
+                                    <div style="flex: auto">
+                                        <span [translate]="'label.SL'"></span>
+                                    </div>
+                                    <button
+                                        *ngIf="!isEditSoLuong"
+                                        (click)="isEditSoLuong = !isEditSoLuong"
+                                        style="width: 26px; padding: 3px; float: right"
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-pencil"
+                                        class="p-button p-button-danger"
+                                    ></button>
+                                    <button
+                                        *ngIf="isEditSoLuong"
+                                        (click)="editSoLuong(rowData)"
+                                        style="width: 26px; padding: 3px; float: right"
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-save"
+                                        class="p-button p-button-success"
+                                    ></button>
+                                </div>
+                            </th>
+                            <th class="w-1">
+                                <span [translate]="'label.unit_price'"></span>
+                            </th>
+                            <th class="w-1">
+                                <span [translate]="'label.tax_vat'"></span>
+                            </th>
+                            <th class="w-1">
+                                <span [translate]="'label.price_discount'"></span>
+                            </th>
+                            <th class="w-1"alignFrozen="right"
+                                pFrozenColumn
+                                [frozen]="true">
+                                <span [translate]="'label.into_money'"></span>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-billDetail>
+                        <tr>
+                            <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.id'"
+                    ></span>
+                                {{ billDetail.id }}
+                            </td>
+                            <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.goods_code'"
+                    ></span>
+                                {{ billDetail.goodsCode }}
+                            </td>
+                            <td class="w-4">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.goods_name'"
+                    ></span>
+                                <span [title]="billDetail.GoodsName">{{
+                                    billDetail.goodsName
+                                    }}</span>
+                            </td>
+                            <td
+                                class="w-1 flex md:justify-content-end"
+                                style="padding: 5px; width: 100px"
+                            >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.SL'"
+                    ></span>
+                                <p-inputNumber
+                                    *ngIf="isEditSoLuong"
+                                    [(ngModel)]="billDetail.quantity"
+                                    class="p-inputtext-sm w-full"
+                                ></p-inputNumber>
+                                <span *ngIf="!isEditSoLuong">
+                        {{
+                                    (billDetail.quantity ? billDetail.quantity : 0)
+                                        | number
+                                    }}
+                    </span>
+                            </td>
+                            <td
+                                class="w-1 flex md:justify-content-end"
+                                style="width: 100px"
+                            >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.unit_price'"
+                    ></span>
+                                {{
+                                (billDetail.unitPrice ? billDetail.unitPrice : 0)
+                                    | number
+                                }}
+                            </td>
+                            <td
+                                class="w-1 flex md:justify-content-end"
+                                style="width: 150px"
+                            >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.tax_vat'"
+                    ></span>
+                                {{ (billDetail.taxVat ? billDetail.taxVat : 0) | number }}
+                            </td>
+                            <td
+                                class="w-1 flex md:justify-content-end"
+                                style="width: 150px"
+                            >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.price_discount'"
+                    ></span>
+                                {{
+                                (billDetail.discountPrice
+                                        ? billDetail.discountPrice
+                                        : 0
+                                ) | number
+                                }}
+                            </td>
+                            <td
+                                alignFrozen="right"
+                                pFrozenColumn
+                                [frozen]="true"
+                                class="w-1 flex md:justify-content-end"
+                                style="width: 150px"
+                            >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.into_money'"
+                    ></span>
+                                {{ billDetail.pricePay | number }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Payment history found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Payment history data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<!--Modal Debit-->
+<p-dialog
+    [formGroup]="formDebit"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="debtData.isShow"
+    [style]="{ width: '500px' }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white" [translate]="''"></h6>
+    </ng-template>
+
+    <div class="grid w-full">
+        <div class="field col-12 flex flex-column">
+            <label htmlFor="code"
+                >{{ "label.number_staff" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-dropdown
+                [options]="employees"
+                formControlName="userId"
+                optionValue="id"
+                optionLabel="fullName"
+                appendTo="body"
+                [filter]="true"
+                class="w-full"
+            >
+            </p-dropdown>
+        </div>
+        <div class="field col-12 flex flex-column">
+            <label htmlFor="name"
+                >{{ "label.date_debit" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [showIcon]="true"
+                inputId="icon"
+                appendTo="body"
+                class="w-full date-debit"
+                formControlName="date"
+                dateFormat="dd-mm-yy"
+            ></p-calendar>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton class="bg-primary w-fit" (click)="submitGetMoney()">
+            {{ "button.save" | translate }}
+        </button>
+    </ng-template>
+</p-dialog>
+
+<app-pxk
+    id="PXN"
+    *ngIf="isPrintXuatKho === true"
+    [company]="company"
+    [dataPrint]="dataPrint"
+></app-pxk>
+
+<app-customers-form
+    #customersForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="isShowCustomerForm"
+    [formCustomerTaxData]="formCustomerTaxData"
+    showAccountingConnection="true"
+    isEdit="true"
+    (onCancel)="isShowCustomerForm = false"
+></app-customers-form>
+<app-bill-refund #billRefundDialog [isMobile]="isMobile"></app-bill-refund>

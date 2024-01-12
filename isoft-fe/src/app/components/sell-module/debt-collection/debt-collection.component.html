@@ -1,0 +1,153 @@
+<div class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between">
+        <h5 [translate]="'label.debt_collection'"></h5>
+    </div>
+
+    <p-table
+        #dt
+        [value]="record?.data"
+        [paginator]="false"
+        [showCurrentPageReport]="true"
+        responsiveLayout="stack"
+        [breakpoint]="'1199px'"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        dataKey="id"
+        [rowHover]="true"
+        lazy="true"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 20%">
+                    <div class="flex align-items-center w-11rem">
+                        <span [translate]="'label.cash_collector'"></span>
+                    </div>
+                </th>
+                <th style="width: 15%">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.collection_date'"></span>
+                    </div>
+                </th>
+                <th style="width: 15%">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.amount_of_money'"></span>
+                    </div>
+                </th>
+                <th style="width: 15%">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.collector_status'"></span>
+                    </div>
+                </th>
+                <th style="width: 15%">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.accountant_status'"></span>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td>
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.cash_collector'"
+                    ></span>
+                    {{ getUser(item.userId) }}
+                </td>
+                <td>
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.collection_date'"
+                    ></span>
+                    {{ item.date | date: "dd/MM/yyyy" }}
+                </td>
+                <td style="text-align: end">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.amount_of_money'"
+                    ></span>
+                    {{ numberWithCommas(item.amount) }}
+                </td>
+                <td class="w-11rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.collector_status'"
+                    ></span>
+                    <p *ngIf="item.statusUserId; else updateUser">
+                        <p-badge
+                            severity="success"
+                            [value]="'Hoàn thành'"
+                        ></p-badge>
+                    </p>
+                    <ng-template #updateUser>
+                        <p-dropdown
+                            [options]="status"
+                            optionValue="id"
+                            optionLabel="label"
+                            [filter]="true"
+                            class="w--25"
+                            [disabled]="item.statusUserId"
+                            [(ngModel)]="item.statusUserId"
+                            (ngModelChange)="
+                                updateStatus(item, {
+                                    statusUserId: item.statusUserId
+                                })
+                            "
+                            appendTo="body"
+                        ></p-dropdown>
+                    </ng-template>
+                </td>
+                <td class="w-11rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.accountant_status'"
+                    ></span>
+                    <p *ngIf="item.statusAccountantId; else updateAccount">
+                        <p-badge
+                            severity="success"
+                            [value]="'Hoàn thành'"
+                        ></p-badge>
+                    </p>
+                    <ng-template #updateAccount>
+                        <p-dropdown
+                            [options]="status"
+                            optionValue="id"
+                            optionLabel="label"
+                            [filter]="true"
+                            class="w--25"
+                            [(ngModel)]="item.statusAccountantId"
+                            (ngModelChange)="
+                                updateStatus(item, {
+                                    statusAccountantId: item.statusAccountantId
+                                })
+                            "
+                            [disabled]="item.statusAccountantId"
+                            appendTo="body"
+                        ></p-dropdown>
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

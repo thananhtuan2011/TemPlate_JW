@@ -1,0 +1,30 @@
+<p-dialog
+    [header]="'label.change_employee' | translate"
+    (onHide)="onHidden.emit()"
+    [(visible)]="visible"
+    [style]="{ width: '400px' }"
+>
+    <div class="field">
+        <p-dropdown
+            [options]="employees"
+            [ngModelOptions]="{ standalone: true }"
+            [optionLabel]="'fullName'"
+            [filter]="true"
+            filterBy="name"
+            [(ngModel)]="changeEmployee.userId"
+            [optionValue]="'id'"
+            [showClear]="true"
+            appendTo="body"
+            [placeholder]="'label.employee' | translate"
+        >
+        </p-dropdown>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-check"
+            (click)="onSaveChange()"
+            label="Ok"
+            styleClass="p-button-text"
+        ></p-button>
+    </ng-template>
+</p-dialog>

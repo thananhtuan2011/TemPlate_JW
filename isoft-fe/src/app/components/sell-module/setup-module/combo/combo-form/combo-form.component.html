@@ -1,0 +1,297 @@
+<div class="card card-table" *ngIf="display">
+    <h5 [translate]="'label.update_combo'"></h5>
+    <p-table
+        [value]="listCombo"
+        dataKey="id"
+        styleClass="p-datatable-gridlines mt-2"
+        responsiveLayout="scroll'"
+        scrollable="true"
+        scrollDirection="both"
+    >
+        <ng-template pTemplate="caption" [formGroup]="PositionDetailForm">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <div class="field col-12 md:col-3 flex flex-column">
+                    <p-dropdown
+                        [placeholder]="'label.goods' | translate"
+                        [formControlName]="'creditCode'"
+                        [options]="creditAccounts"
+                        [optionValue]="'code'"
+                        showClear="true"
+                        (onChange)="chooseCreditCode($event)"
+                        (onClear)="clearCreditCode($event)"
+                    >
+                        <ng-template
+                            let-creditAccounts
+                            pTemplate="creditAccounts"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ creditAccounts.code }} -
+                                {{ creditAccounts.name }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-creditAccounts
+                            pTemplate="creditAccounts"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ creditAccounts.code }} -
+                                {{ creditAccounts.name }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                <!-- debit1 -->
+                <div class="field col-12 md:col-3 flex flex-column">
+                    <p-dropdown
+                        #creditDetailCodeFirst
+                        [placeholder]="'label.detail_1' | translate"
+                        [formControlName]="'creditDetailCodeFirst'"
+                        [options]="listDetail1"
+                        [optionValue]="'code'"
+                        showClear="true"
+                        [disabled]="listDetail1.length == 0"
+                        (onChange)="chooseDetail1($event)"
+                        (onClear)="clearDetail1($event)"
+                    >
+                        <ng-template
+                            let-listDetail1
+                            pTemplate="listDetail1"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ listDetail1.code }} -
+                                {{ listDetail1.name }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-listDetail1
+                            pTemplate="listDetail1"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ listDetail1.code }} -
+                                {{ listDetail1.name }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                <!-- debit2 -->
+                <div class="field col-12 md:col-3 flex flex-column">
+                    <p-dropdown
+                        #creditDetailCodeSecond
+                        [placeholder]="'label.detail_2' | translate"
+                        [formControlName]="'creditDetailCodeSecond'"
+                        [options]="listDetail2"
+                        [optionValue]="'code'"
+                        showClear="true"
+                        [disabled]="listDetail2.length == 0"
+                    >
+                        <ng-template
+                            let-listDetail2
+                            pTemplate="listDetail2"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ listDetail2.code }} -
+                                {{ listDetail2.name }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-listDetail2
+                            pTemplate="listDetail2"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ listDetail2.code }} -
+                                {{ listDetail2.name }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+                <div class="field col-12 md:col-1 flex flex-column"></div>
+                <div class="field col-12 md:col-2 flex flex-column">
+                    <button
+                        pButton
+                        [label]="'button.add' | translate"
+                        class=""
+                        icon="pi pi-user-plus"
+                        (click)="addAccount()"
+                        [disabled]="stateButtonDisable"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.numerical_order'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.code'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name_element'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.stock_quantity'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.cost_of_capital'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.into_money'"></span>
+                    </div>
+                </th>
+                <th
+                    class="w-1"
+                    *ngIf="isMobile"
+                    style="min-width: 80px !important"
+                ></th>
+                <th
+                    class="w-1"
+                    *ngIf="!isMobile"
+                    style="min-width: 80px !important"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quota let-i="rowIndex">
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.numerical_order'"
+                    ></span
+                    >{{ i + 1 }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span
+                    >{{ getCode(quota) }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_element'"
+                    ></span>
+                    {{ getName(quota) }}
+                </td>
+                <td class="w-2">
+                    <p-inputNumber
+                        [(ngModel)]="quota.quantity"
+                        min="0"
+                        mode="decimal"
+                        [minFractionDigits]="0"
+                        [maxFractionDigits]="5"
+                        (onInput)="inputChange($event, 'quantity', quota)"
+                    >
+                    </p-inputNumber>
+                </td>
+                <td class="w-2">
+                    <p-inputNumber
+                        [(ngModel)]="quota.unitPrice"
+                        min="0"
+                        (onInput)="inputChange($event, 'unitPrice', quota)"
+                    >
+                    </p-inputNumber>
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.cost_of_capital'"
+                    ></span>
+                    {{ quota?.amount | number }}
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="min-width: 80px !important"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-1 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="deleteRow(i, quota.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <div class="col-12 mt-5" style="text-align: end; font-weight: 700">
+        Tổng giá vốn thành phần: {{ getTotalCost() | number }}
+    </div>
+    <div class="col-12">
+        <div class="p-fluid p-formgrid grid mt-2">
+            <div class="field col-12 gap-8 flex justify-content-end mt-4 p-0">
+                <p-button
+                    icon="pi pi-times"
+                    (click)="closeModal()"
+                    [label]="'button.back' | translate"
+                    styleClass="p-button-outlined"
+                ></p-button>
+                <p-button
+                    icon="pi pi-check"
+                    (click)="onSubmit()"
+                    [label]="'button.save' | translate"
+                >
+                </p-button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.confirm_timekeeping_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'label.confirm' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

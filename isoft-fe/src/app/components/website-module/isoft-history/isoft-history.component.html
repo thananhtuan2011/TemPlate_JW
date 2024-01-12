@@ -1,0 +1,158 @@
+<div *ngIf="!display" class="card card-table">
+    <h5>Quản lý bài lịch sử</h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        responsiveLayout="scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getHistories($event)"
+        scrollable="true"
+        scrollDirection="both"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="param.searchText"
+                        pInputText
+                        type="text"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.add' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddHistory()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">Lớp</div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Tên bài học
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Tiêu đề
+                    </div>
+                </th>
+                <th class="w-4">
+                    <div class="flex align-items-center">Nội dung</div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Ngày tạo
+                    </div>
+                </th>
+                <th
+                    class="w-1"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-history>
+            <tr>
+                <td class="w-1">{{ history.classNameStr }}</td>
+                <td class="w-2">{{ history.name }}</td>
+                <td class="w-3">{{ history.title }}</td>
+                <td class="w-4 overflow-x-hidden">{{ history.content }}</td>
+                <td class="w-1">{{ history.createAt | date: "dd/MM/yyyy" }}</td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-1 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getHistoryDetail(history)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDeleteHistory(history)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-isoft-history-edit
+    [display]="display"
+    [formData]="formData"
+    (onCancel)="onCancelForm($event)"
+></app-isoft-history-edit>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

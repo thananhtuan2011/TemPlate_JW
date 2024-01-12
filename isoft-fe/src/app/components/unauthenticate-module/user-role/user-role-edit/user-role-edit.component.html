@@ -1,0 +1,75 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.user_role_edit' : 'label.user_role_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="code">{{ "label.user_role_code" | translate }}</label>
+            <input
+                pInputText
+                id="code"
+                type="text"
+                class="w-full"
+                placeholder="Nhập mã nhóm quyền"
+                [(ngModel)]="userRoleModel.code"
+                autocomplete="off"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="name">{{ "label.user_role_title" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên nhóm quyền"
+                [(ngModel)]="userRoleModel.title"
+                autocomplete="off"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="order">{{ "label.user_role_order" | translate }}</label>
+            <input
+                pInputText
+                id="order"
+                type="number"
+                class="w-full"
+                placeholder="Nhập thứ tự"
+                [(ngModel)]="userRoleModel.order"
+                autocomplete="off"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="note">{{ "label.user_role_note" | translate }}</label>
+            <textarea
+                pInputTextarea
+                id="note"
+                [(ngModel)]="userRoleModel.note"
+                rows="4"
+                placeholder="Nhập ghi chú"
+            ></textarea>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onBack()"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

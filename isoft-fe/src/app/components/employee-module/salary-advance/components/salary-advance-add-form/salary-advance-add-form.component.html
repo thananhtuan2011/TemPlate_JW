@@ -1,0 +1,314 @@
+<p-toast></p-toast>
+<div class="card card-table">
+    <div class="d-flex row">
+        <div class="col-3">
+            <h5 [translate]="'label.salary_advance'"></h5>
+        </div>
+        <div class="col-9 d-flex">
+            <h6
+                class="center-text"
+                htmlFor="date"
+                [translate]="'label.salary_advance_month'"
+            ></h6>
+            <div>
+                <p-inputMask
+                    mask="99/99/9999"
+                    [(ngModel)]="listSalaryAdvanceDetail.date"
+                    slotChar="dd/mm/yyyy"
+                    [ngClass]="checkValidValidator('date')"
+                ></p-inputMask>
+                <small
+                    *ngIf="checkValidValidator('date')"
+                    class="p-error"
+                    [innerHTML]="'info.date' | translate"
+                ></small>
+            </div>
+        </div>
+    </div>
+
+    <p-table
+        #dt1
+        [value]="listSalaryAdvanceDetail.items"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines mt-2"
+        [paginator]="true"
+        responsiveLayout="scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getSalaryAdvanceDetail($event)"
+        scrollable="true"
+        scrollDirection="both"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2"> </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0 gap-1"
+                ></div>
+            </div>
+            <div class="row d-flex">
+                <div class="col-3">
+                    <h6 htmlFor="procedureNumber">
+                        {{ "label.procedure_number" | translate
+                        }}<span class="text-pink">*</span>
+                    </h6>
+                    <input
+                        class="full-w"
+                        pInputText
+                        id="procedureNumber"
+                        [(ngModel)]="listSalaryAdvanceDetail.procedureNumber"
+                        [ngClass]="checkValidValidator('procedureNumber')"
+                        disabled
+                    />
+                    <small
+                        *ngIf="checkValidValidator('procedureNumber')"
+                        class="p-error"
+                        [innerHTML]="'info.procedureNumber' | translate"
+                    ></small>
+                </div>
+                <div class="col-3">
+                    <h6 htmlFor="name">
+                        {{ "label.procedure_name" | translate
+                        }}<span class="text-pink">*</span>
+                    </h6>
+                    <input
+                        class="full-w"
+                        pInputText
+                        id="name"
+                        [(ngModel)]="listSalaryAdvanceDetail.name"
+                        [ngClass]="checkValidValidator('name')"
+                    />
+                    <small
+                        *ngIf="checkValidValidator('name')"
+                        class="p-error f-normal"
+                        [innerHTML]="'info.name' | translate"
+                    ></small>
+                </div>
+                <div class="col-3">
+                    <h6 htmlFor="branchId" [translate]="'label.branch'"></h6>
+                    <p-dropdown
+                        class="dropdown-custom"
+                        id="branchId"
+                        [options]="listBranch"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="listSalaryAdvanceDetail.branchId"
+                        (onChange)="onFilterBranch($event.value)"
+                        [placeholder]="'label.empty' | translate"
+                        [ngClass]="checkValidValidator('branchId')"
+                    >
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('branchId')"
+                        class="p-error"
+                        [innerHTML]="'info.branchId' | translate"
+                    ></small>
+                </div>
+                <div class="col-3">
+                    <h6
+                        htmlFor="departmentId"
+                        [translate]="'label.web_career_department'"
+                    ></h6>
+                    <p-dropdown
+                        class="dropdown-custom"
+                        id="departmentId"
+                        [options]="selectedListDepartment"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="listSalaryAdvanceDetail.departmentId"
+                        [placeholder]="'label.empty' | translate"
+                        [ngClass]="checkValidValidator('departmentId')"
+                    >
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('departmentId')"
+                        class="p-error"
+                        [innerHTML]="'info.departmentId' | translate"
+                    ></small>
+                </div>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.employee_code'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.employee_name'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.amount_of_money'"></span>
+                    </div>
+                </th>
+                <th
+                    class="w-4 flex justify-content-start md:justify-content-center"
+                    *ngIf="isMobile"
+                    style="min-width: 80px !important"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        icon="pi pi-plus"
+                        (click)="onAdd()"
+                    ></button>
+                </th>
+                <th
+                    class="w-4 flex justify-content-start md:justify-content-center"
+                    *ngIf="!isMobile"
+                    style="min-width: 80px !important"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        icon="pi pi-plus"
+                        (click)="onAdd()"
+                    ></button>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-item
+            let-rowData
+            let-rowIndex="rowIndex"
+        >
+            <tr>
+                <td class="w-2">
+                    <p-dropdown
+                        class="dropdown-table"
+                        id="status"
+                        [options]="listUser"
+                        [optionLabel]="'id'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="item.userId"
+                        [placeholder]="'label.empty' | translate"
+                        [ngClass]="checkValidValidator('userId' + rowIndex)"
+                        [showClear]="true"
+                        (ngModelChange)="onChange($event, 'userId', rowIndex)"
+                    >
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('userId' + rowIndex)"
+                        class="p-error f-normal"
+                        [innerHTML]="'info.please_check_again' | translate"
+                    ></small>
+                </td>
+                <td class="w-3">
+                    <p-dropdown
+                        class="dropdown-table"
+                        id="status"
+                        [options]="listUser"
+                        [optionLabel]="'fullName'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="item.userId"
+                        [placeholder]="'label.empty' | translate"
+                        [showClear]="true"
+                        [ngClass]="checkValidValidator('userId' + rowIndex)"
+                        (ngModelChange)="onChange($event, 'userId', rowIndex)"
+                    >
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('userId' + rowIndex)"
+                        class="p-error f-normal"
+                        [innerHTML]="'info.please_check_again' | translate"
+                    ></small>
+                </td>
+                <td class="w-3">
+                    <p-inputNumber
+                        class="w-full"
+                        [(ngModel)]="item.value"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="onChange($event, 'value', rowIndex)"
+                    ></p-inputNumber>
+                </td>
+
+                <td
+                    class="w-4"
+                    *ngIf="isMobile"
+                    style="min-width: 80px !important"
+                    alignFrozen="right"
+                    [frozen]="true"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.delete"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(rowIndex)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="min-width: 80px !important"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-4 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.delete"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(rowIndex)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="p-fluid p-formgrid grid mt-2">
+            <div class="field col-12 gap-8 flex justify-content-end mt-4 p-0">
+                <p-button
+                    icon="pi pi-times"
+                    (click)="onCancel.emit({})"
+                    [label]="'button.backF6' | translate"
+                    styleClass="p-button-outlined"
+                ></p-button>
+                <p-button
+                    icon="pi pi-check"
+                    (click)="onSubmit()"
+                    [label]="'button.saveF8' | translate"
+                >
+                </p-button>
+            </div>
+        </div>
+    </div>
+</div>

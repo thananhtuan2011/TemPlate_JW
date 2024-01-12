@@ -1,0 +1,8 @@
+<ng-container [ngSwitch]="isConfirmationService.type">
+    <ng-container *ngSwitchCase="confirmTypes.PopUp">
+        <p-confirmPopup></p-confirmPopup>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+        <p-confirmDialog></p-confirmDialog>
+    </ng-container>
+</ng-container>

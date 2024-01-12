@@ -1,0 +1,309 @@
+<!-- <p>{{value | json}}</p> -->
+<!-- {{chartOfAccounts | json}} -->
+<div class="flex flex-column md:flex-row gap-8">
+    <!--debit-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120 pl-1 md:pl-0"
+            [translate]="'label.debit_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.debitCode"
+                [suggestions]="filteredDebitNames"
+                #debit
+                (completeMethod)="filterDebitName1($event)"
+                [completeOnFocus]="true"
+                (onSelect)="onDebitSelect1($event)"
+                (onClear)="filterDebitName1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ debit.label.split("|")[0] }}</p>
+                        </div>
+                        <div
+                            class="w-12rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee
+                                *ngIf="debit.label.split('|')[1].length > 27"
+                                >{{ debit.label.split("|")[1] }}
+                            </marquee>
+                            <p
+                                class="mb-0"
+                                *ngIf="debit.label.split('|')[1].length <= 27"
+                            >
+                                {{ debit.label.split("|")[1] }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ debit.label.split("|")[2] }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{
+                                    debit.label.split("|")[3] | number: "1.0-0"
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+    <!--debit1-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120"
+            [translate]="'label.debit_1_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.debitDetailCodeFirst"
+                [suggestions]="filteredDebit1Names"
+                #debit1
+                (completeMethod)="filterDebit1Name1($event)"
+                [completeOnFocus]="true"
+                [disabled]="!debits1.length"
+                (onSelect)="onDebit1Select1($event)"
+                (onClear)="filterDebit1Name1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ debit.label.split("|")[0] }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ debit.label.split("|")[1] }}</p>
+                        </div>
+                        <div
+                            class="w-12rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee
+                                *ngIf="debit.label.split('|')[2].length > 27"
+                                >{{ debit.label.split("|")[2] }}
+                            </marquee>
+                            <p
+                                class="mb-0"
+                                *ngIf="debit.label.split('|')[2].length <= 27"
+                            >
+                                {{ debit.label.split("|")[2] }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ debit.label.split("|")[3] }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{
+                                    debit.label.split("|")[4] | number: "1.0-0"
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+    <!--debit2-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120"
+            [translate]="'label.debit_2_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.debitDetailCodeSecond"
+                [suggestions]="filteredDebit2Names"
+                #debit2
+                (completeMethod)="filterDebit2Name1($event)"
+                [completeOnFocus]="true"
+                [disabled]="!debits2.length"
+                (onSelect)="onDebit2Select1($event)"
+                (onClear)="filterDebit2Name1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div class="country-item">
+                        <div>{{ debit.label }}</div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+</div>
+
+<div class="flex flex-column md:flex-row gap-8 mt-4">
+    <!--credit-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120"
+            [translate]="'label.credit_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.creditCode"
+                [suggestions]="filteredCreditNames"
+                #credit
+                (completeMethod)="filterCreditName1($event)"
+                [completeOnFocus]="true"
+                (onSelect)="onCreditSelect1($event)"
+                (onClear)="filterCreditName1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.label.split("|")[0] }}</p>
+                        </div>
+                        <div
+                            class="w-12rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee
+                                *ngIf="credit.label.split('|')[1].length > 27"
+                                >{{ credit.label.split("|")[1] }}
+                            </marquee>
+                            <p
+                                class="mb-0"
+                                *ngIf="credit.label.split('|')[1].length <= 27"
+                            >
+                                {{ credit.label.split("|")[1] }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.label.split("|")[2] }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{
+                                    credit.label.split("|")[3] | number: "1.0-0"
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+    <!--credit1-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120"
+            [translate]="'label.credit_1_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.creditDetailCodeFirst"
+                [suggestions]="filteredCredit1Names"
+                #credit1
+                (completeMethod)="filterCredit1Name1($event)"
+                [completeOnFocus]="true"
+                [disabled]="!credits1.length"
+                (onSelect)="onCredit1Select1($event)"
+                (onClear)="filterCredit1Name1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.label.split("|")[0] }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ credit.label.split("|")[1] }}</p>
+                        </div>
+                        <div
+                            class="w-12rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee
+                                *ngIf="credit.label.split('|')[2].length > 27"
+                                >{{ credit.label.split("|")[2] }}
+                            </marquee>
+                            <p
+                                class="mb-0"
+                                *ngIf="credit.label.split('|')[2].length <= 27"
+                            >
+                                {{ credit.label.split("|")[2] }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.label.split("|")[3] }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{
+                                    credit.label.split("|")[4] | number: "1.0-0"
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+    <!--credit2-->
+    <div class="field flex align-items-center font-bold w-full">
+        <label
+            class="font-bold w-120"
+            [translate]="'label.credit_2_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                [(ngModel)]="value.creditDetailCodeSecond"
+                [suggestions]="filteredCredit2Names"
+                #credit2
+                (completeMethod)="filterCredit2Name1($event)"
+                [completeOnFocus]="true"
+                [disabled]="!credits2.length"
+                (onSelect)="onCredit2Select1($event)"
+                (onClear)="filterCredit2Name1($event)"
+                [autoHighlight]="true"
+                [ngModelOptions]="{ standalone: true }"
+                field="value"
+                class="p-inputtext-sm"
+                appendTo="body"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div class="country-item">
+                        <div>{{ debit.label }}</div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+</div>
+
+<div class="flex justify-content-end gap-8 mt-4">
+    <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        [label]="'button.back' | translate"
+        (click)="onCancel.emit({})"
+    ></button>
+</div>

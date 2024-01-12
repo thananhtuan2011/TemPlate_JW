@@ -1,0 +1,108 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.web_news_edit' : 'label.web_news_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="type">{{
+                "label.web_introduce_type" | translate
+            }}</label>
+            <p-dropdown
+                id="type"
+                [options]="languageTypes"
+                [(ngModel)]="newsModel.type"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Chọn ngôn ngữ"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="thumbnail">{{
+                "label.web_news_thumbnail" | translate
+            }}</label>
+            <div
+                class="w-full flex align-items-start justify-content-start"
+                id="thumbnail"
+            >
+                <p-fileUpload
+                    mode="basic"
+                    name="demo[]"
+                    class="ml-3"
+                    chooseIcon="pi pi-upload"
+                    (onSelect)="onUploadFile($event)"
+                    styleClass="px-3"
+                ></p-fileUpload>
+                <img
+                    *ngIf="newsModel.image"
+                    width="45px"
+                    height="45px"
+                    [src]="newsModel.imageUrl"
+                    class="ml-3"
+                />
+            </div>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="title">{{ "label.web_news_title" | translate }}</label>
+            <input
+                pInputText
+                id="title"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tiêu đề"
+                [(ngModel)]="newsModel.title"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="iframeYoutube">{{
+                "label.web_news_short_content" | translate
+            }}</label>
+            <textarea
+                pInputText
+                id="iframeYoutube"
+                type="text"
+                class="w-full"
+                placeholder="Nhập nội dung tóm tắt"
+                [(ngModel)]="newsModel.shortContent"
+                rows="3"
+            ></textarea>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="content">{{
+                "label.web_news_content" | translate
+            }}</label>
+            <p-editor
+                id="content"
+                [(ngModel)]="content"
+                [style]="{ height: '320px' }"
+                class="w-full"
+                (onTextChange)="onChangeEditor($event)"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats></app-ql-formats>
+                </ng-template>
+            </p-editor>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-2">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

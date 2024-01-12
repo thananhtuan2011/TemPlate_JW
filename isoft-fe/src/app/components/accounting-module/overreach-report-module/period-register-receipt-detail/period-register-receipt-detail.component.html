@@ -1,0 +1,24 @@
+<div class="card card-table">
+    <app-report-filter
+        [typedate]="'yyyymmdd'"
+        [title]="'Sổ chi tiết giai đoạn'"
+        [filter]="getParams"
+        (onPreview)="onPreview('html')"
+        (onPrint)="onPrint('pdf')"
+        (onPrintExcel)="onPrintExcel('excel')"
+        [types]="types"
+        [dateType]="[{ value: 2, label: 'label.date_type' }]"
+        [showTypes]="showTypes"
+        (onChangeFilter)="getParams = $event"
+        (onChangeTypes)="types = $event"
+        [hasContraAccount]="true"
+    ></app-report-filter>
+
+    <div class="frame-container">
+        <div class="frame-content">
+            <div class="frame-report">
+                <div id="iframe-html-report-balance-account"></div>
+            </div>
+        </div>
+    </div>
+</div>

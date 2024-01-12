@@ -1,0 +1,137 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.web_career_edit' : 'label.web_career_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="type">{{
+                "label.web_introduce_type" | translate
+            }}</label>
+            <p-dropdown
+                id="type"
+                [options]="languageTypes"
+                [(ngModel)]="newsModel.type"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Chọn ngôn ngữ"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="group">{{
+                "label.web_career_group" | translate
+            }}</label>
+            <p-dropdown
+                id="group"
+                [options]="careerGroupTypes"
+                [(ngModel)]="newsModel.group"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Chọn khối tuyển dụng"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="workingMethod">{{
+                "label.web_career_type" | translate
+            }}</label>
+            <p-dropdown
+                id="workingMethod"
+                [options]="workingMethodTypes"
+                [(ngModel)]="newsModel.workingMethod"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Chọn hình thức làm việc"
+            ></p-dropdown>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="title">{{
+                "label.web_career_title" | translate
+            }}</label>
+            <input
+                pInputText
+                id="title"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tiêu đề"
+                [(ngModel)]="newsModel.title"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="location">{{
+                "label.web_career_address" | translate
+            }}</label>
+            <input
+                pInputText
+                id="location"
+                type="text"
+                class="w-full"
+                placeholder="Nhập địa điểm"
+                [(ngModel)]="newsModel.location"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="dept">{{
+                "label.web_career_department" | translate
+            }}</label>
+            <input
+                pInputText
+                id="dept"
+                type="text"
+                class="w-full"
+                placeholder="Nhập phòng ban"
+                [(ngModel)]="newsModel.department"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="deadline">{{
+                "label.web_career_deadline" | translate
+            }}</label>
+            <p-calendar
+                id="deadline"
+                [(ngModel)]="newsModel.expiredApply"
+                [showIcon]="true"
+                inputId="deadline"
+                dateFormat="dd/mm/yy"
+            ></p-calendar>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="description">{{
+                "label.web_career_detail" | translate
+            }}</label>
+            <textarea
+                pInputText
+                id="description"
+                type="text"
+                class="w-full"
+                placeholder="Nhập nội dung chi tiết"
+                [(ngModel)]="newsModel.description"
+                rows="8"
+            ></textarea>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-2">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

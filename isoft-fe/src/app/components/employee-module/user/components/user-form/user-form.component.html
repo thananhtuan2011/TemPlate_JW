@@ -1,0 +1,1925 @@
+<p-toast></p-toast>
+<form *ngIf="display" class="w-12" [formGroup]="userForm" autocomplete="off">
+    <div class="p-0 md:p-4 card grid">
+        <div class="col-12 md:col-3 flex justify-content-center">
+            <div class="md:fixed flex flex-column">
+                <div class="flex justify-content-center">
+                    <img
+                        *ngIf="userForm.value.avatar"
+                        class="cursor-pointer"
+                        style="border-radius: 50%"
+                        src="{{ serverURLImage + '/' + userForm.value.avatar }}"
+                        alt="Avatar"
+                        width="150"
+                        height="150"
+                        (click)="uploadFile.click()"
+                    />
+                    <img
+                        *ngIf="!userForm.value.avatar"
+                        class="cursor-pointer"
+                        style="border-radius: 50%"
+                        src="assets/layout/images/user.png"
+                        alt="Avatar"
+                        width="150"
+                        height="150"
+                        (click)="uploadFile.click()"
+                    />
+                    <input
+                        #uploadFile
+                        class="hidden"
+                        type="file"
+                        (change)="doAttachFile($event)"
+                    />
+                </div>
+                <!--status-->
+                <div class="flex flex-column mt-4">
+                    <div class="field flex">
+                        <label
+                            htmlFor="quit"
+                            [translate]="'label.job_status'"
+                        ></label>
+                        <span class="text-pink-400">*</span>
+                    </div>
+                    <p-dropdown
+                        id="quit"
+                        [options]="types.status"
+                        [optionLabel]="'label'"
+                        [optionValue]="'value'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="userForm.value.quit"
+                        [formControlName]="'quit'"
+                        [placeholder]="'label.empty' | translate"
+                        [ngClass]="checkValidValidator('quit')"
+                    >
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('quit')"
+                        class="pl-1 p-error"
+                        [innerHTML]="'info.status' | translate"
+                    ></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-9">
+            <p-accordion>
+                <!--account info-->
+                <p-accordionTab [selected]="true">
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.account'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'username',
+                                        'userRoleIds',
+                                        'branchId',
+                                        'warehouseId',
+                                        'departmentId',
+                                        'positionDetailId',
+                                        'targetId',
+                                        'symbolId',
+                                        'language',
+                                        'note'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.please_check_again_account'
+                                            | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--username-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="username"
+                                    >{{ "label.username" | translate
+                                    }}<span class="text-pink">*</span></label
+                                >
+                                <input
+                                    pInputText
+                                    id="username"
+                                    [(ngModel)]="userForm.value.username"
+                                    formControlName="username"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('username')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('username')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('username')"
+                                    class="p-error"
+                                    [innerHTML]="'info.username' | translate"
+                                ></small>
+                            </div>
+
+                            <!--role-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="userRoleIds"
+                                    [translate]="'label.role'"
+                                ></label>
+                                <p-multiSelect
+                                    id="userRoleIds"
+                                    [options]="roles"
+                                    [optionLabel]="'title'"
+                                    [showClear]="true"
+                                    [optionValue]="'id'"
+                                    [appendTo]="'body'"
+                                    [(ngModel)]="userForm.value.userRoleIds"
+                                    [formControlName]="'userRoleIds'"
+                                    [ngClass]="
+                                        checkValidValidator('userRoleIds')
+                                    "
+                                >
+                                </p-multiSelect>
+                                <small
+                                    *ngIf="checkValidValidator('userRoleIds')"
+                                    class="p-error"
+                                    [innerHTML]="'info.role' | translate"
+                                ></small>
+                            </div>
+
+                            <!--branch-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="branchId"
+                                    [translate]="'label.branch'"
+                                ></label>
+                                <p-dropdown
+                                    id="branchId"
+                                    [options]="branches"
+                                    [optionLabel]="'name'"
+                                    [showClear]="true"
+                                    [optionValue]="'id'"
+                                    [appendTo]="'body'"
+                                    [(ngModel)]="userForm.value.branchId"
+                                    [formControlName]="'branchId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="checkValidValidator('branchId')"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('branchId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.branch' | translate"
+                                ></small>
+                            </div>
+
+                            <!--warehouse-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="warehouseId"
+                                    [translate]="'label.warehouse'"
+                                ></label>
+                                <p-dropdown
+                                    id="warehouseId"
+                                    [options]="warehouses"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [appendTo]="'body'"
+                                    [(ngModel)]="userForm.value.warehouseId"
+                                    [formControlName]="'warehouseId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="
+                                        checkValidValidator('warehouseId')
+                                    "
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('warehouseId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.warehouse' | translate"
+                                ></small>
+                            </div>
+
+                            <!-- department -->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="departmentId"
+                                    [translate]="'label.department'"
+                                ></label>
+                                <p-dropdown
+                                    id="departmentId"
+                                    [options]="departments"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="userForm.value.departmentId"
+                                    [formControlName]="'departmentId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="
+                                        checkValidValidator('departmentId')
+                                    "
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('departmentId')"
+                                    class="p-error"
+                                    [translate]="'info.department' | translate"
+                                ></small>
+                            </div>
+
+                            <!-- position detail -->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="positionDetailId"
+                                    [translate]="'label.position_detail'"
+                                ></label>
+                                <p-dropdown
+                                    id="positionDetailId"
+                                    [options]="positionDetails"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="
+                                        userForm.value.positionDetailId
+                                    "
+                                    [formControlName]="'positionDetailId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="
+                                        checkValidValidator('positionDetailId')
+                                    "
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('positionDetailId')
+                                    "
+                                    class="p-error"
+                                    [translate]="
+                                        'info.position_detail' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!-- target -->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="targetId"
+                                    [translate]="'label.target'"
+                                ></label>
+                                <p-dropdown
+                                    id="targetId"
+                                    [options]="targets"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="userForm.value.targetId"
+                                    [formControlName]="'targetId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="checkValidValidator('targetId')"
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('targetId')"
+                                    class="p-error"
+                                    [translate]="'info.target' | translate"
+                                ></small>
+                            </div>
+
+                            <!-- symbol -->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="symbolId"
+                                    [translate]="'label.symbol'"
+                                ></label>
+                                <p-dropdown
+                                    id="symbolId"
+                                    [options]="symbols"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="userForm.value.symbolId"
+                                    [formControlName]="'symbolId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="checkValidValidator('symbolId')"
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('symbolId')"
+                                    class="p-error"
+                                    [translate]="'info.symbol' | translate"
+                                ></small>
+                            </div>
+
+                            <!--language-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    for="language"
+                                    [translate]="'label.language'"
+                                ></label>
+                                <p-dropdown
+                                    [options]="optionCountries"
+                                    [formControlName]="'language'"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    optionLabel="name"
+                                    optionValue="alpha2"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('language')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('language')
+                                    "
+                                    [(ngModel)]="userForm.value.language"
+                                    [autoDisplayFirst]="false"
+                                    [placeholder]="'label.empty' | translate"
+                                    [disabled]="readonly"
+                                    class="p-fluid"
+                                >
+                                    <ng-template
+                                        let-value
+                                        pTemplate="selectedItem"
+                                    >
+                                        <div
+                                            class="country-item country-item-value"
+                                            *ngIf="userForm.value.language"
+                                        >
+                                            <div
+                                                class="flex align-items-center"
+                                            >
+                                                <img
+                                                    [src]="
+                                                        'assets/country-flags/' +
+                                                        value.alpha2.toLowerCase() +
+                                                        '.svg'
+                                                    "
+                                                    class="flag icon-flag"
+                                                />
+                                                <div>{{ value.name }}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-country pTemplate="item">
+                                        <div class="country-item">
+                                            <div
+                                                class="flex align-items-center"
+                                            >
+                                                <img
+                                                    [src]="
+                                                        'assets/country-flags/' +
+                                                        country.alpha2.toLowerCase() +
+                                                        '.svg'
+                                                    "
+                                                    class="flag icon-flag"
+                                                />
+                                                <div>{{ country.name }}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('language')"
+                                    class="p-error"
+                                    [innerHTML]="'info.language' | translate"
+                                ></small>
+                            </div>
+
+                            <!--note-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="note"
+                                    [translate]="'label.note'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="note"
+                                    [(ngModel)]="userForm.value.note"
+                                    formControlName="note"
+                                    [ngClass]="checkValidValidator('note')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('note')"
+                                    class="p-error"
+                                    [innerHTML]="'info.note' | translate"
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--personal info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.personal_info'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'fullName',
+                                        'phone',
+                                        'facebook',
+                                        'gender',
+                                        'birthDay',
+                                        'provinceId',
+                                        'districtId',
+                                        'wardId',
+                                        'email',
+                                        'address'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_personal_info' | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--fullName-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="fullName"
+                                    [translate]="'label.employee_name'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="fullName"
+                                    [(ngModel)]="userForm.value.fullName"
+                                    formControlName="fullName"
+                                    [ngClass]="checkValidValidator('fullName')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('fullName')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.employee_name' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--phone-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="phone"
+                                    [translate]="'label.phone'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="phone"
+                                    [(ngModel)]="userForm.value.phone"
+                                    formControlName="phone"
+                                    [ngClass]="checkValidValidator('phone')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('phone')"
+                                    class="p-error"
+                                    [innerHTML]="'info.phone' | translate"
+                                ></small>
+                            </div>
+
+                            <!--facebook-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="facebook"
+                                    [translate]="'label.facebook'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="facebook"
+                                    [(ngModel)]="userForm.value.facebook"
+                                    formControlName="facebook"
+                                    [ngClass]="checkValidValidator('facebook')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('facebook')"
+                                    class="p-error"
+                                    [innerHTML]="'info.facebook' | translate"
+                                ></small>
+                            </div>
+
+                            <!--gender-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    for="gender"
+                                    [translate]="'label.gender'"
+                                ></label>
+                                <div class="flex">
+                                    <div
+                                        class="field-radiobutton md:pr-6 mt-2 pt-1"
+                                    >
+                                        <p-radioButton
+                                            id="gender1"
+                                            name="gender"
+                                            value="0"
+                                            [(ngModel)]="userForm.value.gender"
+                                            checked
+                                            [formControlName]="'gender'"
+                                        >
+                                        </p-radioButton>
+                                        <label
+                                            for="gender1"
+                                            [translate]="'label.male'"
+                                        ></label>
+                                    </div>
+                                    <div class="field-radiobutton mt-2 pt-1">
+                                        <p-radioButton
+                                            id="gender2"
+                                            name="gender"
+                                            value="1"
+                                            [(ngModel)]="userForm.value.gender"
+                                            [formControlName]="'gender'"
+                                        >
+                                        </p-radioButton>
+                                        <label
+                                            for="gender2"
+                                            [translate]="'label.female'"
+                                        ></label>
+                                    </div>
+                                </div>
+                                <small
+                                    *ngIf="checkValidValidator('gender')"
+                                    class="p-error"
+                                    [innerHTML]="'info.gender' | translate"
+                                ></small>
+                            </div>
+
+                            <!--birthDay-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="birthDay"
+                                    [translate]="'label.birthday'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="userForm.value.birthDay"
+                                    formControlName="birthDay"
+                                    slotChar="dd/mm/yyyy"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('birthDay')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('birthDay')
+                                    "
+                                ></p-inputMask>
+                                <small
+                                    *ngIf="checkValidValidator('birthDay')"
+                                    class="p-error w-full"
+                                    [innerHTML]="'info.birthday' | translate"
+                                ></small>
+                            </div>
+
+                            <!--province-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="provinceId"
+                                    [translate]="'label.province'"
+                                ></label>
+                                <p-dropdown
+                                    id="provinceId"
+                                    [options]="provinces"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.provinceId"
+                                    [formControlName]="'provinceId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('provinceId')
+                                    "
+                                    (onChange)="getDistrict($event)"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('provinceId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.province' | translate"
+                                ></small>
+                            </div>
+
+                            <!--district-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="districtId"
+                                    [translate]="'label.district'"
+                                ></label>
+                                <p-dropdown
+                                    id="districtId"
+                                    [options]="districts"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.districtId"
+                                    [formControlName]="'districtId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('districtId')
+                                    "
+                                    (onChange)="getWard($event)"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('districtId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.district' | translate"
+                                ></small>
+                            </div>
+
+                            <!--ward-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="wardId"
+                                    [translate]="'label.ward'"
+                                ></label>
+                                <p-dropdown
+                                    id="wardId"
+                                    [options]="wards"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.wardId"
+                                    [formControlName]="'wardId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="checkValidValidator('wardId')"
+                                ></p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('wardId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.ward' | translate"
+                                ></small>
+                            </div>
+
+                            <!--address-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="address"
+                                    [translate]="'label.house_number'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="address"
+                                    [(ngModel)]="userForm.value.address"
+                                    formControlName="address"
+                                    [ngClass]="checkValidValidator('address')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('address')"
+                                    class="p-error"
+                                    [innerHTML]="'info.address' | translate"
+                                ></small>
+                            </div>
+
+                            <!--email-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="email"
+                                    [translate]="'label.email'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="email"
+                                    [(ngModel)]="userForm.value.email"
+                                    formControlName="email"
+                                    [ngClass]="checkValidValidator('email')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('email')"
+                                    class="p-error"
+                                    [innerHTML]="'info.email' | translate"
+                                ></small>
+                            </div>
+                        </div>
+
+                        <p-divider></p-divider>
+
+                        <!--identify info-->
+                        <div class="grid w-full mx-auto">
+                            <div class="col-12 flex flex-wrap">
+                                <h5
+                                    class="m-0 mr-2"
+                                    [translate]="'label.identify'"
+                                ></h5>
+                                <div
+                                    class="flex align-items-center"
+                                    *ngIf="
+                                        isInvalidForm &&
+                                        checkValidMultiValidator(['identify'])
+                                    "
+                                >
+                                    <span
+                                        class="p-error"
+                                        style="margin-top: 2px"
+                                        [translate]="
+                                            'info.enter_identify_info'
+                                                | translate
+                                        "
+                                    ></span>
+                                </div>
+                            </div>
+
+                            <!--identify-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identify"
+                                    [translate]="'label.identify'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="identify"
+                                    [(ngModel)]="userForm.value.identify"
+                                    formControlName="identify"
+                                    [ngClass]="checkValidValidator('identify')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('identify')"
+                                    class="p-error"
+                                    [innerHTML]="'info.identify' | translate"
+                                ></small>
+                            </div>
+
+                            <!--identifyCreatedDate-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identifyCreatedDate"
+                                    [translate]="'label.identify_created_date'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="
+                                        userForm.value.identifyCreatedDate
+                                    "
+                                    formControlName="identifyCreatedDate"
+                                    slotChar="dd/mm/yyyy"
+                                    [class.ng-invalid]="
+                                        checkValidValidator(
+                                            'identifyCreatedDate'
+                                        )
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator(
+                                            'identifyCreatedDate'
+                                        )
+                                    "
+                                ></p-inputMask>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'identifyCreatedDate'
+                                        )
+                                    "
+                                    class="p-error w-full"
+                                    [innerHTML]="
+                                        'info.identify_created_date' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--identifyCreatedPlace-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identifyCreatedPlace"
+                                    [translate]="'label.identify_created_place'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="identifyCreatedPlace"
+                                    [(ngModel)]="
+                                        userForm.value.identifyCreatedPlace
+                                    "
+                                    formControlName="identifyCreatedPlace"
+                                    [ngClass]="
+                                        checkValidValidator(
+                                            'identifyCreatedPlace'
+                                        )
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'identifyCreatedPlace'
+                                        )
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.identify_created_place'
+                                            | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--identifyExpiredDate-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identifyExpiredDate"
+                                    [translate]="'label.identify_expired_date'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="
+                                        userForm.value.identifyExpiredDate
+                                    "
+                                    formControlName="identifyExpiredDate"
+                                    slotChar="dd/mm/yyyy"
+                                    [class.ng-invalid]="
+                                        checkValidValidator(
+                                            'identifyExpiredDate'
+                                        )
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator(
+                                            'identifyExpiredDate'
+                                        )
+                                    "
+                                ></p-inputMask>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'identifyExpiredDate'
+                                        )
+                                    "
+                                    class="p-error w-full"
+                                    [innerHTML]="
+                                        'info.identify_expired_date' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--unionMember-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="unionMember"
+                                    [translate]="'label.union_member'"
+                                ></label>
+                                <p-dropdown
+                                    id="unionMember"
+                                    [options]="types.unionMember"
+                                    [optionLabel]="'label'"
+                                    [optionValue]="'value'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.unionMember"
+                                    [formControlName]="'unionMember'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('unionMember')
+                                    "
+                                ></p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('unionMember')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.union_member' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--nativeProvinceId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="nativeProvinceId"
+                                    [translate]="'label.native_province'"
+                                ></label>
+                                <p-dropdown
+                                    id="nativeProvinceId"
+                                    [options]="nativeProvinces"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="
+                                        userForm.value.nativeProvinceId
+                                    "
+                                    [formControlName]="'nativeProvinceId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('nativeProvinceId')
+                                    "
+                                    (onChange)="getNativeDistrict($event)"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('nativeProvinceId')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.native_province' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--nativeDistrictId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="nativeDistrictId"
+                                    [translate]="'label.native_district'"
+                                ></label>
+                                <p-dropdown
+                                    id="nativeDistrictId"
+                                    [options]="nativeDistricts"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="
+                                        userForm.value.nativeDistrictId
+                                    "
+                                    [formControlName]="'nativeDistrictId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('nativeDistrictId')
+                                    "
+                                    (onChange)="getNativeWard($event)"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('nativeDistrictId')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.native_district' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--nativeWardId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="nativeWardId"
+                                    [translate]="'label.native_ward'"
+                                ></label>
+                                <p-dropdown
+                                    id="nativeWardId"
+                                    [options]="nativeWards"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.nativeWardId"
+                                    [formControlName]="'nativeWardId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('nativeWardId')
+                                    "
+                                ></p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('nativeWardId')"
+                                    class="p-error"
+                                    [innerHTML]="'info.native_ward' | translate"
+                                ></small>
+                            </div>
+
+                            <!--placeOfPermanent-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="placeOfPermanent"
+                                    [translate]="'label.place_of_permanent'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="placeOfPermanent"
+                                    [(ngModel)]="
+                                        userForm.value.placeOfPermanent
+                                    "
+                                    formControlName="placeOfPermanent"
+                                    [ngClass]="
+                                        checkValidValidator('placeOfPermanent')
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('placeOfPermanent')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.place_of_permanent' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--isDemobilized-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="isDemobilized"
+                                    [translate]="'label.demobilized'"
+                                ></label>
+                                <p-dropdown
+                                    id="isDemobilized"
+                                    [options]="types.isDemobilized"
+                                    [optionLabel]="'label'"
+                                    [optionValue]="'value'"
+                                    showClear="true"
+                                    [(ngModel)]="userForm.value.isDemobilized"
+                                    [formControlName]="'isDemobilized'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [ngClass]="
+                                        checkValidValidator('isDemobilized')
+                                    "
+                                ></p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('isDemobilized')"
+                                    class="p-error"
+                                    [innerHTML]="'info.demobilized' | translate"
+                                ></small>
+                            </div>
+
+                            <!--nation-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    for="nation"
+                                    [translate]="'label.nation'"
+                                ></label>
+                                <p-dropdown
+                                    [options]="optionCountries"
+                                    [formControlName]="'nation'"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    optionLabel="name"
+                                    optionValue="alpha2"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('nation')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('nation')
+                                    "
+                                    [(ngModel)]="userForm.value.nation"
+                                    [autoDisplayFirst]="false"
+                                    [placeholder]="'label.empty' | translate"
+                                    [disabled]="readonly"
+                                    class="p-fluid"
+                                >
+                                    <ng-template
+                                        let-value
+                                        pTemplate="selectedItem"
+                                    >
+                                        <div
+                                            class="country-item country-item-value"
+                                            *ngIf="userForm.value.nation"
+                                        >
+                                            <div
+                                                class="flex align-items-center"
+                                            >
+                                                <img
+                                                    [src]="
+                                                        'assets/country-flags/' +
+                                                        value.alpha2.toLowerCase() +
+                                                        '.svg'
+                                                    "
+                                                    class="flag icon-flag"
+                                                />
+                                                <div>{{ value.name }}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-country pTemplate="item">
+                                        <div class="country-item">
+                                            <div
+                                                class="flex align-items-center"
+                                            >
+                                                <img
+                                                    [src]="
+                                                        'assets/country-flags/' +
+                                                        country.alpha2.toLowerCase() +
+                                                        '.svg'
+                                                    "
+                                                    class="flag icon-flag"
+                                                />
+                                                <div>{{ country.name }}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('nation')"
+                                    class="p-error"
+                                    [innerHTML]="'info.nation' | translate"
+                                ></small>
+                            </div>
+
+                            <!--ethnicGroup-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="ethnicGroup"
+                                    [translate]="'label.ethnic_group'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="ethnicGroup"
+                                    [(ngModel)]="userForm.value.ethnicGroup"
+                                    formControlName="ethnicGroup"
+                                    [ngClass]="
+                                        checkValidValidator('ethnicGroup')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('ethnicGroup')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.ethnic_group' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--religion-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="religion"
+                                    [translate]="'label.religion'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="religion"
+                                    [(ngModel)]="userForm.value.religion"
+                                    formControlName="religion"
+                                    [ngClass]="checkValidValidator('religion')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('religion')"
+                                    class="p-error"
+                                    [innerHTML]="'info.religion' | translate"
+                                ></small>
+                            </div>
+
+                            <!--licensePlates-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="licensePlates"
+                                    [translate]="'label.license_plates'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="licensePlates"
+                                    [(ngModel)]="userForm.value.licensePlates"
+                                    formControlName="licensePlates"
+                                    [ngClass]="
+                                        checkValidValidator('licensePlates')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('licensePlates')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.license_plates' | translate
+                                    "
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--education info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.education'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'literacy',
+                                        'literacyDetail',
+                                        'socialInsuranceCode'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_personal_tax' | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--literacy-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="literacy"
+                                    [translate]="'label.literacy'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="literacy"
+                                    [(ngModel)]="userForm.value.literacy"
+                                    formControlName="literacy"
+                                    [ngClass]="checkValidValidator('literacy')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('literacy')"
+                                    class="p-error"
+                                    [innerHTML]="'info.literacy' | translate"
+                                ></small>
+                            </div>
+                            <!--literacyDetail-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="literacyDetail"
+                                    [translate]="'label.literacy_detail'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="literacyDetail"
+                                    [(ngModel)]="userForm.value.literacyDetail"
+                                    formControlName="literacyDetail"
+                                    [ngClass]="
+                                        checkValidValidator('literacyDetail')
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('literacyDetail')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.literacy_detail' | translate
+                                    "
+                                ></small>
+                            </div>
+                            <!--major-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="majorId"
+                                    [translate]="'label.major'"
+                                ></label>
+                                <p-dropdown
+                                    id="majorId"
+                                    [options]="majors"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="userForm.value.majorId"
+                                    [formControlName]="'majorId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="checkValidValidator('majorId')"
+                                    [filter]="true"
+                                    filterBy="name"
+                                ></p-dropdown>
+                                <small
+                                    *ngIf="checkValidValidator('majorId')"
+                                    class="p-error"
+                                    [translate]="'info.major' | translate"
+                                ></small>
+                            </div>
+                            <!--certificateOther-->
+                            <div class="field col-12 flex flex-column">
+                                <label
+                                    htmlFor="certificateOther"
+                                    [translate]="'label.certificate'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="certificateOther"
+                                    [(ngModel)]="
+                                        userForm.value.certificateOther
+                                    "
+                                    formControlName="certificateOther"
+                                    [ngClass]="
+                                        checkValidValidator('certificateOther')
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('certificateOther')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="'info.certificate' | translate"
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--Salary, leave, shareholder number info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0"
+                                [translate]="
+                                    'label.salary_leave_share_holder_number'
+                                "
+                            ></h5>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <!--bank info-->
+                        <div class="grid w-full mx-auto">
+                            <div class="col-12 flex flex-wrap">
+                                <h5
+                                    class="m-0 mr-2"
+                                    [translate]="'label.banking'"
+                                ></h5>
+                                <div
+                                    class="flex align-items-center"
+                                    *ngIf="
+                                        isInvalidForm &&
+                                        checkValidMultiValidator([
+                                            'bankAccount',
+                                            'bank'
+                                        ])
+                                    "
+                                >
+                                    <span
+                                        class="p-error"
+                                        style="margin-top: 2px"
+                                        [translate]="
+                                            'info.enter_bank_info' | translate
+                                        "
+                                    ></span>
+                                </div>
+                            </div>
+
+                            <!--bankAccount-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="bankAccount"
+                                    [translate]="'label.bank_account'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="bankAccount"
+                                    [(ngModel)]="userForm.value.bankAccount"
+                                    formControlName="bankAccount"
+                                    [ngClass]="
+                                        checkValidValidator('bankAccount')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('bankAccount')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.bank_account' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--bank-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="bank"
+                                    [translate]="'label.bank_name'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="bank"
+                                    [(ngModel)]="userForm.value.bank"
+                                    formControlName="bank"
+                                    [ngClass]="checkValidValidator('bank')"
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('bank')"
+                                    class="p-error"
+                                    [innerHTML]="'info.bank' | translate"
+                                ></small>
+                            </div>
+                        </div>
+
+                        <p-divider></p-divider>
+
+                        <!--shareholder number info-->
+                        <div class="grid w-full mx-auto">
+                            <div class="col-12 flex flex-wrap">
+                                <h5
+                                    class="m-0 mr-2"
+                                    [translate]="'label.share_holder'"
+                                ></h5>
+                                <div
+                                    class="flex align-items-center"
+                                    *ngIf="
+                                        isInvalidForm &&
+                                        checkValidMultiValidator([
+                                            'shareHolderCode',
+                                            'noOfLeaveDate'
+                                        ])
+                                    "
+                                >
+                                    <span
+                                        class="p-error"
+                                        style="margin-top: 2px"
+                                        [translate]="
+                                            'info.enter_share_holder_info'
+                                                | translate
+                                        "
+                                    ></span>
+                                </div>
+                            </div>
+
+                            <!--shareHolderCode-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="shareHolderCode"
+                                    [translate]="'label.share_holder_code'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="shareHolderCode"
+                                    [(ngModel)]="userForm.value.shareHolderCode"
+                                    formControlName="shareHolderCode"
+                                    [ngClass]="
+                                        checkValidValidator('shareHolderCode')
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('shareHolderCode')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.share_holder_code' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--noOfLeaveDate-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="noOfLeaveDate"
+                                    [translate]="'label.no_of_leave_date'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="noOfLeaveDate"
+                                    [(ngModel)]="userForm.value.noOfLeaveDate"
+                                    formControlName="noOfLeaveDate"
+                                    [ngClass]="
+                                        checkValidValidator('noOfLeaveDate')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('noOfLeaveDate')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.no_of_leave_date' | translate
+                                    "
+                                ></small>
+                            </div>
+                        </div>
+
+                        <p-divider></p-divider>
+
+                        <!--salary and dayoff info-->
+                        <div class="grid w-full mx-auto">
+                            <div class="col-12 flex flex-wrap">
+                                <h5
+                                    class="m-0 mr-2"
+                                    [translate]="'label.salary_and_day_off'"
+                                ></h5>
+                                <div
+                                    class="flex align-items-center"
+                                    *ngIf="
+                                        isInvalidForm &&
+                                        checkValidMultiValidator([
+                                            'sendSalaryDate',
+                                            'contractTypeId',
+                                            'numberWorkdays',
+                                            'salary',
+                                            'socialInsuranceSalary',
+                                            'dayOff'
+                                        ])
+                                    "
+                                >
+                                    <span
+                                        class="p-error"
+                                        style="margin-top: 2px"
+                                        [translate]="
+                                            'info.enter_salary_and_day_off_info'
+                                                | translate
+                                        "
+                                    ></span>
+                                </div>
+                            </div>
+
+                            <!--sendSalaryDate-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="sendSalaryDate"
+                                    [translate]="'label.send_salary_date'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="userForm.value.sendSalaryDate"
+                                    formControlName="sendSalaryDate"
+                                    slotChar="dd/mm/yyyy"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('sendSalaryDate')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('sendSalaryDate')
+                                    "
+                                ></p-inputMask>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('sendSalaryDate')
+                                    "
+                                    class="p-error w-full"
+                                    [innerHTML]="
+                                        'info.send_salary_date' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!-- contract Type -->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="contractTypeId"
+                                    [translate]="'label.contract_type'"
+                                ></label>
+                                <p-dropdown
+                                    id="contractTypeId"
+                                    [options]="contractTypes"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    [(ngModel)]="userForm.value.contractTypeId"
+                                    [formControlName]="'contractTypeId'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [ngClass]="
+                                        checkValidValidator('contractTypeId')
+                                    "
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('contractTypeId')
+                                    "
+                                    class="p-error"
+                                    [translate]="
+                                        'info.contract_type' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--numberWorkdays-->
+                            <div class="field col-12 sm:col-4 flex flex-column">
+                                <label
+                                    htmlFor="numberWorkdays"
+                                    [translate]="'label.number_of_workdays'"
+                                ></label>
+                                <p-inputNumber
+                                    id="numberWorkdays"
+                                    [(ngModel)]="userForm.value.numberWorkdays"
+                                    formControlName="numberWorkdays"
+                                    [ngClass]="
+                                        checkValidValidator('numberWorkdays')
+                                    "
+                                >
+                                </p-inputNumber>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('numberWorkdays')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.number_workdays' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--salary-->
+                            <div class="field col-12 sm:col-4 flex flex-column">
+                                <label
+                                    htmlFor="salary"
+                                    [translate]="'label.salary'"
+                                ></label>
+                                <p-inputNumber
+                                    id="salary"
+                                    [(ngModel)]="userForm.value.salary"
+                                    formControlName="salary"
+                                    [ngClass]="checkValidValidator('salary')"
+                                ></p-inputNumber>
+                                <small
+                                    *ngIf="checkValidValidator('salary')"
+                                    class="p-error"
+                                    [innerHTML]="'info.salary' | translate"
+                                ></small>
+                            </div>
+
+                            <!--socialInsuranceSalary-->
+                            <div class="field col-12 sm:col-4 flex flex-column">
+                                <label
+                                    htmlFor="socialInsuranceSalary"
+                                    [translate]="
+                                        'label.social_insurance_salary'
+                                    "
+                                ></label>
+                                <p-inputNumber
+                                    id="socialInsuranceSalary"
+                                    [(ngModel)]="
+                                        userForm.value.socialInsuranceSalary
+                                    "
+                                    formControlName="socialInsuranceSalary"
+                                    [ngClass]="
+                                        checkValidValidator(
+                                            'socialInsuranceSalary'
+                                        )
+                                    "
+                                ></p-inputNumber>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'socialInsuranceSalary'
+                                        )
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.social_insurance_salary'
+                                            | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--dayOff-->
+                            <div class="field col-12 sm:col-4 flex flex-column">
+                                <label
+                                    htmlFor="dayOff"
+                                    [translate]="'label.day_off'"
+                                ></label>
+                                <p-inputNumber
+                                    id="dayOff"
+                                    [(ngModel)]="userForm.value.dayOff"
+                                    formControlName="dayOff"
+                                    [ngClass]="checkValidValidator('dayOff')"
+                                >
+                                </p-inputNumber>
+                                <small
+                                    *ngIf="checkValidValidator('dayOff')"
+                                    class="p-error"
+                                    [innerHTML]="'info.day_off' | translate"
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--personal tax info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.personal_tax'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'personalTaxCode',
+                                        'socialInsuranceCreated',
+                                        'socialInsuranceCode'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_personal_tax' | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--personalTaxCode-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="personalTaxCode"
+                                    [translate]="'label.personal_tax_code'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="personalTaxCode"
+                                    [(ngModel)]="userForm.value.personalTaxCode"
+                                    formControlName="personalTaxCode"
+                                    [ngClass]="
+                                        checkValidValidator('personalTaxCode')
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator('personalTaxCode')
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.personal_tax_code' | translate
+                                    "
+                                ></small>
+                            </div>
+                            <!--socialInsuranceCreated-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="socialInsuranceCreated"
+                                    [translate]="
+                                        'label.social_insurance_created'
+                                    "
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="
+                                        userForm.value.socialInsuranceCreated
+                                    "
+                                    formControlName="socialInsuranceCreated"
+                                    slotChar="dd/mm/yyyy"
+                                    [class.ng-invalid]="
+                                        checkValidValidator(
+                                            'socialInsuranceCreated'
+                                        )
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator(
+                                            'socialInsuranceCreated'
+                                        )
+                                    "
+                                ></p-inputMask>
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'socialInsuranceCreated'
+                                        )
+                                    "
+                                    class="p-error w-full"
+                                    [innerHTML]="
+                                        'info.social_insurance_created'
+                                            | translate
+                                    "
+                                ></small>
+                            </div>
+                            <!--socialInsuranceCode-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="socialInsuranceCode"
+                                    [translate]="'label.social_insurance_code'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="socialInsuranceCode"
+                                    [(ngModel)]="
+                                        userForm.value.socialInsuranceCode
+                                    "
+                                    formControlName="socialInsuranceCode"
+                                    [ngClass]="
+                                        checkValidValidator(
+                                            'socialInsuranceCode'
+                                        )
+                                    "
+                                />
+                                <small
+                                    *ngIf="
+                                        checkValidValidator(
+                                            'socialInsuranceCode'
+                                        )
+                                    "
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.social_insurance_code' | translate
+                                    "
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--password info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.change_password_if_need'"
+                            ></h5>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <p-button
+                            (click)="onDefaultPassword()"
+                            [label]="'button.default' | translate"
+                        ></p-button>
+                        <div class="grid w-full mx-auto mt-2">
+                            <!--password-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="password"
+                                    [translate]="'label.password'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="password"
+                                    type="password"
+                                    [(ngModel)]="userForm.value.password"
+                                    [autocomplete]="'off'"
+                                    [formControlName]="'password'"
+                                    [maxlength]="'32'"
+                                />
+                                <small
+                                    class="p-error"
+                                    *ngIf="
+                                        (!isEdit &&
+                                            checkValidValidator('password')) ||
+                                        userForm
+                                            .get('password')
+                                            .hasError('pattern')
+                                    "
+                                    [innerHTML]="'info.password' | translate"
+                                ></small>
+                            </div>
+                            <!--confirmPassword-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="confirmPassword"
+                                    [translate]="'label.confirm_password'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="confirmPassword"
+                                    type="password"
+                                    [(ngModel)]="userForm.value.confirmPassword"
+                                    [formControlName]="'confirmPassword'"
+                                    [autocomplete]="'off'"
+                                />
+                                <small
+                                    *ngIf="
+                                        userForm.value.password &&
+                                        userForm.value.password !==
+                                            userForm.value.confirmPassword
+                                    "
+                                    class="p-error"
+                                    [translate]="
+                                        'info.confirm_password_not_match_password'
+                                            | translate
+                                    "
+                                ></small>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+            </p-accordion>
+        </div>
+        <div class="col-12">
+            <div class="p-fluid p-formgrid grid mt-2">
+                <div
+                    class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                >
+                    <p-button
+                        icon="pi pi-times"
+                        (click)="onCancel.emit({})"
+                        [label]="'button.backF6' | translate"
+                        styleClass="p-button-outlined"
+                    ></p-button>
+                    <p-button
+                        icon="pi pi-check"
+                        (click)="onSubmit()"
+                        [label]="'button.saveF8' | translate"
+                    ></p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

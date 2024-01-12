@@ -1,0 +1,113 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="isEdit ? 'label.edit_floors' : 'label.add_floors'"
+            ></h5>
+            <form [formGroup]="floorsForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="code"
+                            >{{ "label.code" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="code"
+                            [(ngModel)]="floorsForm.value.code"
+                            formControlName="code"
+                            [ngClass]="checkValidValidator('code')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="floorsForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="note"
+                            >{{ "label.note" | translate
+                            }}<span class="text-pink-400"></span
+                        ></label>
+                        <input
+                            pInputText
+                            id="note"
+                            [(ngModel)]="floorsForm.value.note"
+                            formControlName="note"
+                            [ngClass]="checkValidValidator('note')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('note')"
+                            class="p-error"
+                            [innerHTML]="'info.manager_name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.good_position" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-multiSelect
+                            id="floorIds"
+                            [options]="positions"
+                            [optionLabel]="'name'"
+                            [showClear]="true"
+                            [optionValue]="'id'"
+                            [appendTo]="'body'"
+                            [(ngModel)]="floorsForm.value.positionIds"
+                            [formControlName]="'positionIds'"
+                            [ngClass]="checkValidValidator('positionIds')"
+                        >
+                        </p-multiSelect>
+                        <small
+                            *ngIf="checkValidValidator('positionIds')"
+                            class="p-error"
+                            [innerHTML]="
+                                'info.positionIds_required' | translate
+                            "
+                        ></small>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

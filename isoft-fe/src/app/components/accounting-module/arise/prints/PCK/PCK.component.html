@@ -1,0 +1,188 @@
+<div class="a5-horizontal">
+    <div class="head">
+        <div class="head_left">
+            <span>{{ company?.name }}</span>
+            <span>{{ company?.address }}</span>
+            <span>Mã số thuế: {{ company?.mst }}</span>
+        </div>
+        <div class="head_right">
+            <span>Mẫu số: 03 - VT</span>
+        </div>
+    </div>
+    <div class="tite">
+        <br />
+        <h2>PHIẾU CHUYỂN KHO</h2>
+        <span style="font-style: italic">{{ dateStr }}</span>
+        <span style="font-size: 11px">(Liên 1)</span>
+        <div class="tite_right">
+            <span
+                class="tite_right_title"
+                style="
+                    margin-bottom: 8px;
+                    margin-left: auto;
+                    margin-right: 35px;
+                "
+                >Số: PN {{ order }}</span
+            >
+        </div>
+        <br />
+    </div>
+    <div class="content">
+        <div class="wrapper">
+            <div class="padding_bt_d2">
+                - Căn cứ lệnh số:
+                <div
+                    class="d-inline-block bottom-line bottom-line-80"
+                    style="width: 80px"
+                ></div>
+                ngày
+                <div
+                    class="d-inline-block bottom-line bottom-line-30"
+                    style="width: 30px"
+                ></div>
+                tháng
+                <div
+                    class="d-inline-block bottom-line bottom-line-30"
+                    style="width: 30px"
+                ></div>
+                năm
+                <div
+                    class="d-inline-block bottom-line bottom-line-30"
+                    style="width: 30px"
+                ></div>
+                của
+                <div
+                    class="d-inline-block bottom-line bottom-line-105"
+                    style="width: 105px"
+                ></div>
+            </div>
+            <div class="padding_bt_d2">
+                - Về việc:
+                <div
+                    class="d-inline-block bottom-line bottom-line-4xx"
+                    style="width: 448px; margin-left: 5px"
+                >
+                    {{ dataPrint?.orginalDescription }}
+                </div>
+            </div>
+            <div class="padding_bt_d2">
+                - Họ và tên người vận chuyển:
+                <div
+                    class="d-inline-block bottom-line bottom-line-150"
+                    style="width: 150px; margin-left: 5px"
+                >
+                    {{ dataPrint?.orginalCompanyName }}
+                </div>
+                Hợp đồng số:
+                <div
+                    class="d-inline-block bottom-line bottom-line-114"
+                    style="width: 114px"
+                ></div>
+            </div>
+            <div class="padding_bt_d2">
+                - Phương tiện vận chuyển:
+                <div
+                    class="d-inline-block bottom-line bottom-line-3xx"
+                    style="width: 355px"
+                ></div>
+            </div>
+            <div class="padding_bt_d2">
+                <span>
+                    - Xuất tại kho: {{ dataPrint?.debitWarehouseName }}
+                </span>
+            </div>
+            <div class="padding_bt">
+                <span>
+                    - Nhập tại kho: {{ dataPrint?.creditWarehouseName }}
+                </span>
+            </div>
+        </div>
+        <table>
+            <thead class="yellow-header">
+                <tr class="big-tbhead">
+                    <th style="text-align: center">Stt</th>
+                    <th style="text-align: center">Tên mặt hàng</th>
+                    <th style="text-align: center">Mã hàng</th>
+                    <th style="text-align: center">Đvt</th>
+                    <th style="text-align: center">Số lượng</th>
+                    <th style="text-align: center">Đơn giá</th>
+                    <th style="text-align: center">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of dataTables; let i = index">
+                    <tr class="light-border-bottom">
+                        <td style="text-align: center">{{ i + 1 }}</td>
+                        <td style="text-align: left">
+                            {{ item?.invoiceProductItem }}
+                        </td>
+                        <td style="text-align: left">{{ item?.code }}</td>
+                        <td style="text-align: left">{{ Dvts[i] }}</td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatCurrencyVND(item?.quantity) }}
+                        </td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatCurrencyVND(item?.unitPrice) }}
+                        </td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatCurrencyVND(item?.amount) }}
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+            <tfoot style="border-top: 2px solid">
+                <tr>
+                    <td></td>
+                    <td class="text_center lable" style="text-align: center">
+                        Cộng
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text_right lable" style="text-align: right">
+                        {{ appUtil.formatCurrencyVND(total) }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="padding_bt_d2 sm-size" style="margin-top: 10px">
+            <span>
+                Tổng số tiền (viết bằng chữ):
+                {{ appUtil.formatCurrencyVNDString(total) }}
+            </span>
+        </div>
+        <div class="padding_bt_d2 sm-size">
+            <span> Số chứng từ kèm theo: {{ dataPrint?.attachVoucher }} </span>
+        </div>
+        <p class="p_month">
+            <i> {{ dateStr }}</i>
+        </p>
+        <div class="sign">
+            <div>
+                <p class="lable">Người lập phiếu</p>
+                <p class="p_empty"></p>
+            </div>
+            <div>
+                <p class="lable">Thủ kho xuất</p>
+                <p class="p_empty"></p>
+                <h4>{{ dataPrint?.orginalCompanyName }}</h4>
+            </div>
+            <div>
+                <p class="lable">Thủ kho</p>
+                <p class="p_empty"></p>
+                <h4>{{ company?.noteOfChiefSupplier }}</h4>
+            </div>
+            <div>
+                <p class="lable">{{ company?.noteOfChiefAccountant }}</p>
+                <p class="p_empty"></p>
+                <h4>{{ company?.nameOfChiefAccountant }}</h4>
+            </div>
+            <div>
+                <p class="lable">{{ company?.noteOfCeo }}</p>
+                <p class="p_empty"></p>
+                <h4>{{ company?.nameOfCeo }}</h4>
+            </div>
+        </div>
+    </div>
+</div>

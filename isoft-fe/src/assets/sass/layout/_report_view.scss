@@ -1,0 +1,89 @@
+.balance-account-container {
+    min-width: 1010px;
+
+    .header-container {
+        padding-bottom: 5px;
+
+        .query-filter {
+            $width-radio-combo: 140px;
+            display: flex;
+
+            .radio-query {
+                width: $width-radio-combo;
+                margin-right: 10px;
+            }
+
+            .date-picker-query {
+                width: calc(100% - #{$width-radio-combo});
+            }
+        }
+
+        .card > .card-header {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background-color: #1b00ff;
+            color: white;
+        }
+
+        .input-date-1 {
+            $width-label-date: 130px;
+            padding-bottom: 5px;
+
+            div:first-child {
+                width: $width-label-date;
+            }
+
+            div:last-child {
+                width: calc(100% - #{$width-label-date});
+            }
+        }
+
+        .input-date {
+            $width-label-date: 75px;
+            padding-bottom: 5px;
+
+            div:first-child {
+                width: $width-label-date;
+            }
+
+            div:last-child {
+                width: calc(100% - #{$width-label-date});
+            }
+        }
+    }
+
+    .width-month {
+        width: calc(100% - 105px);
+        max-width: 170px;
+    }
+
+    .width120 {
+        width: 120px;
+    }
+
+    .bg-blue {
+        background-color: #1890ff !important;
+    }
+
+    .d-grid {
+        display: grid;
+    }
+
+    .width-115 {
+        width: 113px;
+    }
+
+    .width-60px {
+        width: 60px;
+    }
+
+    .width-70px {
+        width: 70px;
+    }
+
+    .hidden-ele {
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.3s;
+    }
+}

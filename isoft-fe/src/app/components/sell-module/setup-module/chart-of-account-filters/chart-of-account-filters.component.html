@@ -1,0 +1,245 @@
+<div *ngIf="!display" class="card card-table">
+    <div
+        class="py-2 flex flex-column sm:flex-row align-items-center sm:justify-content-between"
+    >
+        <h5 [translate]="'label.chart_of_account_filters_management'"></h5>
+        <div class="flex">
+            <button
+                pButton
+                [label]="'button.addF7' | translate"
+                icon="pi pi-plus"
+                (click)="onAddCOAFilters()"
+            ></button>
+        </div>
+    </div>
+    <p-table
+        [value]="coaFilters"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCOAFilters($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search_by_name' | translate"
+                        class="w-full"
+                    />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.accounts_name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.type'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.document_code'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.number_ordinal'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-coaFilter>
+            <tr>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ coaFilter.id }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span
+                    >{{ coaFilter.name }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.accounts_name'"
+                    ></span
+                    >{{ getAccountNames(coaFilter.accounts) }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.type'"
+                    ></span>
+                    <p-badge
+                        [value]="coaFilter.type"
+                        size="large"
+                        class="text-sm"
+                        [severity]="
+                            coaFilter.type === 'NHAPHANGHOA'
+                                ? 'success'
+                                : 'info'
+                        "
+                    >
+                    </p-badge>
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.document_code'"
+                    ></span
+                    >{{ coaFilter.documentCode }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_ordinal'"
+                    ></span
+                    >{{ coaFilter.order }}
+                </td>
+                <td *ngIf="isMobile" style="height: 70px">
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(coaFilter.id)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(coaFilter.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                    style="height: 70px; width: 200px"
+                >
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(coaFilter.id)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(coaFilter.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    No Chart of account filters found.
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Chart of account filters data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-chart-of-account-filters-form
+    [chartOfAccounts]="chartOfAccounts"
+    [documents]="documents"
+    #coaFilterForm
+    [formData]="formData"
+    [display]="display"
+    (onCancel)="display = false; getCOAFilters(null); isReset = false"
+    [isEdit]="isEdit"
+></app-chart-of-account-filters-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white" [translate]="'question.s'"></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

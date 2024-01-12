@@ -1,0 +1,520 @@
+<!--Hàng hóa-->
+<p-dataView
+    #dv
+    [value]="goodsList"
+    [rows]="8"
+    filterBy="code"
+    [sortField]="sortField"
+    [sortOrder]="sortOrder"
+    [layout]="layout"
+    [lazy]="true"
+    (onLazyLoad)="getGoods($event)"
+    [totalRecords]="totalRecords"
+    [showFirstLastIcon]="false"
+    [first]="first"
+    (onChangeLayout)="onChangeLayout($event)"
+>
+    <ng-template pTemplate="header">
+        <div
+            class="flex flex-column md:flex-row md:justify-content-between p-0"
+        >
+            <div class="flex gap-8 justify-content-between align-items-center">
+                <div class="p-inputgroup w-full">
+                    <p-autoComplete
+                        id="customer"
+                        [suggestions]="filteredCustomers"
+                        [(ngModel)]="selectedBillTab?.data.customerName"
+                        [placeholder]="'label.find_customer' | translate"
+                        [ngModelOptions]="{ standalone: true }"
+                        [completeOnFocus]="true"
+                        (completeMethod)="filterCustomerName($event)"
+                        [forceSelection]="true"
+                        [autoHighlight]="true"
+                        [showClear]="true"
+                        (onSelect)="onCustomerNameSelect($event)"
+                        (onClear)="onCustomerNameSelect(null)"
+                    >
+                    </p-autoComplete>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-plus"
+                        (click)="showAddCustomerDialog()"
+                    ></button>
+                </div>
+                <p-dropdown
+                    id="user"
+                    [(ngModel)]="selectedUser"
+                    [options]="users"
+                    [filter]="true"
+                    class="w-auto"
+                    [filterBy]="'username,fullName'"
+                    showClear="true"
+                    [optionLabel]="'username'"
+                    [optionValue]="'username'"
+                    [placeholder]="'label.empty' | translate"
+                >
+                    <ng-template pTemplate="item" let-user>
+                        {{ user.username }} | {{ user.fullName }}
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                class="flex justify-content-between md:justify-content-start gap-8"
+            >
+                <div class="flex gap-8 justify-content-start">
+                    <!-- [label]="'Wifi'" -->
+                    <button
+                        pButton
+                        class="p-button-warning mt-2 md:mt-0 small-button"
+                        icon="pi pi-globe"
+                        title="Pass wifi"
+                        (click)="isPassWifi = true"
+                    ></button>
+
+                    <!-- [label]="'Quét QR'" -->
+                    <button
+                        pButton
+                        class="p-button-success mt-2 md:mt-0 small-button"
+                        icon="pi pi-qrcode"
+                        title="Quét QR"
+                        (click)="isQRScannerVisible = true"
+                    ></button>
+
+                    <!-- [label]="'label.search_advanced' | translate" -->
+                    <button
+                        pButton
+                        class="p-button-info mt-2 md:mt-0 small-button"
+                        icon="pi pi-filter"
+                        title="Tìm kiếm nâng cao"
+                        (click)="isSearchAdvanced = true"
+                    ></button>
+                </div>
+                <p-dataViewLayoutOptions
+                    class="mt-2 md:mt-0"
+                ></p-dataViewLayoutOptions>
+            </div>
+        </div>
+
+        <app-qr-scanner
+            [isVisible]="isQRScannerVisible"
+            (onScanSuccess)="onQRScanSuccess($event)"
+            (onHide)="isQRScannerVisible = false"
+        >
+        </app-qr-scanner>
+
+        <p-sidebar
+            [(visible)]="isPassWifi"
+            position="right"
+            [baseZIndex]="10000"
+        >
+            <h3>Wifi</h3>
+            <input
+                type="text"
+                class="p-inputtext-sm w-full mt-3"
+                pInputText
+                [(ngModel)]="passWifi"
+                [ngModelOptions]="{ standalone: true }"
+            />
+            <button
+                pButton
+                [label]="'button.save' | translate"
+                class="mt-4 w-full p-button-danger"
+                icon="pi pi-save"
+                (click)="onSavePassWifi()"
+            ></button>
+        </p-sidebar>
+        <p-sidebar
+            [(visible)]="isSearchAdvanced"
+            position="right"
+            [baseZIndex]="10000"
+        >
+            <h3>{{ "label.search_advanced" | translate }}</h3>
+            <div class="grid p-fluid">
+                <div class="field col-12">
+                    <label
+                        class="font-bold"
+                        [translate]="'left_menu.customer'"
+                    ></label>
+                    <!-- [required]="true" [forceSelection]="true" -->
+                    <p-autoComplete
+                        id="customer-autocomplete"
+                        [suggestions]="filteredCustomers"
+                        [(ngModel)]="getParams.customerName"
+                        class="w-full flex flex-row-reverse"
+                        [placeholder]="'label.find_customer' | translate"
+                        [ngModelOptions]="{ standalone: true }"
+                        (onClear)="onClearCustomer($event)"
+                        [completeOnFocus]="true"
+                        (completeMethod)="filterCustomerName($event)"
+                        (onSelect)="onCustomerNameSelect($event)"
+                    >
+                        <ng-template let-customer pTemplate="item">
+                            <div class="w-full overflow-hidden mx-1">
+                                <marquee *ngIf="customer.length > 45">{{
+                                    customer
+                                }}</marquee>
+                                <p class="mb-0" *ngIf="customer.length <= 45">
+                                    {{ customer }}
+                                </p>
+                            </div>
+                        </ng-template>
+                    </p-autoComplete>
+                </div>
+
+                <div class="field col-12">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.price_list'"
+                    ></label>
+                    <app-customer-prices
+                        [(ngModel)]="getParams.priceCode"
+                        (onChange)="getGoods()"
+                    >
+                    </app-customer-prices>
+                </div>
+
+                <div class="field col-12">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.account'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.account"
+                        (onChange)="onChangeAccount($event)"
+                        [filter]="true"
+                        [options]="types?.chartOfAccount"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                        (onClear)="getParams.detail1 = ''; getGoods()"
+                    >
+                        <ng-template
+                            let-chartOfAccount
+                            pTemplate="chartOfAccount"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ chartOfAccount?.code }} |
+                                {{ chartOfAccount?.name }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-chartOfAccount
+                            pTemplate="chartOfAccount"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ chartOfAccount?.code }} |
+                                {{ chartOfAccount?.name }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.detail_1'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.detail1"
+                        (onChange)="getGoods()"
+                        [options]="types.detail1"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                        [filter]="true"
+                    >
+                        <ng-template
+                            let-detail1
+                            pTemplate="detail1"
+                            pTemplate="selectedItem"
+                        >
+                            <span>{{ detail1.code }} | {{ detail1.name }}</span>
+                        </ng-template>
+                        <ng-template
+                            let-detail1
+                            pTemplate="detail1"
+                            pTemplate="item"
+                        >
+                            <span>{{ detail1.code }} | {{ detail1.name }}</span>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.goods_group'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.menuType"
+                        (onChange)="getGoods()"
+                        [options]="types.menuType"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                        [filter]="true"
+                    >
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.goods_type'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.goodType"
+                        (onChange)="getGoods()"
+                        [options]="types.goodsType"
+                        [filter]="true"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                    >
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.location'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.position"
+                        (onChange)="getGoods()"
+                        [options]="types.position"
+                        showClear="true"
+                        [filter]="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                    >
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.menu_web'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.menuWeb"
+                        (onChange)="getGoods()"
+                        [options]="types.menuWeb"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                        [filter]="true"
+                    >
+                    </p-dropdown>
+                </div>
+
+                <div class="field-checkbox col-12 md:col-6 pt-5">
+                    <p-checkbox
+                        id="remember"
+                        [binary]="true"
+                        [(ngModel)]="getParams.isQuantityStock"
+                        (click)="getGoods()"
+                    ></p-checkbox>
+                    <label
+                        class="font-bold text-primary"
+                        [translate]="'Hàng trong kho'"
+                    ></label>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.sort_field'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.sortField"
+                        (onChange)="onChangeSort($event, 'sortField')"
+                        [options]="sortFields"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.sort_type'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.isSort"
+                        (onChange)="onChangeSort($event, 'sortType')"
+                        [options]="sortTypes"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                </div>
+
+                <div class="col-12 flex gap-8">
+                    <button
+                        pButton
+                        [label]="'button.reset' | translate"
+                        class="p-button-danger"
+                        icon="pi pi-filter"
+                        (click)="onResetParams(); getGoods()"
+                    ></button>
+                </div>
+            </div>
+        </p-sidebar>
+
+        <div *ngIf="layout == 'grid'" class="flex p-0 pt-2 gap-8">
+            <!-- <p-dropdown
+                id="searchType"
+                [options]="searchTypes"
+                [optionLabel]="'key'"
+                [filter]="true"
+                filterBy="key"
+                [optionValue]="'value'"
+                [(ngModel)]="getParams.searchType"
+                [ngModelOptions]="{ standalone: true }"
+                [showClear]="true"
+                [placeholder]="'label.type' | translate"
+            >
+            </p-dropdown> -->
+            <span class="p-input-icon-left w-full">
+                <i class="pi pi-search"></i>
+                <input
+                    #filter
+                    [(ngModel)]="getParams.searchText"
+                    pInputText
+                    type="text"
+                    (keypress)="onSearch($event)"
+                    [placeholder]="'label.search_by_code_name' | translate"
+                    class="w-full"
+                />
+            </span>
+            <button
+                style="width: 80px !important"
+                (click)="getGoods()"
+                pButton
+                pRipple
+                icon="pi pi-search"
+            ></button>
+        </div>
+    </ng-template>
+
+    <ng-template let-index="rowIndex" pTemplate="listItem">
+        <div *ngIf="index == 0" class="p-2 w-full">
+            <div class="mt-2">
+                <p-dropdown
+                    id="selectGoods"
+                    ngModel="selectedProduct"
+                    [options]="allGoodList"
+                    showClear="true"
+                    [placeholder]="'Chọn sản phẩm' | translate"
+                    [filter]="true"
+                    class="mt-2"
+                    [ngStyle]="{ width: '100% !important' }"
+                    (onFilter)="getAllGoods($event)"
+                    filterBy="displayName"
+                >
+                    <ng-template let-product pTemplate="selectedItem">
+                        <span>{{ product.displayName }}</span>
+                    </ng-template>
+                    <ng-template let-product pTemplate="item">
+                        <div (click)="onProductSelected.emit(product)">
+                            <span>{{ product.displayName }}</span>
+                            <div
+                                [ngStyle]="{ color: 'var(--green-400)' }"
+                                class="mt-1 font-bold text-sm"
+                            >
+                                Tồn: {{ product.quantity || 0 | number }}
+                                {{ product.stockUnit }}
+                                | {{ product.price | number }} -
+                                {{ product.salePrice + product.taxVat | number }}
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template let-product pTemplate="gridItem">
+        <div [ngClass]="!isSeller ? 'col-6 md:col-3 mt-2' : 'col-4 mt-2'">
+            <div
+                class="product-grid-item card h-full my-1 mx-0 cursor-pointer"
+                (click)="onProductSelected.emit(product)"
+            >
+                <div class="text-center w-full">
+                    <div [ngClass]="'mt-1 mb-2 product-name text-sm'">
+                        {{ getAccountCode(product) }}
+                    </div>
+                    <div
+                        [pTooltip]="getAccountName(product)"
+                        class="mb-1 text-primary text-bold text-sm overflow-hidden text-overflow-ellipsis px-2"
+                    >
+                        {{ getAccountName(product) }}
+                    </div>
+                    <img
+                        *ngIf="product.image1"
+                        [width]="!isSeller ? '100%' : '40%'"
+                        [height]="!isSeller ? '100' : '60'"
+                        [src]="baseUrlImage(product?.image1)"
+                        [title]="'label.image_1' | translate"
+                    />
+                    <img
+                        *ngIf="!product.image1"
+                        [width]="!isSeller ? '100%' : '40%'"
+                        [height]="!isSeller ? '100' : '60'"
+                        [src]="
+                            'assets/layout/images/logo-xl-jwk.png'
+                        "
+                        [alt]="product.code"
+                    />
+                    <div class="flex flex-column justify-content-center">
+                        <div
+                            *ngIf="!isSeller"
+                            class="mt-1 text-primary text-sm"
+                        >
+                            {{ product.price | number }} -
+                            {{ product.salePrice + product.taxVat | number }}
+                        </div>
+                        <div
+                            [ngStyle]="{ color: 'var(--green-400)' }"
+                            class="mt-1 font-bold text-sm"
+                        >
+                            Tồn: {{ product.quantity || 0 | number }}
+                            {{ product.stockUnit }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <p-paginator
+            *ngIf="layout == 'grid'"
+            (onPageChange)="getGoods($event)"
+            [rows]="8"
+            [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="[4, 8, 12, 100, { showAll: 'Tất cả' }]"
+        ></p-paginator>
+    </ng-template>
+</p-dataView>
+
+<p-sidebar
+    [(visible)]="showCustomerFormDialog"
+    [fullScreen]="true"
+    [baseZIndex]="10000"
+>
+    <h3>Thêm mới khách hàng</h3>
+    <app-customers-form
+        display="true"
+        [formData]="{}"
+        (onCancel)="showCustomerFormDialog = false"
+        (onSuccess)="onAddCustomerSuccess($event)"
+    ></app-customers-form>
+</p-sidebar>

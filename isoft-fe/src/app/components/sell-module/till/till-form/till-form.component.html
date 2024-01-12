@@ -1,0 +1,87 @@
+<p-toast></p-toast>
+<p-dialog
+    [header]="(isFinish ? 'Kết thúc ca' : 'Vào ca') | translate"
+    [(visible)]="display"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onCancel.emit({})"
+    (close)="onCancel.emit({})"
+>
+    <ng-container *ngTemplateOutlet="tillFormTemplate"></ng-container>
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-times"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+            styleClass="p-button-outlined"
+            class="pr-2"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="onSubmit()"
+            [label]="'button.saveF8' | translate"
+        ></p-button>
+    </ng-template>
+</p-dialog>
+
+<ng-template #tillFormTemplate>
+    <form [formGroup]="tillForm" class="grid">
+        <div class="col-12 py-2">
+            <h5
+                class="m-0"
+                [translate]="isEdit ? 'label.edit_till' : 'label.add_till'"
+            ></h5>
+        </div>
+        <!--Code-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label [translate]="'label.money_start'"></label>
+            <p-inputNumber
+                mode="decimal"
+                [formControlName]="'fromAmount'"
+                [class.ng-invalid]="checkValidValidator('fromAmount')"
+                [class.ng-dirty]="checkValidValidator('fromAmount')"
+            ></p-inputNumber>
+        </div>
+        <!--start time-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label htmlFor="toAt"
+                >{{ (isFinish ? 'label.shift_end' : 'label.shift_start')  | translate }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [(ngModel)]="tillForm.value.toAt"
+                formControlName="toAt"
+                [showTime]="true"
+                appendTo="body"
+                [disabled]="!isFinish"
+                class="w-full"
+                [class.ng-invalid]="checkValidValidator('toAt')"
+                [class.ng-dirty]="checkValidValidator('toAt')"
+            ></p-calendar>
+        </div>
+
+        <!--value-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label [translate]="'label.money_difference_table_caption'"></label>
+            <p-inputNumber
+                mode="decimal" [disabled]="!isFinish"
+                [formControlName]="'moneyAfterEndOfShift'"
+                [class.ng-invalid]="checkValidValidator('moneyAfterEndOfShift')"
+                (onInput)="calculateDifferenceAmount($event.value)"
+                [class.ng-dirty]="checkValidValidator('moneyAfterEndOfShift')"
+            ></p-inputNumber>
+        </div>
+        <!--type-->
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label [translate]="'label.amount_difference'"></label>
+            <p-inputNumber
+                mode="decimal" [disabled]="!isFinish"
+                [formControlName]="'amountDifferent'"
+                [class.ng-invalid]="checkValidValidator('amountDifferent')"
+                disabled
+                [class.ng-dirty]="checkValidValidator('amountDifferent')"
+            ></p-inputNumber>
+        </div>
+    </form>
+</ng-template>

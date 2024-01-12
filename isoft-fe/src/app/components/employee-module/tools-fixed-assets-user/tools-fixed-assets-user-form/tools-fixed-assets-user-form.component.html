@@ -1,0 +1,412 @@
+<p-toast></p-toast>
+<div *ngIf="form" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isNew
+                        ? 'label.tools_fixed_assets_edit'
+                        : 'label.tools_fixed_assets_add'
+                "
+            ></h5>
+            <form [formGroup]="form">
+                <div class="grid w-full">
+                    <ng-container
+                        *ngTemplateOutlet="taiKhoanCoTmp"
+                    ></ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="chiTietCo1Tmp"
+                    ></ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="chiTietCo2Tmp"
+                    ></ng-container>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label>Mã sử dụng</label>
+                        <input
+                            disabled
+                            pInputText
+                            id="usedCode"
+                            formControlName="usedCode"
+                        />
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+                        <label
+                            htmlFor="code"
+                            [translate]="'label.date_to_use'"
+                        ></label>
+                        <p-calendar
+                            inputId="basic"
+                            [formControlName]="'usedDate'"
+                            dateFormat="dd/mm/yy"
+                        >
+                        </p-calendar>
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+                        <label>Ngày trả lại</label>
+                        <p-calendar
+                            inputId="basic"
+                            [formControlName]="'liquidationDate'"
+                            dateFormat="dd/mm/yy"
+                        >
+                        </p-calendar>
+                    </div>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="name"
+                            [translate]="'label.price_money'"
+                        ></label>
+                        <p-inputNumber
+                            id="order"
+                            formControlName="historicalCost"
+                        >
+                        </p-inputNumber>
+                    </div>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="order"
+                            [translate]="'label.month_depreciation'"
+                        ></label>
+                        <p-inputNumber
+                            id="totalMonth"
+                            formControlName="totalMonth"
+                        >
+                        </p-inputNumber>
+                    </div>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="order"
+                            [translate]="'label.status'"
+                        ></label>
+                        <p-dropdown
+                            [formControlName]="'use'"
+                            [options]="listDepreciation"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+                        <label
+                            htmlFor="code"
+                            [translate]="'label.department_use'"
+                        ></label>
+                        <p-dropdown
+                            [placeholder]="'label.department_use' | translate"
+                            [formControlName]="'departmentId'"
+                            [options]="listDepartment"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                            showClear="true"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="name"
+                            [translate]="'label.people_to_use'"
+                        ></label>
+                        <p-dropdown
+                            [placeholder]="'label.people_to_use' | translate"
+                            [formControlName]="'userId'"
+                            [options]="users"
+                            [optionValue]="'id'"
+                            showClear="true"
+                        >
+                            <ng-template
+                                let-users
+                                pTemplate="users"
+                                pTemplate="selectedItem"
+                            >
+                                <span
+                                    >{{ users.username }} -
+                                    {{ users.fullName }}</span
+                                >
+                            </ng-template>
+                            <ng-template
+                                let-users
+                                pTemplate="users"
+                                pTemplate="item"
+                            >
+                                <span
+                                    >{{ users.username }} -
+                                    {{ users.fullName }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 flex flex-column">
+                        <label>Ghi chú</label>
+                        <textarea
+                            pInputTextarea
+                            [rows]="5"
+                            class="w-full"
+                            placeholder="Nhập ghi chú"
+                            formControlName="note"
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="goBack()"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button styleClass="w-auto px-2 font-bold"
+                                >Chuyển người dùng (F10)</p-button
+                            >
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- tk co -->
+<ng-template #taiKhoanCoTmp>
+    <div class="field p-fluid col-12 md:col-3">
+        <label
+            htmlFor="creditCode"
+            [translate]="'label.credit_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                #creditCodeTmp
+                [ngModel]="fc['creditCode'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden': isHiddenAutoCompleteCreditCode
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditCodeFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [lazy]="true"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="20"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditCode($event)"
+                (onFocus)="creditCodeTmp.handleDropdownClick()"
+                (input)="fc['creditCode'].setValue($event?.target?.value)"
+                (onClear)="onClearCreditCode()"
+                (onSelect)="onSelectCreditCode($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name?.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name?.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.accGroup }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>{{ credit.closingDebit | number: "1.0-0" }}</p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+            <div
+                (click)="creditCodeTmp.clear()"
+                class="p-inputgroup-addon cursor-pointer"
+            >
+                <i class="pi pi-times"></i>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietCo1Tmp>
+    <div class="field p-fluid col-12 md:col-3">
+        <label
+            htmlFor="debitCode"
+            [translate]="'label.credit_1_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                #creditDetailCodeFirstTmp
+                [ngModel]="fc['creditDetailCodeFirst'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteCreditDetailCodeFirst
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditDetailCodeFirstFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="!isCreditCodeHas || !isCreditCodeHasDetails"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditDetailCodeFirst($event)"
+                (onFocus)="creditDetailCodeFirstTmp.handleDropdownClick()"
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.creditDetailCodeFirst
+                    })
+                "
+                (input)="
+                    fc['creditDetailCodeFirst'].setValue($event?.target?.value)
+                "
+                (onClear)="onClearCreditDetailCodeFirst()"
+                (onSelect)="onSelectCreditDetailCodeFirst($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div
+                        *ngIf="credit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ credit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name?.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name?.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ credit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+            <div
+                (click)="creditDetailCodeFirstTmp.clear()"
+                class="p-inputgroup-addon cursor-pointer"
+            >
+                <i class="pi pi-times"></i>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietCo2Tmp>
+    <div class="field p-fluid col-12 md:col-3">
+        <label
+            htmlFor="debitCode"
+            [translate]="'label.credit_2_code_name'"
+        ></label>
+        <div class="p-inputgroup w-full">
+            <p-autoComplete
+                #creditDetailCodeSecondTmp
+                [ngModel]="fc['creditDetailCodeSecond'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteCreditDetailCodeSecond
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditDetailCodeSecondFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="
+                    !isCreditDetailCodeFirstHasDetails ||
+                    !isCreditDetailCodeFirstHas
+                "
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditDetailCodeSecond($event)"
+                (onFocus)="creditDetailCodeSecondTmp.handleDropdownClick()"
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.creditDetailCodeSecond
+                    })
+                "
+                (input)="
+                    fc['creditDetailCodeSecond'].setValue($event?.target?.value)
+                "
+                (onClear)="onClearCreditDetailCodeSecond()"
+                (onSelect)="onSelectCreditDetailCodeSecond($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div
+                        *ngIf="credit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ credit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ credit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+            <div
+                (click)="creditDetailCodeSecondTmp.clear()"
+                class="p-inputgroup-addon cursor-pointer"
+            >
+                <i class="pi pi-times"></i>
+            </div>
+        </div>
+    </div>
+</ng-template>

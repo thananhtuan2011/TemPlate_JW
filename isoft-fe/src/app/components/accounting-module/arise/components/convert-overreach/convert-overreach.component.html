@@ -1,0 +1,49 @@
+<form [formGroup]="convertForm" class="grid">
+    <div class="col-12 md:col-6 flex flex-column">
+        <span
+            class="col-12 text-primary"
+            [translate]="'left_menu.license'"
+        ></span>
+        <p-dropdown
+            [options]="types.document"
+            [optionLabel]="'name'"
+            [optionValue]="'code'"
+            [placeholder]="'label.empty' | translate"
+            [(ngModel)]="convertForm.value.documentType"
+            formControlName="documentType"
+            [appendTo]="'body'"
+        >
+        </p-dropdown>
+    </div>
+    <div class="col-12 md:col-6 flex flex-column">
+        <span class="col-12 text-primary" [translate]="'label.month'"></span>
+        <p-dropdown
+            [options]="types.month"
+            [optionLabel]="'label'"
+            [optionValue]="'value'"
+            [placeholder]="'label.empty' | translate"
+            [(ngModel)]="convertForm.value.month"
+            formControlName="month"
+            [appendTo]="'body'"
+        >
+        </p-dropdown>
+    </div>
+</form>
+
+<div class="flex justify-content-end gap-8 mt-4">
+    <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        [label]="'button.back' | translate"
+        (click)="onCancel.emit({})"
+    ></button>
+    <button
+        class="p-button-info"
+        type="button"
+        pButton
+        icon="pi pi-check"
+        [label]="'button.save' | translate"
+        (click)="onSave()"
+    ></button>
+</div>

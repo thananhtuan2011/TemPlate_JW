@@ -1,0 +1,1305 @@
+<div *ngIf="!display" class="card card-table">
+    <div class="flex flex-column pt-2 pb-3">
+        <p-panel
+            [header]="'label.search_job' | translate"
+            [toggleable]="true"
+            [collapsed]="true"
+            styleClass="w-full md:mb-3 md:mt-2"
+        >
+            <div class="flex flex-wrap gap-8">
+                <span class="w-full md:w-auto p-input-icon-left">
+                    <input
+                        [(ngModel)]="exportParam.searchText"
+                        pInputText
+                        [placeholder]="'label.search' | translate"
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        class="w-full"
+                    />
+                    <i class="pi pi-search"></i>
+                </span>
+                <p-calendar
+                    class="w-full md:w-auto"
+                    inputId="basic"
+                    dateFormat="dd/mm/yy"
+                    [(ngModel)]="exportParam.startDate"
+                    (onSelect)="onSearchUserTask($event)"
+                ></p-calendar>
+                <p-calendar
+                    class="w-full md:w-auto"
+                    inputId="basic"
+                    dateFormat="dd/mm/yy"
+                    [(ngModel)]="exportParam.endDate"
+                    (onSelect)="onSearchUserTask($event)"
+                ></p-calendar>
+
+                <p-multiSelect
+                    class="w-full md:w-auto"
+                    [placeholder]="'label.select_job' | translate"
+                    optionLabel="name"
+                    optionValue="value"
+                    [showClear]="true"
+                    [(ngModel)]="exportParam.status"
+                    [options]="status"
+                    (onChange)="onSearchUserTask($event)"
+                ></p-multiSelect>
+
+                <p-dropdown
+                    class="w-full md:w-auto"
+                    id="parentProject"
+                    [options]="parentProjectResult.data"
+                    [(ngModel)]="exportParam.parentProjectId"
+                    [placeholder]="'label.select_parent' | translate"
+                    optionLabel="name"
+                    optionValue="id"
+                    showClear="true"
+                    (onChange)="onSearchUserTask($event)"
+                ></p-dropdown>
+
+                <p-dropdown
+                    class="w-full md:w-auto"
+                    [options]="employees"
+                    [ngModelOptions]="{ standalone: true }"
+                    [optionLabel]="'fullName'"
+                    [filter]="true"
+                    filterBy="name"
+                    [(ngModel)]="exportParam.UserCreatedId"
+                    [optionValue]="'id'"
+                    [showClear]="true"
+                    [placeholder]="'label.employee' | translate"
+                    (onChange)="onSearchUserTask()"
+                >
+                </p-dropdown>
+
+                <p-dropdown
+                    class="w-full md:w-auto"
+                    [placeholder]="'label.select_department' | translate"
+                    optionLabel="name"
+                    optionValue="id"
+                    [showClear]="true"
+                    [(ngModel)]="exportParam.departmentId"
+                    [options]="departments"
+                    [filter]="true"
+                    (onFilter)="onFilterDepartment($event)"
+                    (onChange)="onSearchUserTask($event)"
+                ></p-dropdown>
+
+                <p-dropdown
+                    class="w-full md:w-auto"
+                    [placeholder]="'label.select_status' | translate"
+                    optionLabel="label"
+                    optionValue="value"
+                    [showClear]="true"
+                    (onChange)="onSearchUserTask()"
+                    [(ngModel)]="exportParam.isStatusForManager"
+                    [options]="reviewStatusItems"
+                ></p-dropdown>
+
+                <p-autoComplete
+                    class="w-full md:w-auto"
+                    [suggestions]="filteredCustomers"
+                    [(ngModel)]="exportParam.customerName"
+                    [placeholder]="'label.find_partner' | translate"
+                    [ngModelOptions]="{ standalone: true }"
+                    [completeOnFocus]="true"
+                    (completeMethod)="filterCustomerName($event)"
+                    [forceSelection]="true"
+                    [autoHighlight]="true"
+                    [showClear]="false"
+                    (onSelect)="onCustomerNameSelect($event)"
+                    (onClear)="onCustomerNameSelect(null)"
+                >
+                </p-autoComplete>
+            </div>
+        </p-panel>
+    </div>
+    <div class="flex justify-content-between">
+        <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
+        <div class="flex gap-8">
+            <p-button
+                icon="pi pi-download"
+                [label]="
+                    (appMain.isDesktop() ? 'button.export' : '') | translate
+                "
+                (onClick)="exportData()"
+            >
+            </p-button>
+            <p-button
+                *appHasAccess="{
+                    menu: appConstant.MENU_TYPE.DANHSACHCONGVIEC,
+                    action: appConstant.PERMISSION_FUNC.ADD
+                }"
+                (click)="onAddWorkflow()"
+                icon="pi pi-plus"
+                [label]="
+                    (appMain.isDesktop() ? 'button.addF7' : '') | translate
+                "
+            ></p-button>
+        </div>
+    </div>
+    <p-table
+        *ngIf="activeItem?.id === '1'"
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [first]="first"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines mt-2"
+        [paginator]="true"
+        [responsiveLayout]="!appMain.isDesktop() ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getWorkList($event)"
+        [scrollable]="appMain.isDesktop()"
+        scrollDirection="both"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 50px">
+                    <!--                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>-->
+                </th>
+                <th class="w-3">
+                    {{ "label.workflow_title" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_expired" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_created_date" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_total_hour" | translate }}
+                </th>
+                <th class="w-2">
+                    {{ "label.join" | translate }}
+                </th>
+                <th style="width: 80px">
+                    {{ "label.workflow_viewed" | translate }}
+                </th>
+                <th class="w-3">
+                    {{ "label.workflow_parent_project" | translate }}
+                </th>
+                <th
+                    class="w-10rem"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    {{ "label.status" | translate }}
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr *ngIf="!appMain.isDesktop()">
+                <td
+                    class="w-full pt-2 flex justify-content-start align-items-center"
+                >
+                    <div
+                        class="w-2rem flex flex-column align-items-center justify-content-center text-center"
+                    >
+                        <div *ngIf="allowShowEditPopup(item)">
+                            <i
+                                *appHasAccess="{
+                                    menu: appConstant.MENU_TYPE
+                                        .DANHSACHCONGVIEC,
+                                    action: appConstant.PERMISSION_FUNC.EDIT
+                                }"
+                                class="pi pi-ellipsis-h cursor-pointer text-400 text-lg"
+                                (click)="op.toggle($event); selectedJob = item"
+                            ></i>
+                        </div>
+                        <app-work-flow-process
+                            [item]="item"
+                        ></app-work-flow-process>
+                    </div>
+                    <app-workflow-item
+                        (onSelect)="
+                            onGetComments(item);
+                            isShowInfo = true;
+                            activeDialog = 0
+                        "
+                        [commandMenuItems]="statusItems"
+                        class="w-full"
+                        [item]="item"
+                    ></app-workflow-item>
+                </td>
+            </tr>
+            <tr *ngIf="appMain.isDesktop()">
+                <td
+                    class="flex flex-column text-center justify-content-center align-items-center"
+                    style="width: 50px"
+                >
+                    <div *ngIf="allowShowEditPopup(item)">
+                        <i
+                            *appHasAccess="{
+                                menu: appConstant.MENU_TYPE.DANHSACHCONGVIEC,
+                                action: appConstant.PERMISSION_FUNC.EDIT
+                            }"
+                            class="pi pi-ellipsis-h cursor-pointer text-400 text-lg"
+                            (click)="
+                                selectedJob = item;
+                                op.toggle($event);
+                                testLog(item)
+                            "
+                        ></i>
+                    </div>
+                    <app-work-flow-process
+                        [item]="item"
+                    ></app-work-flow-process>
+                </td>
+                <td class="w-3 p-2">
+                    <app-workflow-items
+                        [showCheck]="true"
+                        [item]="item"
+                        type="responsiblePerson"
+                    ></app-workflow-items>
+                    <p-tag
+                        (click)="
+                            onGetComments(item);
+                            isShowInfo = true;
+                            activeDialog = 0
+                        "
+                        [styleClass]="item['bgName']"
+                        class="cursor-pointer"
+                        [value]="item.id + ' - ' + item.name"
+                        [rounded]="true"
+                    ></p-tag>
+                </td>
+                <td class="w-1 flex justify-content-center">
+                    <p-tag
+                        [styleClass]="item['bgDueDate']"
+                        [value]="item['dueDate'] | date: 'dd/MM/yyyy HH:mm'"
+                        [rounded]="true"
+                    ></p-tag>
+                </td>
+                <td class="w-1 flex justify-content-center">
+                    {{ item["createdDate"] | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-1 p-2 flex justify-content-center">
+                    {{ item["actualHours"] | number: "1.0-2" }}h
+                </td>
+                <td class="w-2 p-2">
+                    <app-workflow-items [item]="item"></app-workflow-items>
+                </td>
+                <td class="p-2 flex justify-content-center" style="width: 80px">
+                    {{ item["viewer"] | number: "1.0-0" }}
+                </td>
+                <td class="w-3 p-2">
+                    {{ item["project"] }}
+                </td>
+                <td
+                    class="flex justify-content-center w-10rem"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    <app-change-workflow-status
+                        [data]="item"
+                        [commandMenuItems]="statusItems"
+                        class="pl-1"
+                    ></app-change-workflow-status>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <div *ngIf="activeItem?.id === '2'">
+        <div class="w-full flex align-items-start justify-content-center">
+            <div
+                class="flex-1 border-right-1 border-y-none border-left-none border-dotted border-500 relative"
+            >
+                <p-virtualScroller
+                    [value]="expiredWork.expired"
+                    scrollHeight="calc(100vh - 265px)"
+                    [itemSize]="100"
+                    [lazy]="true"
+                    (onLazyLoad)="getWorkList($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            class="w-full flex align-items-center justify-content-start bg-pink-400 p-3"
+                        >
+                            <p>Công việc quá hạn</p>
+                        </div>
+                    </ng-template>
+                    <ng-template let-work pTemplate="item">
+                        <app-workflow-item
+                            class="w-full"
+                            [item]="work"
+                            [commandMenuItems]="statusItems"
+                            (onSelect)="
+                                onGetComments(work);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                        ></app-workflow-item>
+                    </ng-template>
+                </p-virtualScroller>
+            </div>
+            <div
+                class="flex-1 border-right-1 border-y-none border-left-none border-dotted border-500 sticky top-0"
+            >
+                <p-virtualScroller
+                    [value]="expiredWork.expiredToday"
+                    scrollHeight="calc(100vh - 265px)"
+                    [itemSize]="100"
+                    [lazy]="true"
+                    (onLazyLoad)="getWorkList($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            class="flex align-items-center justify-content-start bg-yellow-400 p-3"
+                        >
+                            <p>Đến hạn hôm nay</p>
+                        </div>
+                    </ng-template>
+                    <ng-template let-work pTemplate="item">
+                        <app-workflow-item
+                            (onSelect)="
+                                onGetComments(work);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [commandMenuItems]="statusItems"
+                            class="w-full"
+                            [item]="work"
+                        ></app-workflow-item>
+                    </ng-template>
+                </p-virtualScroller>
+            </div>
+            <div
+                class="flex-1 border-right-1 border-y-none border-left-none border-dotted border-500 sticky top-0"
+            >
+                <p-virtualScroller
+                    [value]="expiredWork.expiredCurrentWeek"
+                    scrollHeight="calc(100vh - 265px)"
+                    [itemSize]="100"
+                    [lazy]="true"
+                    (onLazyLoad)="getWorkList($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            class="flex align-items-center justify-content-start bg-green-400 p-3"
+                        >
+                            <p>Đến hạn tuần này</p>
+                        </div>
+                    </ng-template>
+                    <ng-template let-work pTemplate="item">
+                        <app-workflow-item
+                            (onSelect)="
+                                onGetComments(work);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [commandMenuItems]="statusItems"
+                            class="w-full"
+                            [item]="work"
+                        ></app-workflow-item>
+                    </ng-template>
+                </p-virtualScroller>
+            </div>
+            <div
+                class="flex-1 border-right-1 border-y-none border-left-none border-dotted border-500 sticky top-0"
+            >
+                <p-virtualScroller
+                    [value]="expiredWork.expiredNextWeek"
+                    scrollHeight="calc(100vh - 265px)"
+                    [itemSize]="100"
+                    [lazy]="true"
+                    (onLazyLoad)="getWorkList($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            class="flex align-items-center justify-content-start bg-teal-400 p-3"
+                        >
+                            <p>Đến hạn tuần tới</p>
+                        </div>
+                    </ng-template>
+                    <ng-template let-work pTemplate="item">
+                        <app-workflow-item
+                            (onSelect)="
+                                onGetComments(work);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [commandMenuItems]="statusItems"
+                            class="w-full"
+                            [item]="work"
+                        ></app-workflow-item>
+                    </ng-template>
+                </p-virtualScroller>
+            </div>
+            <div
+                class="flex-1 border-right-1 border-y-none border-left-none border-dotted border-500 sticky top-0"
+            >
+                <p-virtualScroller
+                    [value]="expiredWork.notExpired"
+                    scrollHeight="calc(100vh - 265px)"
+                    [itemSize]="100"
+                    [lazy]="true"
+                    (onLazyLoad)="getWorkList($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <div
+                            class="flex align-items-center justify-content-start bg-bluegray-400 p-3"
+                        >
+                            <p>Không có thời gian</p>
+                        </div>
+                    </ng-template>
+                    <ng-template let-work pTemplate="item">
+                        <app-workflow-item
+                            (onSelect)="
+                                onGetComments(work);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [commandMenuItems]="statusItems"
+                            class="w-full"
+                            [item]="work"
+                        ></app-workflow-item>
+                    </ng-template>
+                </p-virtualScroller>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="w-full flex flex-column align-items-start justify-content-start py-2"
+        [style.visibility]="activeItem?.id === '3' ? 'visible' : 'hidden'"
+        [style.height]="activeItem?.id === '3' ? '100%' : '0px'"
+    >
+        <full-calendar
+            #calendar
+            class="w-full"
+            [options]="calendarOption"
+            [deepChangeDetection]="true"
+            [style.visibility]="activeItem?.id === '3' ? 'visible' : 'hidden'"
+        ></full-calendar>
+    </div>
+
+    <div *ngIf="activeItem?.id === '4'">
+        <ng-container *ngFor="let kanban of kanbanWorks">
+            <div class="flex align-items-center justify-content-start p-2">
+                <img
+                    [src]="kanban?.user?.avatar"
+                    class="h-3rem w-3rem"
+                    alt=""
+                />
+                <p class="pl-3 font-semibold text-blue-400">
+                    {{ kanban?.user?.fullName }}
+                </p>
+            </div>
+            <div class="w-full grid">
+                <div
+                    class="col-12 md:col-4"
+                    pDroppable="jobs"
+                    (onDrop)="dropTodo($event)"
+                >
+                    <p-virtualScroller
+                        [value]="kanban.todo"
+                        scrollHeight="calc(100vh - 250px)"
+                        [itemSize]="100"
+                        [lazy]="true"
+                        (onLazyLoad)="getWorkListKanban($event)"
+                        class="h-13rem"
+                    >
+                        <ng-template pTemplate="header">
+                            <div
+                                class="flex align-items-center justify-content-start bg-teal-400 p-3"
+                            >
+                                <p class="text-white">Chưa bắt đầu</p>
+                            </div>
+                        </ng-template>
+                        <ng-template let-work pTemplate="item">
+                            <div
+                                [id]="'kanbanTodo-' + work.id"
+                                pDraggable="jobs"
+                                (onDragStart)="dragStartTodo(work)"
+                                (onDragEnd)="dragEndTodo()"
+                                class="h-full flex flex-column align-items-start justify-content-center surface-50 px-2 py-1"
+                            >
+                                <div
+                                    [id]="'subKanbanTodo-' + work.id"
+                                    class="h-full w-full shadow-3 flex align-items-start justify-content-between border-left-3 border-teal-400 bg-white p-2"
+                                >
+                                    <app-workflow-item
+                                        (onSelect)="
+                                            onGetComments(work);
+                                            isShowInfo = true;
+                                            activeDialog = 0
+                                        "
+                                        class="w-full"
+                                        [item]="work"
+                                        [commandMenuItems]="statusItems"
+                                    ></app-workflow-item>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-virtualScroller>
+                </div>
+                <div
+                    class="col-12 md:col-4"
+                    pDroppable="jobs"
+                    (onDrop)="dropInProgress($event)"
+                >
+                    <p-virtualScroller
+                        [value]="kanban.inProgress"
+                        scrollHeight="calc(100vh - 250px)"
+                        [itemSize]="100"
+                        [lazy]="true"
+                        (onLazyLoad)="getWorkListKanban($event)"
+                        class="h-13rem"
+                    >
+                        <ng-template pTemplate="header">
+                            <div
+                                class="flex align-items-center justify-content-start bg-green-400 p-3"
+                            >
+                                <p class="text-white">Đang tiến hành</p>
+                            </div>
+                        </ng-template>
+                        <ng-template let-work pTemplate="item">
+                            <div
+                                [id]="'kanbanInProgress-' + work.id"
+                                pDraggable="jobs"
+                                (onDragStart)="dragStartInProgress(work)"
+                                (onDragEnd)="dragEndInProgress()"
+                                class="h-full flex flex-column align-items-start justify-content-center surface-50 px-2 py-1"
+                            >
+                                <div
+                                    [id]="'subKanbanInProgress-' + work.id"
+                                    class="h-full w-full shadow-3 flex align-items-start justify-content-between border-left-3 border-green-400 bg-white p-2"
+                                >
+                                    <app-workflow-item
+                                        (onSelect)="
+                                            onGetComments(work);
+                                            isShowInfo = true;
+                                            activeDialog = 0
+                                        "
+                                        [commandMenuItems]="statusItems"
+                                        class="w-full"
+                                        [item]="work"
+                                    ></app-workflow-item>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-virtualScroller>
+                </div>
+                <div
+                    class="col-12 md:col-4"
+                    pDroppable="jobs"
+                    (onDrop)="dropDone($event)"
+                >
+                    <p-virtualScroller
+                        [value]="kanban.done"
+                        scrollHeight="calc(100vh - 250px)"
+                        [itemSize]="100"
+                        [lazy]="true"
+                        (onLazyLoad)="getWorkListKanban($event)"
+                        class="h-13rem"
+                    >
+                        <ng-template pTemplate="header">
+                            <div
+                                class="flex align-items-center justify-content-start bg-indigo-400 p-3"
+                            >
+                                <p class="text-white">
+                                    {{
+                                        "label.workflow_panel_reviewing"
+                                            | translate
+                                    }}
+                                </p>
+                            </div>
+                        </ng-template>
+                        <ng-template let-work pTemplate="item">
+                            <div
+                                [id]="'kanbanDone-' + work.id"
+                                pDraggable="jobs"
+                                (onDragStart)="dragStartDone(work)"
+                                (onDragEnd)="dragEndDone()"
+                                class="h-full flex flex-column align-items-start justify-content-center surface-50 px-2 py-1"
+                            >
+                                <div
+                                    [id]="'subKanbanDone-' + work.id"
+                                    class="h-full w-full shadow-3 flex align-items-start justify-content-between border-left-3 border-indigo-400 bg-white p-2"
+                                >
+                                    <app-workflow-item
+                                        (onSelect)="
+                                            onGetComments(work);
+                                            isShowInfo = true;
+                                            activeDialog = 0
+                                        "
+                                        [commandMenuItems]="statusItems"
+                                        class="w-full"
+                                        [item]="work"
+                                    ></app-workflow-item>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-virtualScroller>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <p-table
+        *ngIf="activeItem?.id === '5'"
+        [value]="parentProjectResult.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines mt-2"
+        [paginator]="true"
+        [responsiveLayout]="!appMain.isDesktop() ? 'stack' : 'scroll'"
+        [totalRecords]="parentProjectResult.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getListProjectParent($event)"
+        [scrollable]="appMain.isDesktop()"
+        scrollDirection="both"
+        rowGroupMode="subheader"
+        groupRowsBy="id"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 50px">
+                    {{ "label.STT" | translate }}
+                </th>
+                <th class="w-3">
+                    {{ "label.workflow_title" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_expired" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_created_date" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_total_hour" | translate }}
+                </th>
+                <th class="w-2">
+                    {{ "label.join" | translate }}
+                </th>
+                <th class="w-1">
+                    {{ "label.workflow_viewed" | translate }}
+                </th>
+                <th class="w-3">
+                    {{ "label.workflow_parent_project" | translate }}
+                </th>
+                <th
+                    class="w-10rem"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    {{ "label.status" | translate }}
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="groupheader" let-item let-expanded="expanded">
+            <tr *ngIf="!appMain.isDesktop()">
+                <td
+                    class="w-full pt-2 flex justify-content-start align-items-start"
+                >
+                    <div
+                        class="flex flex-column align-items-center justify-content-center"
+                    >
+                        <button
+                            *ngIf="item.isChildren"
+                            type="button"
+                            pButton
+                            pRipple
+                            [pRowToggler]="item"
+                            class="p-button-text p-button-rounded p-button-plain p-button-sm ml-2"
+                            [icon]="
+                                expanded
+                                    ? 'pi pi-chevron-down'
+                                    : 'pi pi-chevron-right'
+                            "
+                            (click)="getChildren(expanded, item)"
+                        ></button>
+                        <app-work-flow-process
+                            [item]="item"
+                        ></app-work-flow-process>
+                    </div>
+                    <app-workflow-item
+                        (onSelect)="
+                            onGetComments(item);
+                            isShowInfo = true;
+                            activeDialog = 0
+                        "
+                        class="w-full"
+                        [commandMenuItems]="statusItems"
+                        [item]="item"
+                    ></app-workflow-item>
+                </td>
+            </tr>
+            <tr *ngIf="appMain.isDesktop()">
+                <td
+                    style="width: 50px"
+                    class="pt-2 flex flex-column align-items-center justify-content-center"
+                >
+                    <button
+                        *ngIf="item.isChildren"
+                        type="button"
+                        pButton
+                        pRipple
+                        [pRowToggler]="item"
+                        class="p-button-text p-button-rounded p-button-plain mr-2"
+                        [icon]="
+                            expanded
+                                ? 'pi pi-chevron-down'
+                                : 'pi pi-chevron-right'
+                        "
+                        (click)="getChildren(expanded, item)"
+                    ></button>
+                    <app-work-flow-process
+                        [item]="item"
+                    ></app-work-flow-process>
+                </td>
+                <td class="w-3 p-2">
+                    <app-workflow-items
+                        [item]="item"
+                        type="responsiblePerson"
+                    ></app-workflow-items>
+                    <p-tag
+                        (click)="
+                            onGetComments(item);
+                            isShowInfo = true;
+                            activeDialog = 0
+                        "
+                        class="cursor-pointer"
+                        [styleClass]="item['bgName']"
+                        [value]="item.id + ' - ' + item.name"
+                        [rounded]="true"
+                    ></p-tag>
+                </td>
+                <td class="w-1 flex justify-content-center">
+                    <p-tag
+                        [styleClass]="item['bgDueDate']"
+                        [value]="item['dueDate'] | date: 'dd/MM/yyyy'"
+                        [rounded]="true"
+                    >
+                    </p-tag>
+                </td>
+                <td class="w-1 flex justify-content-center">
+                    {{ item["createdDate"] | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-1 p-2 flex justify-content-center">
+                    {{ item["actualHours"] | number: "1.0-2" }}h
+                </td>
+                <td class="w-2 p-2">
+                    <app-workflow-items [item]="item"></app-workflow-items>
+                </td>
+                <td class="w-1 p-2 flex justify-content-center">
+                    {{ item["viewer"] | number: "1.0-0" }}
+                </td>
+                <td class="w-3 p-2">
+                    {{ item["project"] }}
+                </td>
+                <td
+                    class="flex justify-content-center w-10rem"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    <app-change-workflow-status
+                        [data]="item"
+                        [commandMenuItems]="statusItems"
+                        class="pl-1"
+                    ></app-change-workflow-status>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-item>
+            <ng-container *ngFor="let child of item['children']">
+                <tr *ngIf="!appMain.isDesktop()">
+                    <td
+                        style="width: 50px"
+                        class="w-full pt-2 flex justify-content-start align-items-start"
+                    >
+                        <app-workflow-item
+                            (onSelect)="
+                                onGetComments(child);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [commandMenuItems]="statusItems"
+                            class="w-full"
+                            [item]="child"
+                            [mainColor]="'bg-green-400'"
+                        ></app-workflow-item>
+                    </td>
+                </tr>
+                <tr *ngIf="appMain.isDesktop()">
+                    <td
+                        style="width: 50px"
+                        class="flex flex-column text-center justify-content-center align-items-center"
+                    >
+                        <span>{{ child["no"] }}</span>
+                        <app-work-flow-process
+                            [item]="item"
+                        ></app-work-flow-process>
+                    </td>
+                    <td class="w-3 p-2">
+                        <app-workflow-items
+                            [item]="item"
+                            type="responsiblePerson"
+                        ></app-workflow-items>
+                        <p-tag
+                            (click)="
+                                onGetComments(child);
+                                isShowInfo = true;
+                                activeDialog = 0
+                            "
+                            [styleClass]="'bg-green-400'"
+                            class="cursor-pointer"
+                            [value]="child.id + ' - ' + child.name"
+                            [rounded]="true"
+                        ></p-tag>
+                    </td>
+                    <td class="w-1 flex justify-content-center">
+                        <p-tag
+                            [styleClass]="'bg-green-400'"
+                            [value]="child['dueDate'] | date: 'dd/MM/yyyy'"
+                            [rounded]="true"
+                        >
+                        </p-tag>
+                    </td>
+                    <td class="w-1 flex justify-content-center">
+                        {{ child["createdDate"] | date: "dd/MM/yyyy" }}
+                    </td>
+                    <td class="w-1 p-2 flex justify-content-center">
+                        {{ child["actualHours"] | number: "1.0-2" }}h
+                    </td>
+                    <td class="w-2 p-2">
+                        <app-workflow-items [item]="child"></app-workflow-items>
+                    </td>
+                    <td class="w-1 p-2 flex justify-content-center">
+                        {{ child["viewer"] | number: "1.0-0" }}
+                    </td>
+                    <td class="w-3 p-2">
+                        {{ child["project"] }}
+                    </td>
+                    <td
+                        class="flex justify-content-center w-8rem"
+                        alignFrozen="right"
+                        pFrozenColumn
+                        [frozen]="true"
+                    >
+                        <app-change-workflow-status
+                            [data]="item"
+                            [commandMenuItems]="statusItems"
+                            class="pl-1"
+                        ></app-change-workflow-status>
+                    </td>
+                </tr>
+            </ng-container>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-workflow-form
+    [display]="display"
+    [formData]="formData"
+    (onCancel)="onCancelForm()"
+    (onSuccess)="onCancelForm()"
+>
+</app-workflow-form>
+<p-overlayPanel #op class="px-0">
+    <ng-template pTemplate>
+        <div class="flex flex-column align-items-start">
+            <p-confirmPopup></p-confirmPopup>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer item-overlay"
+                (click)="onPinWorkflow()"
+            >
+                <i class="text-purple-400 pi pi-link mr-4"></i>
+                <p class="font-bold text-purple-400">
+                    {{ "label.workflow_panel_pin" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                *ngIf="
+                    !selectedJob?.isExistTask && ![UserTaskStatusEnum.DOING].includes(selectedJob?.status)
+                "
+                (click)="onChangeStatusWorkflow(UserTaskStatusEnum.DOING, true)"
+            >
+                <i class="text-green-400 pi pi-play mr-4"></i>
+                <p class="font-bold text-green-400">
+                    {{ "label.workflow_panel_start" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                *ngIf="
+                    [UserTaskStatusEnum.DOING].includes(selectedJob?.status) &&
+                    selectedJob?.supervisorPersons?.length > 0
+                "
+                (click)="onChangeStatusWorkflow(UserTaskStatusEnum.REVIEWING)"
+            >
+                <i class="text-pink-400 pi pi-eye mr-4"></i>
+                <p class="font-bold text-pink-400">
+                    {{ "label.workflow_panel_reviewing" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                *ngIf="
+                    ![
+                        UserTaskStatusEnum.OPENING,
+                        UserTaskStatusEnum.PAUSE,
+                        UserTaskStatusEnum.COMPLETE
+                    ].includes(selectedJob?.status)
+                "
+                (click)="onChangeStatusWorkflow(UserTaskStatusEnum.PAUSE)"
+            >
+                <i class="text-orange-400 pi pi-pause mr-4"></i>
+                <p class="font-bold text-orange-400">
+                    {{ "label.workflow_panel_pause" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                *ngIf="
+                    ![
+                        UserTaskStatusEnum.OPENING,
+                        UserTaskStatusEnum.COMPLETE,
+                        UserTaskStatusEnum.PAUSE
+                    ].includes(selectedJob?.status)
+                "
+                (click)="onChangeStatusWorkflow(UserTaskStatusEnum.COMPLETE)"
+            >
+                <i class="text-blue-400 pi pi-check mr-4"></i>
+                <p class="font-bold text-blue-400">
+                    {{ "label.workflow_panel_complete" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                (click)="onCopyWorkflow()"
+            >
+                <i class="text-teal-400 pi pi-copy mr-4"></i>
+                <p class="font-bold text-teal-400">
+                    {{ "label.workflow_panel_copy" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                (click)="onEditWorkflow()"
+            >
+                <i class="text-pink-400 pi pi-pencil mr-4"></i>
+                <p class="font-bold text-pink-400">
+                    {{ "label.workflow_panel_edit" | translate }}
+                </p>
+            </div>
+            <div
+                class="item-panel w-full flex align-items-center justify-content-start border-bottom-1 border-400 py-2 cursor-pointer"
+                (click)="onDeleteWorkflow()"
+            >
+                <i class="text-bluegray-400 pi pi-trash mr-4"></i>
+                <p class="font-bold text-bluegray-400">
+                    {{ "label.workflow_panel_delete" | translate }}
+                </p>
+            </div>
+        </div>
+    </ng-template>
+</p-overlayPanel>
+
+<p-dialog
+    [(visible)]="isShowInfo"
+    [style]="{ width: appMain.isMobile() ? '98vw' : '60vw' }"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <div *ngIf="activeItem.id != 2" class="flex align-items-center gap-8">
+            <app-work-flow-process
+                [item]="selectedItem"
+            ></app-work-flow-process>
+            <app-workflow-items
+                [item]="selectedItem"
+                type="responsiblePerson"
+            ></app-workflow-items>
+        </div>
+        <span class="pl-2 pr-4">{{ selectedItem.name }}</span>
+    </ng-template>
+    <p-tabView [activeIndex]="activeDialog">
+        <p-tabPanel>
+            <span
+                class="mt-3 mb-3 md:mb-0 font-italic"
+                [innerHTML]="selectedItem.description"
+            ></span>
+            <div class="flex justify-content-between align-items-center">
+                <div class="flex align-items-end font-italic">
+                    <span class="text-sm md:text-lg pr-1 text-primary"
+                        >Lượt xem: {{ selectedItem.viewer }}</span
+                    >
+                    <span class="text-sm">{{
+                        selectedItem.createdDate | date: "dd/MM/yy HH:mm"
+                    }}</span>
+                </div>
+
+                <span class="flex align-items-center">
+                    <div>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            class="w-auto p-button-success mr-2"
+                            (click)="
+                                activeDialog = 1;
+                                selectedJob = selectedItem;
+                                showFormDialog = true;
+                                onEditWorkflow(false)
+                            "
+                            [label]="'button.detail' | translate"
+                        ></button>
+                    </div>
+                    <span class="text-sm md:text-lg">Tạo bởi:</span>
+                    <p-avatar
+                        [image]="getUserById(selectedItem?.userCreated)?.avatar"
+                        [title]="
+                            getUserById(selectedItem?.userCreated)?.fullName
+                        "
+                        shape="circle"
+                    ></p-avatar>
+                </span>
+            </div>
+            <div class="flex gap-8 mt-1" *ngIf="selectedItem.fileLink">
+                <div *ngFor="let url of selectedItem.fileLink">
+                    <p-image
+                        *ngIf="appUtil.isImageFile(url['fileId'])"
+                        class="style_prev_kit"
+                        src="{{ userTaskImg + url['fileId'] }}"
+                        appendTo="body"
+                        [preview]="true"
+                        alt="Image"
+                        width="80"
+                        height="40"
+                    >
+                    </p-image>
+
+                    <app-file-preview
+                        *ngIf="!appUtil.isImageFile(url['fileId'])"
+                        [fileName]="url['fileId']"
+                        [serverURLImage]="userTaskImg"
+                    ></app-file-preview>
+                </div>
+            </div>
+            <div
+                class="w-full flex flex-column gap-8 justify-content-start my-1"
+            >
+                <p-editor
+                    [ngModel]="newComment"
+                    [style]="{ height: '150px' }"
+                    class="w-full"
+                    (onTextChange)="onChangeEditor($event)"
+                >
+                    <ng-template pTemplate="header">
+                        <app-ql-formats-basic></app-ql-formats-basic>
+                    </ng-template>
+                </p-editor>
+                <div class="w-full row">
+                    <div class="col-12 flex align-items-center gap-8">
+                        <span
+                            class="text-primary font-bold flex align-items-center"
+                            >{{ "label.image" | translate }}</span
+                        >
+                        <span
+                            class="text-primary text-sm font-italic flex align-items-center"
+                            >(Tối đa 4 ảnh)</span
+                        >
+                        <button
+                            pButton
+                            icon="pi pi-upload"
+                            class="p-button-sm"
+                            (click)="uploadFile.click()"
+                        ></button>
+                        <button
+                            pButton
+                            icon="pi pi-times"
+                            class="p-button-sm"
+                            [disabled]="fileLinks.length === 0"
+                            (click)="onRemoveImages()"
+                        ></button>
+                        <input
+                            #uploadFile
+                            class="hidden"
+                            type="file"
+                            (change)="doAttachFile($event)"
+                            multiple
+                        />
+                    </div>
+                    <div class="col-12 flex gap-8" *ngIf="fileLinks">
+                        <div *ngFor="let url of fileLinks">
+                            <img
+                                *ngIf="appUtil.isImageFile(url['fileId'])"
+                                id="{{ url.fileId }}"
+                                class="style_prev_kit"
+                                (click)="onImageClick(url.fileId)"
+                                src="{{ serverUserTaskImg + url['fileId'] }}"
+                                alt="image"
+                            />
+                            <app-file-preview
+                                *ngIf="!appUtil.isImageFile(url['fileId'])"
+                                [fileName]="url['fileId']"
+                                [serverURLImage]="serverUserTaskImg"
+                            ></app-file-preview>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex align-items-center justify-content-center">
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        class="w-auto p-button-success mr-2"
+                        (click)="onAddComment()"
+                        [label]="'label.add_comment' | translate"
+                    ></button>
+                </div>
+            </div>
+
+            <div class="w-full flex flex-column justify-content-start mt-1">
+                <h3
+                    class="p-text-secondary font-italic"
+                    *ngIf="isGetComments && comments.length === 0"
+                >
+                    {{ "label.loading_comment" | translate }}
+                </h3>
+                <h3
+                    class="p-text-secondary font-italic"
+                    *ngIf="!isGetComments && comments.length === 0"
+                >
+                    {{ "label.no_comment" | translate }}
+                </h3>
+                <p-accordion *ngIf="comments.length > 0" class="w-full">
+                    <p-accordionTab
+                        *ngFor="let comment of comments"
+                        class="accordion-custom"
+                    >
+                        <ng-template pTemplate="header">
+                            <div class="w-full text-left">
+                                <div class="w-full justify-content-between">
+                                    <div class="flex align-items-center">
+                                        <p-avatar
+                                            class="d-block"
+                                            [image]="serverImg + comment.avatar"
+                                            shape="circle"
+                                        ></p-avatar>
+                                        <a class="ml-2 text-sm md:text-lg"
+                                            >{{ comment.nameOfUser }}
+                                        </a>
+                                        <div class="flex align-items-end">
+                                            <span
+                                                class="ml-2 hidden md:block font-normal text-color"
+                                            >
+                                                Đã thêm một bình luận
+                                            </span>
+                                            <p
+                                                class="ml-1 text-sm font-italic p-text-secondary"
+                                                style="
+                                                    font-size: 10px !important;
+                                                "
+                                            >
+                                                {{
+                                                    comment.createdDate
+                                                        | date: "dd/MM/yy HH:mm"
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-sm w-full md:justify-content-end white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                    [innerHTML]="comment.commentHTML"
+                                ></span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <div [innerHTML]="comment.commentHTML"></div>
+                            <div
+                                class="flex gap-8 mt-1"
+                                *ngIf="comment.fileLink"
+                            >
+                                <div *ngFor="let url of comment.fileLink">
+                                    <p-image
+                                        *ngIf="appUtil.isImageFile(url['fileId'])"
+                                        class="style_prev_kit"
+                                        src="{{ userTaskImg + url['fileId'] }}"
+                                        appendTo="body"
+                                        [preview]="true"
+                                        alt="Image"
+                                        width="80"
+                                        height="40"
+                                    >
+                                    </p-image>
+                                    <app-file-preview
+                                        *ngIf="!appUtil.isImageFile(url['fileId'])"
+                                        [fileName]="url['fileId']"
+                                        [serverURLImage]="userTaskImg"
+                                    ></app-file-preview>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-accordionTab>
+                </p-accordion>
+            </div>
+        </p-tabPanel>
+        <p-tabPanel [disabled]="!showFormDialog || activeDialog === 0">
+            <app-workflow-form
+                class="py-2"
+                [readonly]="
+                    selectedItem.responsiblePerson &&
+                    !allowShowEditPopup(selectedItem)
+                "
+                [display]="showFormDialog"
+                [formData]="formData"
+                (onCancel)="activeDialog = 0"
+                (onSuccess)="
+                    activeDialog = 0;
+                    formData = {};
+                    showFormDialog = false;
+                    isShowInfo = false
+                "
+            >
+            </app-workflow-form>
+        </p-tabPanel>
+    </p-tabView>
+</p-dialog>

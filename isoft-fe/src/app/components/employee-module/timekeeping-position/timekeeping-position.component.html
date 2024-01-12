@@ -1,0 +1,392 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.timekeeping_position_management'"></h5>
+    <p-table
+        #dt1
+        [value]="lstTargets"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getTargets($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.export' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getReligions(null, true)"
+                    ></button>
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.VITRICHAMCONG,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 100px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.numerical_order'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.code'"></span>
+                    </div>
+                </th>
+                <th style="width: 300px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.name_target'"></span>
+                    </div>
+                </th>
+                <th style="width: 250px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.address'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.effective'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.present'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.reality'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_contact'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.date_export_receipt'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.unit_price'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.sum_price'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.time_start'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.time_end'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.status'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.phone_number'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.tax_code'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.note'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile" style="width: 150px"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 150px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ user.id }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span
+                    >{{ user.code }}
+                </td>
+                <td style="width: 300px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_target'"
+                    ></span
+                    >{{ user.name }}
+                </td>
+                <td style="width: 250px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.address'"
+                    ></span
+                    >{{ user.address }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.effective'"
+                    ></span
+                    >{{ user.armyNumber }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.present'"
+                    ></span
+                    >{{ user.present }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.reality'"
+                    ></span
+                    >{{ user.checkedInCount }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_contact'"
+                    ></span
+                    >{{ user.nameContact }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.date_export_receipt'"
+                    ></span
+                    >{{ user.dateInvoice | date: "dd/MM/yyyy hh:mm:ss" }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.unit_price'"
+                    ></span
+                    >{{ user.unitPrice }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.sum_price'"
+                    ></span
+                    >{{ user.total }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_start'"
+                    ></span
+                    >{{ user.startDate | date: "dd/MM/yyyy hh:mm:ss" }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_end'"
+                    ></span
+                    >{{ user.endDate | date: "dd/MM/yyyy hh:mm:ss" }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.status'"
+                    ></span
+                    >{{ user.status }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.phone_number'"
+                    ></span
+                    >{{ user.phone }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.tax_code'"
+                    ></span
+                    >{{ user.identityCode }}
+                </td>
+                <td style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.note'"
+                    ></span
+                    >{{ user.note }}
+                </td>
+                <td *ngIf="isMobile" style="width: 150px">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.VITRICHAMCONG,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.VITRICHAMCONG,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="width: 150px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.VITRICHAMCONG,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.VITRICHAMCONG,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Target found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Target data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-timekeeping-position-form
+    #TargetForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getTargets(null, false); isReset = false"
+    [isEdit]="isEdit"
+>
+</app-timekeeping-position-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_timekeeping_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

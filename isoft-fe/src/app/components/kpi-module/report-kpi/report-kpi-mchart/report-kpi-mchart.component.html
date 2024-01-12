@@ -1,0 +1,15 @@
+<p-panel>
+    <ng-template pTemplate="header">
+        <span class="text-primary font-semibold text-xl">
+            {{ data.label }} {{ data.data?.name }}</span
+        ></ng-template
+    >
+    <p-listbox [options]="data.children" [(ngModel)]="itemChoiced">
+        <ng-template let-item pTemplate="item">
+            <span> {{ item.label }} {{ item.data?.name }} </span>
+        </ng-template>
+    </p-listbox>
+</p-panel>
+<ng-template [ngIf]="itemChoiced">
+    <app-report-kpi-mchart class="mt-4" [data]="itemChoiced"></app-report-kpi-mchart>
+</ng-template>

@@ -1,0 +1,175 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.edit_category' : 'label.add_category'"
+    ></h5>
+    <form [formGroup]="categoryForm">
+        <div class="p-fluid formgrid grid">
+            <div class="field col">
+                <label htmlFor="code"
+                    >{{ "label.category_code" | translate }}
+                    <span class="text-pink-400">*</span></label
+                >
+                <input
+                    pInputText
+                    id="code"
+                    [(ngModel)]="categoryForm.value.code"
+                    formControlName="code"
+                    [ngClass]="checkValidValidator('code')"
+                />
+                <small
+                    *ngIf="checkValidValidator('code')"
+                    class="p-error"
+                    [innerHTML]="'info.code' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid">
+            <div class="field col">
+                <label htmlFor="name"
+                    >{{ "label.name_viet_nam" | translate }}
+                    <span class="text-pink-400">*</span>
+                </label>
+                <input
+                    pInputText
+                    id="name"
+                    [(ngModel)]="categoryForm.value.name"
+                    formControlName="name"
+                    [ngClass]="checkValidValidator('name')"
+                />
+                <small
+                    *ngIf="checkValidValidator('name')"
+                    class="p-error"
+                    [innerHTML]="'info.name_viet_nam' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid">
+            <div class="field col">
+                <label htmlFor="nameEnglish">{{
+                    "label.name_english" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="nameEnglish"
+                    [(ngModel)]="categoryForm.value.nameEnglish"
+                    formControlName="nameEnglish"
+                />
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid">
+            <div class="field col">
+                <label htmlFor="nameKorea">{{
+                    "label.name_korea" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="nameKorea"
+                    [(ngModel)]="categoryForm.value.nameKorea"
+                    formControlName="nameKorea"
+                />
+            </div>
+        </div>
+        <div class="p-fluid formGrid grid">
+            <div class="field col">
+                <label htmlFor="type"
+                    >{{ "label.category_type" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <p-dropdown
+                    id="type"
+                    [options]="types.category"
+                    [optionLabel]="'label'"
+                    [optionValue]="'value'"
+                    showClear="true"
+                    [formControlName]="'type'"
+                    [appendTo]="'body'"
+                    (onChange)="onChangeCategory($event)"
+                    [placeholder]="'label.empty' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                ></p-dropdown>
+                <small
+                    *ngIf="checkValidValidator('type')"
+                    class="p-error"
+                    [innerHTML]="'info.type' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid">
+            <div class="field col">
+                <label htmlFor="note">{{
+                    "label.description" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="note"
+                    [(ngModel)]="categoryForm.value.note"
+                    formControlName="note"
+                />
+            </div>
+        </div>
+        <div
+            *ngIf="
+                categoryForm.value.type === appConstant.CATEGORY_TYPE.PRICE_LIST
+            "
+            class="p-fluid formgrid grid"
+        >
+            <div class="field col">
+                <label htmlFor="customer">{{
+                    "left_menu.customer" | translate
+                }}</label>
+                <p-multiSelect
+                    [options]="customers"
+                    [filter]="true"
+                    optionLabel="name"
+                    [filterBy]="'name,code'"
+                    [(ngModel)]="categoryForm.value.customers"
+                    (onFilter)="onCustomerFilter($event)"
+                    [formControlName]="'customers'"
+                    optionValue="id"
+                    class="w-full"
+                >
+                    <ng-template let-customer pTemplate="item">
+                        {{ customer.code }} | {{ customer.name }}
+                    </ng-template>
+                    <ng-template let-customer pTemplate="selectedItem">
+                        {{ customer.code }} | {{ customer.name }}
+                    </ng-template>
+                </p-multiSelect>
+            </div>
+        </div>
+        <div
+            *ngIf="
+                categoryForm.value.type === appConstant.CATEGORY_TYPE.PRICE_LIST
+            "
+            class="p-fluid formgrid grid"
+        >
+            <div class="field col flex flex-column">
+                <label htmlFor="isShowWeb">{{
+                    "label.show_web" | translate
+                }}</label>
+                <p-checkbox
+                    [(ngModel)]="categoryForm.value.isShowWeb"
+                    [binary]="true"
+                    inputId="binary"
+                    formControlName="isShowWeb"
+                ></p-checkbox>
+            </div>
+        </div>
+        <div
+            class="w-full col-12 flex align-items-center justify-content-end mt-5 gap-8"
+        >
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

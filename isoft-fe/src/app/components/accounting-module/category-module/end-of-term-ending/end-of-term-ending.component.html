@@ -1,0 +1,236 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.end_of_term_ending_management'"></h5>
+    <p-table
+        #dt1
+        [value]="listEndOfTermEnding"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getEndOfTermEnding($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.export' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getEndOfTermEnding(null, true)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KETCHUYENCUOIKY,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddEndOfTermEnding()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.id'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.debit_code_name'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.credit_code_name'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.ratio'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.type'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile" class="w-2"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user let-i="rowIndex">
+            <tr>
+                <td class="w-1">
+                    <span class="p-column-title" [translate]="'label.id'"></span
+                    >{{ user.id }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.debit_code_name'"
+                    ></span
+                    >{{ user.debitCode }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.credit_code_name'"
+                    ></span
+                    >{{ user.creditCode }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.ratio'"
+                    ></span
+                    >{{ user.percentRatio }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.type'"
+                    ></span>
+                    {{
+                        user.type == "debitToCredit"
+                            ? "Kết chuyển Nợ qua Có"
+                            : "Kết chuyển Có qua Nợ"
+                    }}
+                </td>
+                <td *ngIf="isMobile" class="w-2">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KETCHUYENCUOIKY,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KETCHUYENCUOIKY,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KETCHUYENCUOIKY,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KETCHUYENCUOIKY,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No end of term ending found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading end of term ending data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-end-of-term-ending-form
+    #endOfTermEndingFormComponent
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getEndOfTermEnding(null, false)"
+    [isEdit]="isEdit"
+>
+</app-end-of-term-ending-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

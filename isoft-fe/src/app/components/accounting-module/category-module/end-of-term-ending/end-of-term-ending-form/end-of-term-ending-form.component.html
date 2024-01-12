@@ -1,0 +1,131 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <h5
+        class="pl-2"
+        [translate]="
+            isEdit
+                ? 'label.end_of_term_ending_edit'
+                : 'label.end_of_term_ending_add'
+        "
+    ></h5>
+    <form [formGroup]="endOfTermEndingForm">
+        <div class="grid w-full">
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="code"
+                    >{{ "label.debit_code_name" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <p-dropdown
+                    [placeholder]="'label.debit_code_name' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                    [formControlName]="'debitCode'"
+                    [options]="chartOfAccounts"
+                    [ngModelOptions]="{ standalone: true }"
+                    [optionValue]="'code'"
+                >
+                    <ng-template
+                        let-chartOfAccounts
+                        pTemplate="chartOfAccounts"
+                        pTemplate="selectedItem"
+                    >
+                        <span
+                            >{{ chartOfAccounts.code }} -
+                            {{ chartOfAccounts.name }}</span
+                        >
+                    </ng-template>
+                    <ng-template
+                        let-chartOfAccounts
+                        pTemplate="chartOfAccounts"
+                        pTemplate="item"
+                    >
+                        <span
+                            >{{ chartOfAccounts.code }} -
+                            {{ chartOfAccounts.name }}</span
+                        >
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="name"
+                    >{{ "label.credit_code_name" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <p-dropdown
+                    [placeholder]="'label.credit_code_name' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                    [formControlName]="'creditCode'"
+                    [options]="chartOfAccounts"
+                    [optionValue]="'code'"
+                >
+                    <ng-template
+                        let-chartOfAccounts
+                        pTemplate="chartOfAccounts"
+                        pTemplate="selectedItem"
+                    >
+                        <span
+                            >{{ chartOfAccounts.code }} -
+                            {{ chartOfAccounts.name }}</span
+                        >
+                    </ng-template>
+                    <ng-template
+                        let-chartOfAccounts
+                        pTemplate="chartOfAccounts"
+                        pTemplate="item"
+                    >
+                        <span
+                            >{{ chartOfAccounts.code }} -
+                            {{ chartOfAccounts.name }}</span
+                        >
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="managerName"
+                    >{{ "label.ratio" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <p-inputNumber
+                    [formControlName]="'percentRatio'"
+                    suffix="%"
+                    min="0"
+                    max="100"
+                ></p-inputNumber>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="managerName"
+                    >{{ "label.type" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <p-dropdown
+                    [formControlName]="'type'"
+                    [options]="listType"
+                    [optionLabel]="'label'"
+                    [optionValue]="'value'"
+                >
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="p-fluid p-formgrid grid mt-2">
+                <div
+                    class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                >
+                    <p-button
+                        icon="pi pi-times"
+                        (click)="onBack()"
+                        [label]="'button.backF6' | translate"
+                        styleClass="p-button-outlined"
+                    ></p-button>
+                    <p-button
+                        icon="pi pi-check"
+                        (click)="onSubmit()"
+                        [label]="'button.saveF8' | translate"
+                    >
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

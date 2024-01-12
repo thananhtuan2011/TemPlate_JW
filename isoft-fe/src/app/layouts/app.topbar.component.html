@@ -1,0 +1,333 @@
+<div *ngIf="appMain.isMobile()">
+    <button
+        pButton
+        pRipple
+        type="button"
+        [label]="'Menu'"
+        class="menu-toggle p-button-success p-button-sm"
+        (click)="appMain.toggleMenu($event)"
+    ></button>
+</div>
+<div *ngIf="appMain.isDesktop()" class="layout-topbar">
+    <div class="flex">
+        <a class="layout-topbar-logo" routerLink="/uikit">
+            <!-- src="assets/layout/images/{{appMain.config.dark ? 'logo-white' : 'logo-dark'}}.svg" -->
+            <img
+                *ngIf="company && company.fileLogo"
+                [src]="baseUrlImage(company.fileLogo)"
+                [title]="'label.logo' | translate"
+            />
+            <img
+                *ngIf="!company || !company.fileLogo"
+                src="assets/layout/images/logo-xl-jwk.png"
+                alt="Isoft logo"
+                style="width: 50px; height: 50px"
+            />
+        </a>
+
+        <a
+            class="mt-1 p-link layout-menu-button layout-topbar-button"
+            href="#"
+            (click)="appMain.toggleMenu($event)"
+        >
+            <i class="pi pi-bars"></i>
+        </a>
+
+        <a
+            class="mt-1 p-link layout-topbar-menu-button layout-topbar-button"
+            (click)="layoutService.showProfileSidebar()"
+        >
+            <i class="pi pi-ellipsis-v"></i>
+        </a>
+    </div>
+
+    <div
+        *ngIf="appMain.isDesktop()"
+        class="w-full mt-1 hidden sm:block text-center flex"
+    >
+        <h4 class="m-0" *ngIf="company">{{ company.name }}</h4>
+    </div>
+
+    <p-dialog
+        [(visible)]="displayNotification"
+        [modal]="true"
+        [style]="{ padding: '0', 'min-width': '35vw' }"
+        [draggable]="false"
+        [resizable]="false"
+    >
+        <ng-template pTemplate="header">
+            <div class="flex justify-content-between align-items-center gap-8">
+                <h5
+                    class="m-0 text-white"
+                    [translate]="'label.notifications'"
+                ></h5>
+                <button
+                    (click)="deleteNotifications()"
+                    class="p-button-danger"
+                    pButton
+                    icon="pi pi-trash"
+                    pRipple
+                    [label]="'label.remove_all' | translate"
+                ></button>
+            </div>
+        </ng-template>
+        <div
+            (click)="seenNotify(message)"
+            *ngFor="let message of messages"
+            class="cursor-pointer mb-2"
+            style="
+                background-color: var(--surface-200);
+                padding: 10px;
+                border-radius: 4px;
+            "
+        >
+            <div [innerHTML]="message.note"></div>
+        </div>
+    </p-dialog>
+
+    <app-customer-notification [type]="'header'"></app-customer-notification>
+
+    <app-notification
+        iconClass="pi pi-inbox p-text-primary"
+        notificationType="WARNING_CHOOSE_GOODS_EXPIRATION"
+    >
+    </app-notification>
+
+    <app-notification iconClass="pi pi-bell p-text-secondary">
+    </app-notification>
+
+    <div
+        #menu
+        class="layout-topbar-menu"
+        [ngClass]="{
+            'layout-topbar-menu-mobile-active':
+                layoutService.state.profileSidebarVisible
+        }"
+    >
+        <!--Todo: Update late -->
+        <a (click)="onTheme()" class="p-link layout-topbar-button">
+            <i class="pi pi-briefcase"></i>
+            <span>Theme</span>
+        </a>
+        <a
+            (click)="layoutService.showConfigSidebar()"
+            class="p-link layout-topbar-button"
+        >
+            <i class="pi pi-cog"></i>
+            <span>Setting</span>
+        </a>
+        <a
+            (click)="displayChangePassword = true; registFrm.reset()"
+            class="p-link layout-topbar-button"
+        >
+            <i class="pi pi-lock"></i>
+            <span>Password</span>
+        </a>
+        <a class="p-link layout-topbar-button" (click)="doLogout()">
+            <i class="pi pi-sign-out"></i>
+            <span>Sign out</span>
+        </a>
+    </div>
+</div>
+
+<p-dialog
+    [header]="'label.change_password' | translate"
+    [(visible)]="displayChangePassword"
+    [modal]="true"
+    [style]="{ padding: '0' }"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <div class="grid">
+        <form class="w-12 grid" [formGroup]="registFrm" autocomplete="off">
+            <!--old password-->
+            <div class="field col-12 sm:col-4 flex flex-column mt-2">
+                <label
+                    for="oldPassword"
+                    class="block text-900 font-bold mb-2"
+                    [translate]="'label.old_password'"
+                ></label>
+                <p-password
+                    id="oldPassword"
+                    [(ngModel)]="registFrm.value.oldPassword"
+                    [feedback]="false"
+                    placeholder="{{ 'label.old_password' | translate }}"
+                    formControlName="oldPassword"
+                    [class.ng-invalid]="checkValidValidator('oldPassword')"
+                    [class.ng-dirty]="checkValidValidator('oldPassword')"
+                    [toggleMask]="registFrm.value.oldPassword"
+                ></p-password>
+                <small
+                    *ngIf="checkValidValidator('oldPassword')"
+                    class="p-error mt-2"
+                    [innerHTML]="'info.invalid_old_password' | translate"
+                ></small>
+            </div>
+
+            <!--password-->
+            <div class="field col-12 sm:col-4 flex flex-column mt-2">
+                <label
+                    for="password"
+                    class="block text-900 font-bold mb-2"
+                    [translate]="'label.password'"
+                ></label>
+                <p-password
+                    id="password"
+                    [(ngModel)]="registFrm.value.password"
+                    placeholder="{{ 'label.password' | translate }}"
+                    formControlName="password"
+                    [toggleMask]="registFrm.value.password"
+                    [feedback]="false"
+                    [class.ng-invalid]="checkValidValidator('password')"
+                    [class.ng-dirty]="checkValidValidator('password')"
+                ></p-password>
+                <small
+                    *ngIf="checkValidValidator('password')"
+                    class="p-error mt-2"
+                    [innerHTML]="'info.invalid_new_password' | translate"
+                ></small>
+            </div>
+
+            <!--confirmPassword-->
+            <div class="field col-12 sm:col-4 flex flex-column mt-2">
+                <label
+                    for="confirmPassword"
+                    class="block text-900 font-bold mb-2"
+                    [translate]="'label.confirm_password'"
+                ></label>
+                <p-password
+                    id="confirmPassword"
+                    [(ngModel)]="registFrm.value.confirmPassword"
+                    placeholder="{{ 'label.confirm_password' | translate }}"
+                    formControlName="confirmPassword"
+                    [toggleMask]="registFrm.value.confirmPassword"
+                    [feedback]="false"
+                    [class.ng-invalid]="checkValidValidator('confirmPassword')"
+                    [class.ng-dirty]="checkValidValidator('confirmPassword')"
+                >
+                </p-password>
+                <small
+                    *ngIf="checkValidValidator('confirmPassword')"
+                    class="p-error mt-2"
+                    [innerHTML]="'info.invalid_confirm_password' | translate"
+                ></small>
+            </div>
+
+            <div class="col-12 flex justify-content-end">
+                <button
+                    (click)="onChangePass()"
+                    pButton
+                    icon="pi pi-check"
+                    pRipple
+                    [label]="'button.apply' | translate"
+                ></button>
+            </div>
+        </form>
+    </div>
+</p-dialog>
+
+<p-dialog
+    [header]="'label.change_theme' | translate"
+    [(visible)]="displayChangeTheme"
+    [modal]="true"
+    [style]="{ padding: '0', width: '45rem' }"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <div class="grid">
+        <div class="field col-12 flex mt-2">
+            <p-inputNumber
+                mode="decimal"
+                [pTooltip]="'Scale' | translate"
+                [(ngModel)]="themeConfig.scale"
+                [placeholder]="'Scale'"
+                [max]="24"
+                [min]="10"
+                [ngModelOptions]="{ standalone: true }"
+            ></p-inputNumber>
+            <button
+                icon="pi pi-check"
+                class="w-auto ml-2"
+                pButton
+                (click)="applyScale()"
+                [label]="'button.save' | translate"
+            ></button>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.primary_color'"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.primaryColor"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.text_color'"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.textColor"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.text_color_2' | translate"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.primaryColorText"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.text_error_color' | translate"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.invalidPrimaryColor"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.text_light_primary' | translate"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.lightPrimaryColor"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="field col-12 sm:col-6 flex flex-column mt-2">
+            <label
+                class="block text-900 font-bold mb-2"
+                [translate]="'label.text_secondary' | translate"
+            ></label>
+            <p-colorPicker
+                [(ngModel)]="themeConfig.textColorSecondary"
+                [inline]="true"
+            ></p-colorPicker>
+        </div>
+
+        <div class="col-12 flex justify-content-end">
+            <button
+                (click)="onChangeTheme(true)"
+                pButton
+                icon="pi pi-check"
+                pRipple
+                [label]="'button.apply' | translate"
+            ></button>
+        </div>
+    </div>
+</p-dialog>

@@ -1,0 +1,45 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.web_social_edit' : 'label.web_social_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="code">{{ "label.allowance_code" | translate }}</label>
+            <input
+                pInputText
+                id="code"
+                type="text"
+                class="w-full"
+                placeholder="Nhập mã loại phụ cấp"
+                [(ngModel)]="allowanceModel.code"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name">{{ "label.allowance_name" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên loại phụ cấp"
+                [(ngModel)]="allowanceModel.name"
+            />
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-5">
+        <button
+            pButton
+            pRipple
+            type="button"
+            class="p-button-outlined p-button-secondary"
+            (click)="onCancel.emit({})"
+        >
+            {{ "button.backF6" | translate }}
+        </button>
+        <button pButton pRipple type="button" class="ml-4" (click)="onSave()">
+            {{ "button.saveF8" | translate }}
+        </button>
+    </div>
+</div>

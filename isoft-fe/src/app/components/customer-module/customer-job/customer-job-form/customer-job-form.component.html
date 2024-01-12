@@ -1,0 +1,85 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <form [formGroup]="customerJobForm" class="grid">
+        <div *ngIf="!hiddenTitle" class="col-12 py-2">
+            <h5
+                class="m-0"
+                [translate]="
+                    isEdit ? 'label.edit_job_infor' : 'label.add_job_infor'
+                "
+            ></h5>
+        </div>
+        <!--Name-->
+        <div [tabIndex]="1" class="field col-12 md:col-4 flex flex-column">
+            <label
+                htmlFor="customerTypeForm"
+                [translate]="'label.name'"
+            ></label>
+            <input
+                pInputText
+                id="customerTypeForm"
+                [(ngModel)]="customerJobForm.value.name"
+                formControlName="name"
+                [class.ng-invalid]="checkValidValidator('name')"
+                [class.ng-dirty]="checkValidValidator('name')"
+            />
+            <small
+                *ngIf="checkValidValidator('name')"
+                class="p-error"
+                [innerHTML]="'info.enter_job_name' | translate"
+            ></small>
+        </div>
+        <!--Description-->
+        <div [tabIndex]="2" class="field col-12 md:col-4 flex flex-column">
+            <label
+                htmlFor="description"
+                [translate]="'label.description'"
+            ></label>
+            <input
+                pInputText
+                id="description"
+                [(ngModel)]="customerJobForm.value.description"
+                formControlName="description"
+            />
+        </div>
+        <!--Choose color code-->
+        <div  [tabIndex]="3" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="color" [translate]="'label.color_code'"></label>
+            <div class="flex">
+                <input
+                    pInputText
+                    id="color"
+                    [(ngModel)]="customerJobForm.value.color"
+                    formControlName="color"
+                    [class.ng-invalid]="checkValidValidator('color')"
+                    class="w-full mr-0 boder-radius"
+                    [class.ng-dirty]="checkValidValidator('color')"
+                />
+                <p-colorPicker
+                    [appendTo]="'body'"
+                    [(ngModel)]="customerJobForm.value.color"
+                    formControlName="color"
+                ></p-colorPicker>
+            </div>
+            <small
+                *ngIf="checkValidValidator('color')"
+                class="p-error pr-2"
+                [innerHTML]="'info.enter_code_color' | translate"
+            ></small>
+        </div>
+        <div class="col-12 flex justify-content-end">
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+                class="pr-2"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

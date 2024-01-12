@@ -1,0 +1,159 @@
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit
+                        ? 'label.edit_salary_level'
+                        : 'label.add_salary_level'
+                "
+            ></h5>
+            <form [formGroup]="salaryLevelForm" autocomplete="off">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="positionName"
+                            >{{ "label.position" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-dropdown
+                            [options]="lstPositions"
+                            [formControlName]="'positionName'"
+                            optionLabel="name"
+                            [filter]="true"
+                            filterBy="key"
+                            [(ngModel)]="salaryLevelForm.value.positionName"
+                            [showClear]="true"
+                            [placeholder]="'label.position' | translate"
+                            [ngClass]="checkValidValidator('positionName')"
+                        >
+                            <ng-template let-position pTemplate="item">
+                                <div>
+                                    <div>
+                                        {{ position.name }} |
+                                        {{ position.name }} |
+                                        {{ position.code }}
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-dropdown>
+                        <small
+                            *ngIf="checkValidValidator('positionName')"
+                            class="p-error"
+                            [innerHTML]="'info.positionName' | translate"
+                        ></small>
+                    </div>
+
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            >{{ "label.salary_level" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-inputNumber
+                            [formControlName]="'salaryCost'"
+                            mode="decimal"
+                            [showButtons]="true"
+                            [min]="0"
+                            [ngClass]="checkValidValidator('salaryCost')"
+                        >
+                        </p-inputNumber>
+                        <small
+                            *ngIf="checkValidValidator('salaryCost')"
+                            class="p-error"
+                            [innerHTML]="'info.salaryCost' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            >{{ "label.coefficient" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-inputNumber
+                            [formControlName]="'coefficient'"
+                            mode="decimal"
+                            [showButtons]="true"
+                            [min]="0"
+                            [ngClass]="checkValidValidator('coefficient')"
+                        >
+                        </p-inputNumber>
+                        <small
+                            *ngIf="checkValidValidator('coefficient')"
+                            class="p-error"
+                            [innerHTML]="'info.coefficient' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            >{{ "label.amount_number" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-inputNumber
+                            [formControlName]="'amount'"
+                            step="1000000"
+                            mode="decimal"
+                            [showButtons]="true"
+                            [min]="0"
+                            [ngClass]="checkValidValidator('amount')"
+                        >
+                        </p-inputNumber>
+                        <small
+                            *ngIf="checkValidValidator('amount')"
+                            class="p-error"
+                            [innerHTML]="'info.amount' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="updateAt">{{
+                            "label.sign_date" | translate
+                        }}</label>
+                        <p-calendar
+                            [style]="{ width: '100%' }"
+                            [showIcon]="true"
+                            inputId="icon"
+                            [(ngModel)]="date"
+                            [formControlName]="'updateAt'"
+                        ></p-calendar>
+                        <small
+                            *ngIf="checkValidValidator('updateAt')"
+                            class="p-error"
+                            [innerHTML]="'info.updateAt' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label>{{ "label.note" | translate }}</label>
+                        <input
+                            type="text"
+                            pInputText
+                            [formControlName]="'note'"
+                            [ngClass]="checkValidValidator('note')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('note')"
+                            class="p-error"
+                            [innerHTML]="'info.note' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-12 flex flex-column">
+                        <div class="p-fluid p-formgrid grid mt-2">
+                            <div
+                                class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                            >
+                                <p-button
+                                    icon="pi pi-times"
+                                    (click)="onCancel.emit({})"
+                                    [label]="'button.backF6' | translate"
+                                    styleClass="p-button-outlined"
+                                ></p-button>
+                                <p-button
+                                    icon="pi pi-check"
+                                    (click)="onSubmit()"
+                                    [label]="'button.saveF8' | translate"
+                                >
+                                </p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

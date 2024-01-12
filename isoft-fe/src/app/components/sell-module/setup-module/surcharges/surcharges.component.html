@@ -1,0 +1,232 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.surcharge_management'"></h5>
+    <p-table
+        #dt1
+        [value]="surcharges"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getSurcharges($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <!-- <div class="flex flex-column md:flex-row gap-8 w-full md:w-auto">
+                    <p-dropdown [(ngModel)]="getParams.sortField" (onChange)="onChangeSort($event, 'sortField')"
+                        [options]="sortFields" [optionLabel]="'label'" [optionValue]="'code'"></p-dropdown>
+                    <p-dropdown [(ngModel)]="getParams.isSort" (onChange)="onChangeSort($event, 'sortType')"
+                        [options]="sortTypes" [optionLabel]="'label'" [optionValue]="'code'"></p-dropdown>
+                </div> -->
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <!-- add button -->
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.add"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.code'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name'"></span>
+                    </div>
+                </th>
+                <th class="w-12rem">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.time_start'"></span>
+                    </div>
+                </th>
+                <th class="w-12rem">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.time_end'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.value'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.type'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.note_to_cashier'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span
+                    >{{ customer.code }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span
+                    >{{ customer.name }}
+                </td>
+                <td class="w-12rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_start'"
+                    ></span
+                    >{{ customer.fromDate | date: "dd/MM/yyyy mm:ss" }}
+                </td>
+                <td class="w-12rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_end'"
+                    ></span
+                    >{{ customer.toDate | date: "dd/MM/yyyy mm:ss" }}
+                </td>
+                <td class="w-1 flex justify-content-end">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.value'"
+                    ></span
+                    >{{ customer.value | number }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.type'"
+                    ></span
+                    >{{ getTypeName(customer.type) }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.note_to_cashier'"
+                    ></span
+                    >{{ customer.note }}
+                </td>
+                <td *ngIf="isMobile">
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.delete"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.delete"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No surcharge found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading surcharge data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-sur-charges-form
+    #surChargesForm
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getSurcharges(null, false); isReset = false"
+    [isEdit]="isEdit"
+></app-sur-charges-form>

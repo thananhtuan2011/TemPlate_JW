@@ -1,0 +1,155 @@
+<p-panel>
+    <ng-template pTemplate="header">
+        <h5
+            class="m-0 text-white"
+            [translate]="'label.general_diary_report'"
+        ></h5>
+    </ng-template>
+    <div class="grid" [formGroup]="filterForm">
+        <div
+            class="col-12 md:col-4 formgrid grid"
+            [class]="appMain.isDesktop() ? 'border-right' : ''"
+        >
+            <div class="field col-12 md:col-6">
+                <label class="font-bold" [translate]="'label.type'"></label>
+                <p-dropdown
+                    [options]="dateType"
+                    optionValue="value"
+                    class="w-full"
+                    optionLabel="label"
+                    [formControl]="chooseDate"
+                >
+                    <ng-template let-item pTemplate="selectedItem">
+                        {{ item.label | translate }}
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                        {{ item.label | translate }}
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label
+                    class="font-bold"
+                    [translate]="
+                        chooseDate.value
+                            ? 'label.start_date'
+                            : 'label.start_month'
+                    "
+                ></label>
+
+                <p-calendar
+                    *ngIf="chooseDate.value; else filterFromMonth"
+                    formControlName="FromDate"
+                    class="w-full"
+                    inputId="basic"
+                    dateFormat="dd-mm-yy"
+                ></p-calendar>
+
+                <ng-template #filterFromMonth>
+                    <p-dropdown
+                        [options]="listMonth"
+                        formControlName="FromMonth"
+                        optionValue="value"
+                        optionLabel="label"
+                        [filter]="true"
+                        class="w-full"
+                    >
+                    </p-dropdown>
+                </ng-template>
+            </div>
+            <div class="col-12 md:col-6 formgrid grid">
+                <div class="field col-4 flex pt-5">
+                    <p-checkbox
+                        formControlName="isCheckName"
+                        [binary]="true"
+                        inputId="binary"
+                    ></p-checkbox>
+                </div>
+                <div class="field col-8">
+                    <label
+                        class="font-bold text-primary w-6rem"
+                        [translate]="'label.preparedBy'"
+                    ></label>
+                    <input
+                        type="text"
+                        formControlName="LedgerReportMaker"
+                        pInputText
+                        class="w-full"
+                        [ngClass]="{
+                            'field-prepared-disabled':
+                                !getValueField('isCheckName')
+                        }"
+                        [disabled]="!getValueField('isCheckName')"
+                    />
+                </div>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label
+                    class="font-bold"
+                    [translate]="
+                        chooseDate.value ? 'label.end_date' : 'label.end_month'
+                    "
+                ></label>
+                <p-calendar
+                    *ngIf="chooseDate.value; else filterToMonth"
+                    formControlName="ToDate"
+                    class="w-full"
+                    inputId="basic"
+                    dateFormat="dd-mm-yy"
+                ></p-calendar>
+
+                <ng-template #filterToMonth>
+                    <p-dropdown
+                        [options]="listMonth"
+                        formControlName="ToMonth"
+                        [filter]="true"
+                        class="w-full"
+                    >
+                    </p-dropdown>
+                </ng-template>
+            </div>
+        </div>
+        <div
+            class="field col-12 md:col-6 flex flex-column"
+            [class]="appMain.isDesktop() ? 'border-right' : ''"
+        >
+            <label class="font-bold" [translate]="'Nhật ký chung'"></label>
+        </div>
+        <div class="col-12 md:col-2 flex flex-wrap md:flex-column gap-8">
+            <div>
+                <button
+                    pButton
+                    type="button"
+                    [label]="'button.preview' | translate"
+                    (click)="submitForm('html')"
+                ></button>
+            </div>
+            <div>
+                <button
+                    pButton
+                    type="button"
+                    [label]="'button.export_pdf' | translate"
+                    (click)="submitForm('pdf')"
+                    class="p-button-info"
+                ></button>
+            </div>
+            <div>
+                <button
+                    class="p-button-success"
+                    pButton
+                    type="button"
+                    [label]="'label.export_excel' | translate"
+                    (click)="submitForm('excel')"
+                ></button>
+            </div>
+        </div>
+    </div>
+</p-panel>
+
+<div class="frame-container">
+    <div class="frame-content">
+        <div class="frame-report">
+            <div id="iframe-html-report-diary"></div>
+        </div>
+    </div>
+</div>

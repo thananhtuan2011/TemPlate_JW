@@ -1,0 +1,214 @@
+<div *ngIf="showDashboard" class="grid m-4">
+    <div class="col-6 sm:col-4 flex flex-column">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4
+                    *ngIf="!isMobile"
+                    class="block text-green-500 font-bold m-0"
+                >
+                    {{ "label.total_amount" | translate }}
+                </h4>
+                <h6 *ngIf="isMobile" class="block text-green-500 font-bold m-0">
+                    {{ "label.total_amount" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-green-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-dollar text-green-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-green-500 font-bold md:text-xl">
+                {{ numberWithCommas(totalNumberReportHome?.totalAmount) }}
+            </div>
+            <img src="assets/layout/images/wave_1.svg" />
+        </div>
+    </div>
+    <div class="col-6 sm:col-4">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4 *ngIf="!isMobile" class="block text-cyan-500 font-bold m-0">
+                    {{ "label.sale_product" | translate }}
+                </h4>
+                <h6 *ngIf="isMobile" class="block text-cyan-500 font-bold m-0">
+                    {{ "label.sale_product" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-cyan-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-share-alt text-cyan-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-cyan-500 font-bold md:text-xl">
+                {{ numberWithCommas(totalNumberReportHome?.totalquantity) }}
+            </div>
+            <img src="assets/layout/images/wave_3.svg" />
+        </div>
+    </div>
+
+    <div class="col-6 sm:col-4">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4 *ngIf="!isMobile" class="block text-blue-500 font-bold m-0">
+                    {{ "label.total_customer" | translate }}
+                </h4>
+                <h6 *ngIf="isMobile" class="block text-blue-500 font-bold m-0">
+                    {{ "label.total_customer" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-blue-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-users text-blue-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-blue-500 font-bold md:text-xl">
+                {{ numberWithCommas(totalNumberReportHome?.totalCustomer) }}
+            </div>
+            <img src="assets/layout/images/wave_5.svg" />
+        </div>
+    </div>
+
+    <div class="col-6 sm:col-4">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4
+                    *ngIf="!isMobile"
+                    class="block text-orange-500 font-bold m-0"
+                >
+                    {{ "label.debit" | translate }}
+                </h4>
+                <h6
+                    *ngIf="isMobile"
+                    class="block text-orange-500 font-bold m-0"
+                >
+                    {{ "label.debit" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-orange-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-credit-card text-orange-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-orange-500 font-bold md:text-xl">
+                {{ numberWithCommas(totalNumberReportHome?.totalAmountCn) }}
+            </div>
+            <img src="assets/layout/images/wave_2.svg" />
+        </div>
+    </div>
+
+    <div class="col-6 sm:col-4">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4 *ngIf="!isMobile" class="block text-pink-500 font-bold m-0">
+                    {{ "label.credit" | translate }}
+                </h4>
+                <h6 *ngIf="isMobile" class="block text-pink-500 font-bold m-0">
+                    {{ "label.credit" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-pink-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-credit-card text-pink-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-pink-500 font-bold md:text-xl">
+                {{ numberWithCommas(totalNumberReportHome?.totalAmount331) }}
+            </div>
+            <img src="assets/layout/images/wave_4.svg" />
+        </div>
+    </div>
+
+    <div class="col-6 sm:col-4">
+        <div class="card card-hover mb-3">
+            <div class="flex justify-content-between align-items-start">
+                <h4
+                    *ngIf="!isMobile"
+                    class="block text-green-500 font-bold m-0"
+                >
+                    {{ "label.order_web" | translate }}
+                </h4>
+                <h6 *ngIf="isMobile" class="block text-green-500 font-bold m-0">
+                    {{ "label.order_web" | translate }}
+                </h6>
+                <div
+                    class="flex align-items-center justify-content-center bg-green-100 border-round"
+                    [ngStyle]="{ width: '2.5rem', height: '2.5rem' }"
+                >
+                    <i class="pi pi-globe text-green-500 text-xl"></i>
+                </div>
+            </div>
+            <div class="text-green-500 font-bold md:text-xl">
+                {{
+                    numberWithCommas(totalNumberReportHome?.totalAmountWebsite)
+                }}
+            </div>
+            <img src="assets/layout/images/wave_6.svg" />
+        </div>
+    </div>
+
+    <div class="col-12 flex flex-column">
+        <div class="flex gap-8 flex-column sm:flex-row">
+            <div class="card w-full">
+                <h5>Nhập hàng</h5>
+                <p-chart
+                    type="bar"
+                    [data]="basicData"
+                    [options]="basicOptions"
+                ></p-chart>
+            </div>
+
+            <div class="card w-full">
+                <h5>Xuất hàng</h5>
+                <p-chart
+                    type="bar"
+                    [data]="basicData"
+                    [options]="horizontalOptions"
+                ></p-chart>
+            </div>
+        </div>
+
+        <div class="flex gap-8 flex-column sm:flex-row mt-2">
+            <div class="card w-full">
+                <h5>Doanh thu</h5>
+                <p-chart
+                    type="bar"
+                    [data]="multiAxisData"
+                    [options]="multiAxisOptions"
+                ></p-chart>
+            </div>
+
+            <div class="card w-full">
+                <h5>Nhân viên bán hàng nhiều nhất</h5>
+                <p-chart
+                    type="bar"
+                    [data]="stackedData"
+                    [options]="stackedOptions"
+                ></p-chart>
+            </div>
+        </div>
+
+        <div class="flex gap-8 flex-column sm:flex-row mt-2">
+            <div class="card w-full">
+                <h5>Báo cáo Nhâp/Xuất/Tồn</h5>
+                <p-chart
+                    type="doughnut"
+                    [data]="doughnutData"
+                    [options]="chartOptions"
+                ></p-chart>
+            </div>
+
+            <div class="card w-full">
+                <h5>Báo cáo Doanh thu theo quý</h5>
+                <p-chart
+                    type="doughnut"
+                    [data]="doughnutData"
+                    [options]="chartOptions"
+                ></p-chart>
+            </div>
+        </div>
+    </div>
+</div>

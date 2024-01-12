@@ -1,0 +1,70 @@
+<p-tabMenu [model]="tabs" [activeItem]="tabSelected"></p-tabMenu>
+
+<!--Diagram-->
+<ng-container *ngIf="tabSelected?.id == 'diagram'">
+    <div class="flex justify-content-start mb-4 p-1">
+        <button
+            *ngIf="currentType != 'warehouse'"
+            [routerLink]="['/uikit/warehouse-diagram']"
+            [queryParams]="getBackQueryParam()"
+            pButton
+            class="mx-2"
+        >
+            Quay lại
+        </button>
+        <p-dropdown
+            [options]="warehouses"
+            [(ngModel)]="warehouseId"
+            optionLabel="name"
+            optionValue="id"
+            (onChange)="getDiagramData()"
+            [disabled]="currentType != 'warehouse'"
+        ></p-dropdown>
+    </div>
+    <h5 class="m-2">
+        <strong *ngIf="shelve">{{ shelve?.name }}</strong>
+        <strong *ngIf="floor"> - {{ floor?.name }}</strong>
+    </h5>
+    <div class="card">
+        <div
+            *ngFor="let row of goodWarehouses"
+            class="flex flex-wrap card-container blue-container column-gap-4 row-gap-6 my-2"
+        >
+            <ng-container *ngFor="let item of row">
+                <div
+                    *ngIf="item != null; else nonLinkedBlock"
+                    [pTooltip]="item.goodsDetails"
+                    [routerLink]="['/uikit/warehouse-diagram']"
+                    [queryParams]="getQueryParam(item?.id)"
+                    class="border-round w-10rem h-6rem border-2 font-bold flex flex-column align-items-center justify-content-center"
+                    [ngClass]="getColorClass(item)"
+                >
+                    <div>{{ item.name }}</div>
+                    <div>
+                        <img
+                            src="assets/layout/images/logo-02.png"
+                            width="32"
+                        />
+                    </div>
+                    <div>Số lượng: {{ item.quantity }}</div>
+                </div>
+                <ng-template #nonLinkedBlock>
+                    <div
+                        class="border-round w-10rem h-6rem border-orange-500 border-2 font-bold flex flex-column align-items-center justify-content-center"
+                    >
+                        <div>
+                            <img
+                                src="assets/layout/images/logo-02.png"
+                                width="32"
+                            />
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-container>
+        </div>
+    </div>
+</ng-container>
+
+<app-report-good-in-warehouse
+    *ngIf="tabSelected?.id == 'report'"
+></app-report-good-in-warehouse>

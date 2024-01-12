@@ -1,0 +1,116 @@
+<div *ngIf="projectList" id="project-module">
+    <div class="project-table">
+        <p-table
+            styleClass="p-datatable-gridlines"
+            [value]="projectList"
+            [scrollable]="true"
+            [scrollHeight]="scrolHeight"
+            [totalRecords]="projectList.length"
+            [rows]="projectList.length"
+            [virtualScroll]="true"
+            [virtualScrollDelay]="1000"
+        >
+            <ng-template pTemplate="caption">
+                <ng-container
+                    *ngTemplateOutlet="captionTableTmp"
+                ></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <ng-container *ngTemplateOutlet="headerTableTmp"></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData>
+                <ng-container
+                    *ngTemplateOutlet="
+                        bodyTableTmp;
+                        context: { rowData: rowData }
+                    "
+                ></ng-container>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<ng-template #headerTableTmp>
+    <tr>
+        <th style="max-width: 150px">
+            <span>Mã dự án</span>
+        </th>
+        <th>
+            <span>Tên dự án</span>
+        </th>
+        <th style="max-width: 85px">
+            <div class="item-action invisible">
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button mr-1 p-button-warning"
+                ></button>
+            </div>
+        </th>
+    </tr>
+</ng-template>
+
+<ng-template #captionTableTmp>
+    <div class="table-header">
+        <div class="table-header-filter">
+            <div class="table-header-filter-right">
+                <p-button
+                    [label]="'Thêm mới'"
+                    (click)="onCrud()"
+                    icon="pi pi-plus"
+                    class="btn-add ml-2"
+                ></p-button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #bodyTableTmp let-rowData="rowData">
+    <tr>
+        <td style="max-width: 150px">
+            {{ rowData.code }}
+        </td>
+        <td>
+            {{ rowData.name }}
+        </td>
+        <td style="max-width: 85px">
+            <div class="item-action">
+                <button
+                    pButton
+                    tooltipPosition="left"
+                    [pTooltip]="'button.remove' | translate"
+                    [disabled]="!rowData.allowDelete"
+                    (click)="onRemove(rowData)"
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+                <button
+                    pButton
+                    tooltipPosition="left"
+                    [pTooltip]="'button.update' | translate"
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button mr-1 p-button-warning"
+                    (click)="onCrud(rowData)"
+                ></button>
+            </div>
+        </td>
+    </tr>
+</ng-template>
+
+<app-project-crud
+    #projectCrudComponent
+    [projectList]="projectList"
+    (onCloseCrudForm)="onCloseCrudForm($event)"
+></app-project-crud>

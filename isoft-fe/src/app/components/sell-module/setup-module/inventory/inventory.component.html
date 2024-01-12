@@ -1,0 +1,319 @@
+<div *ngIf="!displayForm" class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between pb-3">
+        <h5 [translate]="'label.inventory_management'"></h5>
+        <div class="flex flex-1 justify-content-end gap-2">
+            <!--            <button pButton [label]="'Quét QR'" class="p-button-success mt-2 md:mt-0" icon="pi pi-qrcode"-->
+            <!--                    (click)="isQRScannerVisible = true"></button>-->
+
+            <!--            <button pButton class="w-full px-2 p-button-warning font-semibold"-->
+            <!--                    (click)="onCheckInventory()">{{'button.check_inventory' | translate}}</button>-->
+
+            <!--            <app-qr-scanner [isVisible]="isQRScannerVisible" (onScanSuccess)="onQRScanSuccess($event)"-->
+            <!--                            (onHide)="isQRScannerVisible = false">-->
+            <!--            </app-qr-scanner>-->
+        </div>
+    </div>
+
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getInventories($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <!--            <p-panel [toggleable]="true" [collapsed]="true" collapseIcon="pi pi-filter" expandIcon="pi pi-filter">-->
+            <!--                <ng-template pTemplate="header">-->
+            <!--                    <div class="w-full flex align-items-center justify-content-between">-->
+            <!--                        <span class="p-input-icon-left">-->
+            <!--                            <i class="pi pi-search"></i>-->
+            <!--                            <input #filter [(ngModel)]="param.searchText" pInputText type="text"-->
+            <!--                                [placeholder]="'label.search' | translate" class="w-full" />-->
+            <!--                        </span>-->
+            <!--                        <div class="flex align-items-center justify-content-center">-->
+            <!--                            &lt;!&ndash;                            <label class="mb-0 px-2 font-bold">Ngày kiểm tra</label>&ndash;&gt;-->
+            <!--                            &lt;!&ndash;                            <p-calendar inputId="basic" [ngModel]="checkedDate" dateFormat="dd/mm/yy" showTime="true"&ndash;&gt;-->
+            <!--                            &lt;!&ndash;                                        hourFormat="24" [showSeconds]="true"&ndash;&gt;-->
+            <!--                            &lt;!&ndash;                                        inputStyleClass="font-bold text-900"></p-calendar>&ndash;&gt;-->
+            <!--                            <p-dropdown optionLabel="label" optionValue="value" [options]="inventoryDates"-->
+            <!--                                [(ngModel)]="param.dtMax" (onChange)="getInventoryByDates()"></p-dropdown>-->
+            <!--                        </div>-->
+            <!--                        <button pButton>-->
+            <!--                        </button>-->
+            <!--                    </div>-->
+            <!--                </ng-template>-->
+            <!--                <div class="grid p-fluid">-->
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.account'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate"></p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.detail_1'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.goods_group'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.price_list'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.goods_type'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.location'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.menu_web'"></label>-->
+            <!--                        <p-dropdown showClear="true" [optionLabel]="'name'" [optionValue]="'code'"-->
+            <!--                            [placeholder]="'label.empty' | translate">-->
+            <!--                        </p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.sort_field'"></label>-->
+            <!--                        <p-dropdown></p-dropdown>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="field col-12 md:col-6 lg:col-2">-->
+            <!--                        <label class="font-bold" [translate]="'label.sort_type'"></label>-->
+            <!--                        <p-dropdown></p-dropdown>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </p-panel>-->
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="param.searchText"
+                        pInputText
+                        type="text"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                        (change)="getInventories()"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-plus"
+                        (click)="onAddInventory()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1 justify-content-center">
+                    <div class="flex align-items-center">
+                        {{ "label.code" | translate }}
+                    </div>
+                </th>
+                <th class="w-4">
+                    <div class="flex align-items-center">
+                        {{ "label.inventory_name" | translate }}
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Ngày tạo
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Người tạo
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Trạng thái
+                    </div>
+                </th>
+                <th
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-inventory>
+            <tr>
+                <td class="w-1">
+                    <span class="p-column-title" [translate]="'Số QT'"></span
+                    >{{ inventory.procedureNumber }}
+                </td>
+                <td class="w-4">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span
+                    >{{ inventory.name }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.create_at'"
+                    ></span
+                    >{{ inventory.createAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'Người tạo'"
+                    ></span
+                    >{{ inventory.userCreatedName }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.status'"
+                    ></span>
+                    <p-badge
+                        [severity]="
+                            inventory.pProcedureStatusName === 'Hoàn thành'
+                                ? 'success'
+                                : 'primary'
+                        "
+                        *ngIf="inventory.pProcedureStatusName"
+                        [value]="inventory.pProcedureStatusName"
+                    ></p-badge>
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-center"
+                >
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-download"
+                        (click)="exportExcel(inventory.id)"
+                        pTooltip="Tải về"
+                    ></button>
+                    <button
+                        *ngIf="!inventory.isFinish"
+                        pButton
+                        class="p-button-success"
+                        icon="pi pi-check"
+                        pTooltip="Phê duyệt"
+                        tooltipPosition="bottom"
+                        (click)="onApproveInventory(inventory)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        pTooltip="Chỉnh sửa"
+                        tooltipPosition="bottom"
+                        (click)="getDetail(inventory.id)"
+                    ></button>
+                    <button
+                        *ngIf="!inventory.isFinish"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        pTooltip="Xóa"
+                        tooltipPosition="bottom"
+                        (click)="onDelete(inventory.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-inventory-form
+    [display]="displayForm"
+    [formData]="formData"
+    (onCancel)="onCancelForm($event)"
+></app-inventory-form>
+<p-dialog
+    [(visible)]="display"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white" [translate]="'label.add_comment'"></h4>
+    </ng-template>
+    <ng-template pTemplate="body">
+        <p-editor
+            [(ngModel)]="noteStr"
+            [ngModelOptions]="{ standalone: true }"
+            [style]="{ height: '300px' }"
+        >
+            <ng-template pTemplate="header">
+                <app-ql-formats></app-ql-formats>
+            </ng-template>
+        </p-editor>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton class="p-2 p-button-outlined" (click)="display = false">
+            Cancel
+        </button>
+        <button pButton class="p-2" (click)="onSaveComment(noteStr)">
+            Save
+        </button>
+    </ng-template>
+</p-dialog>

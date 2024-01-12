@@ -1,0 +1,314 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.orders'"></h5>
+    <p-table
+        #dt1
+        [value]="lstPayment"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        [rows]="10"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[20, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <div class="p-input-icon-left mb-2">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="startDate"
+                        dateFormat="dd-mm-yy"
+                        class="mr-3"
+                        [placeholder]="'Ngày bắt đầu'"
+                        (onSelect)="getOrder()"
+                    ></p-calendar>
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="endDate"
+                        dateFormat="dd-mm-yy"
+                        class="mr-3"
+                        [placeholder]="'Ngày kết thúc'"
+                        (onSelect)="getOrder()"
+                    ></p-calendar>
+                    <p-dropdown
+                        class="mr-3"
+                        [options]="status"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'statusName'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="getParams.status"
+                        [optionValue]="'statu'"
+                        [showClear]="true"
+                        [placeholder]="'label.customer_name' | translate"
+                        (onChange)="getOrder()"
+                    >
+                    </p-dropdown>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="getOrder()"
+                        [placeholder]="'label.search' | translate"
+                    />
+                </div>
+
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        class="p-button-success"
+                        pButton
+                        type="button"
+                        [label]="'label.export_excel' | translate"
+                        (click)="exportBill()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 200px">
+                    <span [translate]="'label.code_orders'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.status'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.create_at'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.customer_name'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.delivery_address'"></span>
+                </th>
+
+                <th style="width: 200px">
+                    <span [translate]="'label.number_of_product'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.total_price'"></span>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    class="w-2"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-lstProfitBeforeTax>
+            <tr>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.id }}
+                </td>
+                <td style="width: 200px">
+                    <p-dropdown
+                        class="mr-3"
+                        [options]="status"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'statusName'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="lstProfitBeforeTax.status"
+                        [optionValue]="'statu'"
+                        [showClear]="true"
+                        [placeholder]="'label.customer_name' | translate"
+                        (onChange)="getOrder()"
+                    >
+                    </p-dropdown>
+                </td>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.createAt }}
+                </td>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.fullName }}
+                </td>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.shippingAddress }}
+                </td>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.orderDetails.length() }}
+                </td>
+                <td style="width: 200px">
+                    {{ lstProfitBeforeTax.totalPrice }}
+                </td>
+                <td *ngIf="isMobile">
+                    <button
+                        pButton
+                        icon="pi pi-search-plus"
+                        (click)="GetDeatil(lstProfitBeforeTax)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-print"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-print"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        pButton
+                        icon="pi pi-search-plus"
+                        (click)="GetDeatil(lstProfitBeforeTax)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-print"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-print"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    No General website order found.
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading website order data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="displayBillDetail"
+    [style]="{ 'min-width': '60vw' }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white" [translate]="'label.detal_total'"></h6>
+    </ng-template>
+    <p-table
+        #dt1
+        [value]="billDetail"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 70px">
+                    <span [translate]="'label.id'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.goods_code'"></span>
+                </th>
+                <th style="width: 200px">
+                    <span [translate]="'label.goods_name'"></span>
+                </th>
+                <th style="width: 100px">
+                    <span [translate]="'label.SL'"></span>
+                </th>
+                <th style="width: 100px">
+                    <span [translate]="'label.unit_price'"></span>
+                </th>
+                <th style="width: 150px">
+                    <span [translate]="'label.tax_vat'"></span>
+                </th>
+                <th style="width: 150px">
+                    <span [translate]="'label.price_discount'"></span>
+                </th>
+                <th style="width: 150px">
+                    <span [translate]="'label.into_money'"></span>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-billDetail>
+            <tr>
+                <td style="width: 70px">
+                    {{ billDetail.id }}
+                </td>
+                <td style="width: 200px">
+                    {{ billDetail.goodsCode }}
+                </td>
+                <td style="width: 200px">
+                    {{ billDetail.goodsCode }}
+                </td>
+                <td style="width: 100px">
+                    {{
+                        billDetail.quantity ? billDetail.quantity : (0 | number)
+                    }}
+                </td>
+                <td style="width: 100px">
+                    {{
+                        billDetail.unitPrice
+                            ? billDetail.unitPrice
+                            : (0 | number)
+                    }}
+                </td>
+                <td style="width: 150px">
+                    {{ billDetail.taxVAT ? billDetail.taxVAT : (0 | number) }}
+                </td>
+                <td style="width: 150px">
+                    {{
+                        billDetail.discountPrice
+                            ? billDetail.discountPrice
+                            : (0 | number)
+                    }}
+                </td>
+                <td style="width: 150px">
+                    {{
+                        billDetail.unitPrice
+                            ? billDetail.unitPrice
+                            : 0 + billDetail.taxVAT
+                            ? billDetail.taxVAT
+                            : 0 - billDetail.discountPrice
+                            ? billDetail.discountPrice
+                            : 0
+                    }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>

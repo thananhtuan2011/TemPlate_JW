@@ -1,0 +1,205 @@
+<h5 [translate]="'label.send_mail'"></h5>
+<p-table
+    #dt
+    [value]="result.data"
+    responsiveLayout="stack"
+    [breakpoint]="'1199px'"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    dataKey="id"
+    styleClass="p-datatable-gridlines sidebar-custom"
+    [loading]="loading"
+    [rowHover]="true"
+    [totalRecords]="result?.totalItems"
+    lazy="true"
+    [rowsPerPageOptions]="[10, 20, 50]"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+>
+    <ng-template pTemplate="caption">
+        <div
+            class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+        >
+            <div
+                class="flex justify-content-between md:justify-content-end flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="defaultParam.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+            </div>
+            <div
+                class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+            >
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LICHSUGUIMAILKHACHHANG,
+                        action: appConstant.PERMISSION_FUNC.ADD
+                    }"
+                    pButton
+                    [label]="'button.addF7' | translate"
+                    class="mb-2"
+                    icon="pi pi-user-plus"
+                    [routerLink]="['./', 'create']"
+                ></button>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="w-1">
+                <div class="flex align-items-center">
+                    <span [translate]="'label.numerical_order'"></span>
+                </div>
+            </th>
+            <th>
+                <div class="flex align-items-center">
+                    <span [translate]="'label.customer'"></span>
+                </div>
+            </th>
+            <th class="w-1">
+                <div class="flex align-items-center">
+                    <span [translate]="'label.workflow_created_date'"></span>
+                </div>
+            </th>
+            <th>
+                <div class="flex align-items-center">
+                    <span [translate]="'label.title'"></span>
+                </div>
+            </th>
+            <th>
+                <div class="flex align-items-center">
+                    <span [translate]="'label.person_create'"></span>
+                </div>
+            </th>
+            <th class="w-2" *ngIf="isMobile"></th>
+            <th
+                class="w-2"
+                *ngIf="!isMobile"
+                alignFrozen="right"
+                pFrozenColumn
+                [frozen]="true"
+            ></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td class="w-2">
+                <span
+                    class="p-column-title"
+                    [translate]="'label.numerical_order'"
+                ></span>
+                <p>
+                    {{ item.id }}
+                </p>
+            </td>
+
+            <td class="w-2">
+                <span
+                    class="p-column-title"
+                    [translate]="'label.customer'"
+                ></span>
+                <p>
+                    {{ getNameUser(item.customerId, "customer") }}
+                </p>
+            </td>
+            <td class="w-2">
+                <span
+                    class="p-column-title"
+                    [translate]="'label.workflow_created_date'"
+                ></span>
+                <p>
+                    {{ item.createAt | date: "dd/MM/yyyy" }}
+                </p>
+            </td>
+            <td class="w-2">
+                <span class="p-column-title" [translate]="'label.title'"></span>
+                <p>
+                    {{ item.title }}
+                </p>
+            </td>
+
+            <td class="w-2">
+                <span
+                    class="p-column-title"
+                    [translate]="'label.person_create'"
+                ></span>
+                <p>
+                    {{ getNameUser(item.userId, "user") }}
+                </p>
+            </td>
+            <td *ngIf="isMobile">
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LICHSUGUIMAILKHACHHANG,
+                        action: appConstant.PERMISSION_FUNC.EDIT
+                    }"
+                    pButton
+                    class="p-button-warning"
+                    icon="pi pi-pencil"
+                    [routerLink]="['./', item.id]"
+                ></button>
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LICHSUGUIMAILKHACHHANG,
+                        action: appConstant.PERMISSION_FUNC.DELETE
+                    }"
+                    pButton
+                    class="p-button-danger"
+                    icon="pi pi-trash"
+                    (click)="onDelete(item.id)"
+                ></button>
+            </td>
+            <td
+                *ngIf="!isMobile"
+                alignFrozen="right"
+                pFrozenColumn
+                [frozen]="true"
+                class="text-center"
+            >
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LICHSUGUIMAILKHACHHANG,
+                        action: appConstant.PERMISSION_FUNC.EDIT
+                    }"
+                    pButton
+                    class="p-button-warning mr-2"
+                    icon="pi pi-pencil"
+                    [routerLink]="['./', item.id]"
+                ></button>
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LICHSUGUIMAILKHACHHANG,
+                        action: appConstant.PERMISSION_FUNC.DELETE
+                    }"
+                    pButton
+                    class="p-button-danger"
+                    icon="pi pi-trash"
+                    (click)="onDelete(item.id)"
+                ></button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr class="p-rowgroup-footer">
+            <td colspan="10" class="w-full pt-4 pb-4">
+                {{ "info.no_data" | translate }}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody">
+        <tr>
+            <td colspan="10" class="w-full pt-4 pb-4">
+                {{ "info.loading" | translate }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

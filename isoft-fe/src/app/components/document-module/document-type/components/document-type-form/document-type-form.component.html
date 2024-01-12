@@ -1,0 +1,91 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    documentTypeForm.value.id
+                        ? 'label.edit_document_type'
+                        : 'label.add_document_type'
+                "
+            ></h5>
+            <form [formGroup]="documentTypeForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.document_type_name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="documentTypeForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="description"
+                            >{{ "label.document_type_description" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="description"
+                            [(ngModel)]="documentTypeForm.value.description"
+                            formControlName="description"
+                            [ngClass]="checkValidValidator('description')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('description')"
+                            class="p-error"
+                            [innerHTML]="'info.description' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="managerName"
+                            >{{ "label.document_type_status" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-inputSwitch
+                            id="status"
+                            [(ngModel)]="documentTypeForm.value.status"
+                            formControlName="status"
+                            [ngClass]="checkValidValidator('status')"
+                        ></p-inputSwitch>
+                        <small
+                            *ngIf="checkValidValidator('status')"
+                            class="p-error"
+                            [innerHTML]="'info.status' | translate"
+                        ></small>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

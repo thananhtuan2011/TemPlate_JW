@@ -1,0 +1,143 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="
+            isEdit
+                ? 'label.edit_chart_of_account_filter'
+                : 'label.add_chart_of_account_filter'
+        "
+    ></h5>
+    <form [formGroup]="COAFilterForm">
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="name"
+                    >{{ "label.name" | translate }}
+                    <span class="text-pink-400">*</span>
+                </label>
+                <input
+                    pInputText
+                    id="name"
+                    [(ngModel)]="COAFilterForm.value.name"
+                    formControlName="name"
+                    [ngClass]="checkValidValidator('name')"
+                />
+                <small
+                    *ngIf="checkValidValidator('name')"
+                    class="p-error"
+                    [innerHTML]="'info.name' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="accounts"
+                    >{{ "label.accounts_name" | translate }}
+                    <span class="text-pink-400">*</span></label
+                >
+                <p-multiSelect
+                    id="accounts"
+                    [options]="chartOfAccounts"
+                    [optionLabel]="'name'"
+                    [optionValue]="'code'"
+                    showClear="true"
+                    [formControlName]="'accounts'"
+                    [appendTo]="'body'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                ></p-multiSelect>
+                <small
+                    *ngIf="checkValidValidator('accounts')"
+                    class="p-error"
+                    [innerHTML]="'info.accounts_name' | translate"
+                ></small>
+            </div>
+        </div>
+
+        <div class="p-fluid flex justify-content-between mt-4">
+            <div class="field col">
+                <label htmlFor="order">{{
+                    "label.number_ordinal" | translate
+                }}</label>
+                <p-inputNumber
+                    id="receivedPrice"
+                    [(ngModel)]="COAFilterForm.value.order"
+                    formControlName="order"
+                    class="p-inputtext-sm w-full"
+                >
+                </p-inputNumber>
+            </div>
+            <div class="field col">
+                <label htmlFor="documentCode">{{
+                    "label.document_code" | translate
+                }}</label>
+                <p-dropdown
+                    id="documentCode"
+                    [options]="documents"
+                    [optionLabel]="'name'"
+                    [optionValue]="'code'"
+                    showClear="true"
+                    [formControlName]="'documentCode'"
+                    [appendTo]="'body'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                ></p-dropdown>
+            </div>
+        </div>
+
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="documentCode">{{
+                    "label.type" | translate
+                }}</label>
+                <div class="flex">
+                    <div class="field-radiobutton md:pr-6 mt-2 pt-1">
+                        <p-radioButton
+                            id="type1"
+                            name="type"
+                            value="TAODONHANG"
+                            [(ngModel)]="COAFilterForm.value.type"
+                            [formControlName]="'type'"
+                        >
+                        </p-radioButton>
+                        <label
+                            for="type1"
+                            [translate]="'Hiện bên Tạo đơn hàng'"
+                        ></label>
+                    </div>
+                    <div class="field-radiobutton mt-2 pt-1">
+                        <p-radioButton
+                            id="type2"
+                            name="type"
+                            value="NHAPHANGHOA"
+                            [(ngModel)]="COAFilterForm.value.type"
+                            [formControlName]="'type'"
+                        >
+                        </p-radioButton>
+                        <label
+                            for="type2"
+                            [translate]="'Hiện bên Nhập hàng hóa'"
+                        ></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="w-full col-12 flex align-items-center justify-content-end mt-5 gap-8"
+        >
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

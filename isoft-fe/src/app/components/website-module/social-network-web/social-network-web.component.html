@@ -1,0 +1,175 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.web_social_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getSocials($event)"
+        [scrollable]="!isMobile"
+        scrollDirection="both"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="w-full flex flex-column md:flex-row md:justify-content-between"
+            >
+                <div class="flex">
+                    <input
+                        pInputText
+                        placeholder="Nhập tìm kiếm"
+                        [(ngModel)]="param.searchText"
+                        (change)="getSocials()"
+                    />
+                </div>
+                <button
+                    pButton
+                    [label]="'button.addF7' | translate"
+                    con="pi pi-plus"
+                    (click)="onAddSocial()"
+                ></button>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.web_social_name" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.web_social_link" | translate }}</span>
+                    </div>
+                </th>
+                <!-- <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span>{{
+                            "label.web_social_summary" | translate
+                        }}</span>
+                    </div>
+                </th> -->
+                <th class="w-4">
+                    <div class="flex align-items-center">
+                        <span>{{
+                            "label.web_social_content" | translate
+                        }}</span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{
+                            "label.web_social_created_date" | translate
+                        }}</span>
+                    </div>
+                </th>
+                <th class="w-2 justify-content-center"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-social>
+            <tr>
+                <td class="w-2 py-2">
+                    <span class="p-column-title">{{
+                        "label.web_social_name" | translate
+                    }}</span>
+                    {{ social.title }}
+                </td>
+                <td class="w-2 py-2">
+                    <span class="p-column-title">{{
+                        "label.web_social_link" | translate
+                    }}</span>
+                    {{ social.shortContent }}
+                </td>
+                <!-- <td class="w-4 py-2">
+                    <span class="p-column-title">{{
+                        "label.web_social_summary" | translate
+                    }}</span>
+                    {{ social.summary }}
+                </td> -->
+                <td class="w-4 py-2">
+                    <span class="p-column-title">{{
+                        "label.web_social_content" | translate
+                    }}</span>
+                    {{ social.content }}
+                </td>
+                <td class="w-2 py-2">
+                    <span class="p-column-title">{{
+                        "label.web_social_created_date" | translate
+                    }}</span>
+                    {{ social.createAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="onEditSocial(social)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDeleteSocial(social.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-social-network-edit
+    *ngIf="display"
+    [display]="display"
+    [item]="formData"
+    (onCancel)="onCancelForm($event)"
+></app-social-network-edit>
+<!-- <p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            class="mr-3"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog> -->

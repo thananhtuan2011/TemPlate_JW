@@ -1,0 +1,122 @@
+<p-dialog
+    [(visible)]="display"
+    [modal]="true"
+    [header]="'button.add_price_list' | translate"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '60vw' }"
+>
+    <ng-container [formGroup]="formGroup">
+        <div class="lg:flex">
+            <div class="w--20 mr-3 mb-3">
+                <label htmlFor="code" class="text-primary mb-2 font-bold">{{
+                    "label.up_down" | translate
+                }}</label>
+                <p-dropdown
+                    [options]="listUpAndDown"
+                    class="w-20 mr-3"
+                    optionLabel="name"
+                    optionValue="value"
+                    formControlName="type"
+                    appendTo="body"
+                ></p-dropdown>
+            </div>
+            <div class="w--20 mr-3 mb-3">
+                <label htmlFor="code" class="text-primary mb-2 font-bold">{{
+                    "label.percent_cash" | translate
+                }}</label>
+                <p-dropdown
+                    [options]="listPercentOrPrice"
+                    [filter]="true"
+                    class="w-20 mr-3"
+                    optionLabel="name"
+                    optionValue="value"
+                    formControlName="typeMoney"
+                    appendTo="body"
+                ></p-dropdown>
+            </div>
+            <!--            <is-dropdown class="w&#45;&#45;20 mr-3" [label]="'label.up_down'| translate" formControlName="type"-->
+            <!--                         [options]="listUpAndDown" [optionLabel]="'name'" optionValue="value"></is-dropdown>-->
+            <!--            <is-dropdown class="mr-3" [label]="'label.percent_cash'| translate" formControlName="typeMoney"-->
+            <!--                         [options]="listPercentOrPrice" [optionLabel]="'name'" optionValue="value">-->
+            <!--            </is-dropdown>-->
+            <ng-container *ngIf="isPercents">
+                <div class="w--20 mr-3 mb-3">
+                    <label htmlFor="code" class="text-primary font-bold">{{
+                        "label.percent" | translate
+                    }}</label>
+                    <p-inputNumber
+                        min="0"
+                        formControlName="percent"
+                        suffix="%"
+                    ></p-inputNumber>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="isPrice">
+                <div class="w--20 mr-3 mb-3">
+                    <label htmlFor="code" class="text-primary font-bold">{{
+                        "label.Tien_mat" | translate
+                    }}</label>
+                    <p-inputNumber
+                        min="0"
+                        formControlName="cash"
+                    ></p-inputNumber>
+                </div>
+            </ng-container>
+            <div class="w--20 mr-3 mb-3">
+                <label htmlFor="code" class="text-primary mb-2 font-bold">{{
+                    "label.from_the_price_list" | translate
+                }}</label>
+                <p-dropdown
+                    [options]="listOther"
+                    [placeholder]="'label.from_the_price_list' | translate"
+                    [filter]="true"
+                    class="w-20 mr-3"
+                    optionLabel="name"
+                    optionValue="code"
+                    formControlName="priceListFrom"
+                    appendTo="body"
+                ></p-dropdown>
+            </div>
+            <div class="w--20 mr-3 mb-3">
+                <label htmlFor="code" class="text-primary mb-2 font-bold">{{
+                    "label.to_the_price_list" | translate
+                }}</label>
+                <p-dropdown
+                    [options]="listOther"
+                    [placeholder]="'label.from_the_price_list' | translate"
+                    [filter]="true"
+                    class="w-20 mr-3"
+                    optionLabel="name"
+                    optionValue="code"
+                    formControlName="priceListTo"
+                    appendTo="body"
+                ></p-dropdown>
+            </div>
+            <!--            <is-dropdown [placeholder]="'label.from_the_price_list' | translate" class="w&#45;&#45;20 mr-3"-->
+            <!--                [label]="'label.from_the_price_list'| translate" formControlName="priceListFrom" [options]="listOther"-->
+            <!--                [optionLabel]="'name'" optionValue="code">-->
+            <!--            </is-dropdown>-->
+            <!--            <is-dropdown [placeholder]="'label.to_the_price_list' | translate" class="w&#45;&#45;20"-->
+            <!--                         [label]="'label.to_the_price_list'|translate" formControlName="priceListTo"-->
+            <!--                         [options]="listOther"-->
+            <!--                         [optionLabel]="'name'" optionValue="code">-->
+            <!--            </is-dropdown>-->
+        </div>
+    </ng-container>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-times"
+            (click)="onCancel()"
+            [label]="'button.backF6' | translate"
+            styleClass="p-button-outlined"
+            class="mr-3"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="submit()"
+            [label]="'button.saveF8' | translate"
+        ></p-button>
+    </ng-template>
+</p-dialog>

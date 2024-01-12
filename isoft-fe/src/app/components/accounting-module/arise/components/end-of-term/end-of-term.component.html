@@ -1,0 +1,247 @@
+<form
+    [formGroup]="endOfTermEndingForm"
+    class="text-sm py-2"
+    pFocusTrap
+    pFocusTrapDisabled="true"
+>
+    <!--account debit credit code-->
+    <div class="field flex align-items-center font-bold">
+        <label
+            class="font-bold w-20rem pt-1"
+            [translate]="'label.debit_code_name'"
+        ></label>
+        <div class="w-full">
+            <p-dropdown
+                [style]="{ width: '20rem' }"
+                [placeholder]="'label.debit_code_name' | translate"
+                [filter]="true"
+                filterBy="code"
+                [(ngModel)]="endOfTermEndingForm.value.debitCode"
+                [formControlName]="'debitCode'"
+                [options]="chartOfAccounts"
+                [optionValue]="'code'"
+                appendTo="body"
+            >
+                <ng-template
+                    let-chartOfAccounts
+                    pTemplate="chartOfAccounts"
+                    pTemplate="selectedItem"
+                >
+                    <span
+                        >{{ chartOfAccounts.code }} -
+                        {{ chartOfAccounts.name }}</span
+                    >
+                </ng-template>
+                <ng-template
+                    let-chartOfAccounts
+                    pTemplate="chartOfAccounts"
+                    pTemplate="item"
+                >
+                    <span
+                        >{{ chartOfAccounts.code }} -
+                        {{ chartOfAccounts.name }}</span
+                    >
+                </ng-template>
+            </p-dropdown>
+        </div>
+
+        <!--credit-->
+        <label
+            class="font-bold w-20rem ml-2 pt-1"
+            [translate]="'label.credit_code_name'"
+        ></label>
+        <div class="w-full">
+            <p-dropdown
+                [style]="{ width: '20rem' }"
+                [placeholder]="'label.credit_code_name' | translate"
+                [filter]="true"
+                filterBy="code"
+                [(ngModel)]="endOfTermEndingForm.value.creditCode"
+                [formControlName]="'creditCode'"
+                [options]="chartOfAccounts"
+                [optionValue]="'code'"
+            >
+                <ng-template
+                    let-chartOfAccounts
+                    pTemplate="chartOfAccounts"
+                    pTemplate="selectedItem"
+                    appendTo="body"
+                >
+                    <span
+                        >{{ chartOfAccounts.code }} -
+                        {{ chartOfAccounts.name }}</span
+                    >
+                </ng-template>
+                <ng-template
+                    let-chartOfAccounts
+                    pTemplate="chartOfAccounts"
+                    pTemplate="item"
+                >
+                    <span
+                        >{{ chartOfAccounts.code }} -
+                        {{ chartOfAccounts.name }}</span
+                    >
+                </ng-template>
+            </p-dropdown>
+        </div>
+
+        <!--percentRatio-->
+        <label
+            class="font-bold w-20rem ml-2 pt-1"
+            [translate]="'label.ratio'"
+        ></label>
+        <div>
+            <p-inputNumber
+                [style]="{ 'min-width': '10rem' }"
+                [(ngModel)]="endOfTermEndingForm.value.percentRatio"
+                suffix="%"
+                min="0"
+                max="100"
+                formControlName="percentRatio"
+            ></p-inputNumber>
+        </div>
+
+        <!--percentRatio-->
+        <label
+            class="font-bold w-20rem ml-2 pt-1"
+            [translate]="'label.type'"
+        ></label>
+        <p-dropdown
+            [style]="{ 'min-width': '20rem' }"
+            class="text-sm"
+            [(ngModel)]="endOfTermEndingForm.value.type"
+            [options]="listType"
+            appendTo="body"
+            [optionLabel]="'label'"
+            [optionValue]="'value'"
+            formControlName="type"
+        >
+        </p-dropdown>
+
+        <!--save remove account-->
+        <div class="flex justify-content-end gap-8 ml-4">
+            <button
+                type="button"
+                pButton
+                icon="pi pi-save"
+                (click)="onSave()"
+            ></button>
+        </div>
+    </div>
+</form>
+
+<p-table
+    #dt1
+    [value]="endOfTerms"
+    dataKey="id"
+    [rows]="10"
+    [loading]="loading"
+    [rowHover]="true"
+    selectionMode="multiple"
+    [selection]="endOfTermSelected"
+    styleClass="p-datatable-gridlines sidebar-custom"
+    [paginator]="true"
+    [responsiveLayout]="'scroll'"
+    [totalRecords]="totalRecords"
+    [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [showCurrentPageReport]="true"
+    [lazy]="true"
+    (onLazyLoad)="getEnOfTerms($event)"
+    scrollDirection="both"
+    [scrollable]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [(first)]="first"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th class="w-1 flex justify-content-center">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th class="w-1">{{ "label.id" | translate }}</th>
+            <th class="w-2">{{ "label.debit_code_name" | translate }}</th>
+            <th class="w-2">{{ "label.credit_code_name" | translate }}</th>
+            <th class="w-2">{{ "label.ratio" | translate }}</th>
+            <th class="w-3">{{ "label.type" | translate }}</th>
+            <th
+                class="w-2"
+                alignFrozen="right"
+                pFrozenColumn
+                [frozen]="true"
+            ></th>
+        </tr>
+    </ng-template>
+    <ng-template
+        pTemplate="body"
+        let-item
+        let-rowgroup="rowgroup"
+        let-rowspan="rowspan"
+    >
+        <tr>
+            <td class="w-1 flex justify-content-center">
+                <p-tableCheckbox [value]="item"></p-tableCheckbox>
+            </td>
+            <td class="w-1">{{ item.id }}</td>
+            <td class="w-2">{{ item.debitCode }}</td>
+            <td class="w-2">{{ item.creditCode }}</td>
+            <td class="w-2">{{ item.percentRatio | number }}</td>
+            <td class="w-3">
+                <p-badge
+                    [value]="
+                        item.type === 'debitToCredit'
+                            ? 'K/C Nợ -> Có'
+                            : 'K/C Có -> Nợ'
+                    "
+                    [severity]="
+                        item.type === 'debitToCredit' ? 'info' : 'success'
+                    "
+                ></p-badge>
+            </td>
+            <td
+                alignFrozen="right"
+                pFrozenColumn
+                [frozen]="true"
+                class="w-2 flex justify-content-start md:justify-content-center"
+            >
+                <button
+                    pButton
+                    class="p-button-warning"
+                    icon="pi pi-pencil"
+                    (click)="onEdit(item.id)"
+                ></button>
+                <button
+                    pButton
+                    class="p-button-danger"
+                    icon="pi pi-trash"
+                    (click)="onDelete(item.id)"
+                ></button>
+            </td></tr
+    ></ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td class="w-full pt-4 pb-4">{{ "info.no_data" | translate }}</td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="loadingbody">
+        <tr>
+            <td class="w-full pt-4 pb-4">{{ "info.loading" | translate }}</td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<div class="flex justify-content-end gap-8 mt-4">
+    <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        [label]="'button.back' | translate"
+        (click)="cancel()"
+    ></button>
+    <button
+        class="p-button-info"
+        type="button"
+        pButton
+        icon="pi pi-check"
+        label="Kết chuyển"
+        (click)="onSave()"
+    ></button>
+</div>

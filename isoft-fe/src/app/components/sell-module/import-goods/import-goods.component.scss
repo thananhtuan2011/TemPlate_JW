@@ -1,0 +1,114 @@
+:host ::ng-deep {
+    .p-dialog .p-dialog-content {
+        padding: 2rem 1.5rem 0.5rem 1.5rem;
+    }
+
+    .card-table {
+        min-height: 80vh !important;
+    }
+
+    .p-paginator {
+        padding: 0 !important;
+    }
+
+    .p-orderlist .p-orderlist-header,
+    .p-orderlist .p-orderlist-filter-container {
+        display: none;
+    }
+
+    .p-tabview .p-tabview-panels {
+        padding: 0;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav .p-tabview-ink-bar {
+        display: none;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+        padding: 0.95rem;
+        border-right: 1px solid #dee2e6;
+        border-top-right-radius: 0;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+        border-color: #dee2e6;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav-btn.p-link {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #receivedPrice .p-inputnumber-input,
+    #discountPrice .p-inputnumber-input {
+        text-align: left;
+    }
+
+    .p-splitter-panel-nested {
+        /* flex-basis: auto !important; */
+    }
+    @media screen and (max-width: 768px) {
+        .p-dialog {
+            width: 95vw !important;
+        }
+    }
+
+    .p-splitbutton .p-splitbutton-defaultbutton,
+    .p-splitbutton.p-button-rounded > .p-splitbutton-defaultbutton.p-button,
+    .p-splitbutton.p-button-outlined > .p-splitbutton-defaultbutton.p-button,
+    .p-splitbutton-menubutton,
+    .p-splitbutton.p-button-rounded > .p-splitbutton-menubutton.p-button,
+    .p-splitbutton.p-button-outlined > .p-splitbutton-menubutton.p-button,
+    .p-button,
+    .p-inputtext,
+    .p-inputnumber-buttons-stacked .p-inputnumber-button-group,
+    .p-dropdown {
+        height: 38px;
+    }
+
+    .p-inputmask-clear-icon {
+        right: 8px;
+    }
+}
+
+.filter-month {
+    @media screen and (max-width: 768px) {
+        width: 100%;
+        flex-wrap: wrap;
+
+        .document-dropdown {
+            width: 30.4% !important;
+            padding-right: 0 !important;
+        }
+
+        .month-dropdown {
+            width: 33% !important;
+        }
+
+        .current-date-input {
+            width: 30.6% !important;
+        }
+
+        .bill-type-dropdown {
+            width: 31% !important;
+        }
+    }
+
+    @media screen and (min-width: 769px) {
+        
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .import-goods-filter-top {
+        .bill-type-dropdown {
+            width: 10rem !important;
+        }
+    }
+}
+
+.table-history-notification {
+    .p-button {
+        margin: 0 44%;
+    }
+}
+

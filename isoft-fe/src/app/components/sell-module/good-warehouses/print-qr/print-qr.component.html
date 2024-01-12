@@ -1,0 +1,159 @@
+<p-dialog
+    [(visible)]="isVisiblePopup"
+    header="Xem trước"
+    [style]="{ width: '90mm' }"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label translate="Loại in"></label>
+            <div class="flex gap-8">
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="menuType"
+                        value="1"
+                        [(ngModel)]="printType"
+                        inputId="menuType1"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></p-radioButton>
+                    <label translate="Mã vạch"></label>
+                </div>
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="menuType"
+                        value="2"
+                        [(ngModel)]="printType"
+                        inputId="menuType2"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></p-radioButton>
+                    <label translate="Mã QR"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="field d-flex">
+            <label translate="Lựa chọn"></label>
+            <p-radioButton
+                name="menuType"
+                value="1"
+                [(ngModel)]="printDisplayOption"
+                label="Chỉ in mã"
+            >
+            </p-radioButton>
+
+            <p-radioButton
+                name="menuType"
+                value="2"
+                [(ngModel)]="printDisplayOption"
+                label="In mã và tên hàng"
+            >
+            </p-radioButton>
+
+            <p-radioButton
+                name="menuType"
+                value="3"
+                [(ngModel)]="printDisplayOption"
+                label="In mã và giá bán"
+            >
+            </p-radioButton>
+
+            <p-radioButton
+                name="menuType"
+                value="4"
+                [(ngModel)]="printDisplayOption"
+                label="In đầy đủ thông tin"
+            >
+            </p-radioButton>
+        </div>
+    </ng-template>
+
+    <div class="barcode-container">
+        <ng-container
+            *ngFor="let item of listBarCodeItems; let even = even; index as i"
+        >
+            <div *ngIf="i % 2 == 0" class="barcode-row">
+                <div
+                    class="barcode-row-item"
+                    *ngFor="
+                        let bcItem of [
+                            item,
+                            i + 1 <= listBarCodeItems.length
+                                ? listBarCodeItems[i + 1]
+                                : null
+                        ]
+                    "
+                >
+                    <p
+                        class="barcode-item-text"
+                        *ngIf="bcItem != null"
+                        style="font-size: 10px"
+                    >
+                        {{ bcItem.detail2 || bcItem.detail1 }}
+                    </p>
+                    <ngx-barcode
+                        *ngIf="bcItem != null && printType == 1"
+                        [bc-element-type]="barcodeSetting.type"
+                        [bc-format]="barcodeSetting.format"
+                        [bc-width]="barcodeSetting.width"
+                        [bc-height]="barcodeSetting.height"
+                        bc-display-value="false"
+                        [bc-font-size]="barcodeSetting.fontSize"
+                        bc-margin-top="0"
+                        bc-margin-bottom="0"
+                        [bc-value]="bcItem.detail2 || bcItem.detail1"
+                    >
+                    </ngx-barcode>
+
+                    <qrcode
+                        class="qrItems"
+                        *ngIf="bcItem != null && printType == 2"
+                        [qrdata]="bcItem.qrCode"
+                        [elementType]="'img'"
+                        [width]="qrCodeSize"
+                        [attr.name]="bcItem.detailName2 || bcItem.detailName1"
+                        [attr.price]="bcItem.salePrice | number"
+                        [attr.code]="bcItem.qrCode"
+                        errorCorrectionLevel="M"
+                    >
+                    </qrcode>
+
+                    <p
+                        class="barcode-item-text"
+                        *ngIf="
+                            bcItem != null &&
+                            (optionDisplay == 2 || optionDisplay == 4)
+                        "
+                        style="font-size: 10px"
+                    >
+                        {{ bcItem.detailName2 || bcItem.detailName1 }}
+                    </p>
+
+                    <p
+                        class="barcode-item-text"
+                        *ngIf="
+                            bcItem != null &&
+                            (optionDisplay == 3 || optionDisplay == 4)
+                        "
+                        style="font-size: 10px"
+                    >
+                        {{ bcItem.salePrice | number }}
+                    </p>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            [label]="'Đóng' | translate"
+            class="p-button-outlined"
+            (click)="onCancel.emit()"
+        ></button>
+        <button
+            pButton
+            [label]="'In' | translate"
+            class="p-button-warning"
+            (click)="onExportClick()"
+        ></button>
+    </ng-template>
+</p-dialog>

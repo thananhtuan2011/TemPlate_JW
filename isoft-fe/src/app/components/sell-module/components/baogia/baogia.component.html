@@ -1,0 +1,90 @@
+<div class="wrapper">
+    <div class="bill-content">
+        <div id="bill-title">Bảng báo giá</div>
+        <table class="customer-info">
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 120px">Tên khách hàng:</span>
+                    <span style="text-transform: uppercase; margin-left: 5px">{{
+                        dataPrint?.bill?.customerName
+                    }}</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 60px">Địa chỉ:</span>
+                    <span style="margin-left: 5px">{{
+                        dataPrint?.bill?.customerAddress
+                    }}</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Mã số thuế: {{ dataPrint?.bill?.customerTaxCode }}</td>
+            </tr>
+        </table>
+
+        <table class="detail-table">
+            <tr>
+                <th style="width: 50px">Stt</th>
+                <th>Tên hàng</th>
+                <th style="width: 80px">Đơn vị</th>
+                <th style="width: 80px">Số lượng</th>
+                <th style="width: 90px">Đơn giá</th>
+                <th style="width: 120px">Thành tiền</th>
+                <th style="width: 100px">Ghi chú</th>
+            </tr>
+            <tr *ngFor="let item of products; let i = index" class="prod-info">
+                <td style="padding: 0px 2px; text-align: center">{{ i + 1 }}</td>
+                <td style="padding: 0px 2px">{{ item?.goodsName }}</td>
+                <td style="padding: 10px 5px">{{ item?.stockUnit }}</td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.quantity | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.salePrice | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.amount | number: "1.0-0" }}
+                </td>
+                <td>{{ item?.note }}</td>
+            </tr>
+            <tr class="total-info">
+                <td></td>
+                <td colspan="5">
+                    TỔNG CỘNG:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.originalAmount | number: "1.0-0" }}
+                </td>
+            </tr>
+        </table>
+        <p style="text-align: right">
+            <strong>Ngày {{date.getDate()}} tháng {{date.getMonth()}} năm {{date.getFullYear()}}</strong>
+        </p>
+    </div>
+    <div class="bill-footer">
+        <div class="item">
+        </div>
+        <div class="item">
+        </div>
+        <div class="item">
+        </div>
+        <div class="item">
+            <p><strong>Giám đốc</strong></p>
+            <br/>
+            <br/>
+            <p><i>{{dataPrint.bill?.nameOfCeo}}</i></p>
+        </div>
+    </div>
+    <p style="text-align: left">
+        <strong>Lưu ý: {{dataPrint.bill?.note}}</strong>
+    </p>
+</div>

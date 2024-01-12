@@ -1,0 +1,25 @@
+<p-dialog
+    styleClass="add-edit-account-group"
+    [(visible)]="display"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [header]="'label.add_account_sync' | translate"
+>
+    <p-button
+        styleClass="mb-4"
+        [label]="'label.group_sync' | translate"
+        icon="pi pi-plus"
+        (click)="onAddGroup()"
+    >
+    </p-button>
+    <is-table
+        #accountGroupTable
+        (actionButtonClick)="onActionButtonClick($event)"
+    ></is-table>
+</p-dialog>
+
+<add-account-group-sync
+    #addAccountGroupSync
+    (addSuccessfull)="onAddSuccessfull()"
+></add-account-group-sync>

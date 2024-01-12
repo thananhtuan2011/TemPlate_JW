@@ -1,0 +1,216 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.decide_management'"></h5>
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="lstDecides"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getDecides($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Shnpowing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUYETDINH,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddDecide()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [style]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+                <th *ngIf="isMobile" class="w-2"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-user
+            let-columns="columns"
+        >
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <td
+                        *ngIf="
+                            col.display &&
+                            col.value != 'note' &&
+                            col.value != 'description'
+                        "
+                        [style]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+
+                        <p *ngIf="col.value == 'date'; else elseBlock">
+                            {{ rowData[col.value] | date: "dd/MM/yyyy" }}
+                        </p>
+                        <ng-template #elseBlock>
+                            <p *ngIf="col.value == 'fileUrl'">
+                                <app-file-preview
+                                    [fileName]="rowData[col.value]"
+                                ></app-file-preview>
+                            </p>
+                            <p *ngIf="col.value != 'fileUrl'">
+                                {{ rowData[col.value] }}
+                            </p>
+                        </ng-template>
+                    </td>
+                    <td
+                        *ngIf="
+                            !isMobile &&
+                            col.display &&
+                            (col.value == 'note' || col.value == 'description')
+                        "
+                        [style]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p>
+                            {{ rowData[col.value] }}
+                        </p>
+                    </td>
+                    <div
+                        *ngIf="
+                            isMobile &&
+                            col.display &&
+                            (col.value == 'note' || col.value == 'description')
+                        "
+                        class="my-2 group-td"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p style="flex: 1; text-align: center">
+                            {{ rowData[col.value] }}
+                        </p>
+                    </div>
+                </ng-container>
+                <td *ngIf="isMobile" class="w-2">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUYETDINH,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUYETDINH,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUYETDINH,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUYETDINH,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Branch found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Branch data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-decide-form
+    #decideForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getDecides(null, false); isReset = false"
+    [isEdit]="isEdit"
+></app-decide-form>

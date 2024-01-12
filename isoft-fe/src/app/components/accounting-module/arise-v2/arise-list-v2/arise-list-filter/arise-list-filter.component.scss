@@ -1,0 +1,33 @@
+:host ::ng-deep {
+    #app-arise-list-filter-v2 {
+        .p-dropdown,
+        .p-multiselect,
+        .p-inputnumber,
+        .p-inputnumber-input,
+        p-inputMask .p-inputtext,
+        .p-inputtext,
+        .p-button,
+        .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+            height: 24px !important;
+        }
+
+        .p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+        .p-dropdown-panel .p-dropdown-items:not(.p-dropdown-virtualscroll) {
+            padding-top: 6px !important;
+            padding-bottom: 2px !important;
+        }
+
+        p-inputMask .p-inputtext {
+            padding: 4px 0 0 4px !important;
+        }
+
+        .p-inputtext,
+        .p-dropdown.p-dropdown-clearable .p-dropdown-label {
+            padding: 4px !important;
+        }
+
+        .p-dropdown .p-dropdown-trigger {
+            width: 2rem;
+        }
+    }
+}

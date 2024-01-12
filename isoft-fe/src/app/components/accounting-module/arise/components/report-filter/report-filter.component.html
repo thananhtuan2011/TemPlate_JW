@@ -1,0 +1,530 @@
+<p-panel>
+    <ng-template pTemplate="header">
+        <h5 class="m-0 text-white" [translate]="title"></h5>
+    </ng-template>
+    <!-- {{showTypes | json}} -->
+    <div class="grid">
+        <div
+            class="col-12 md:col-4 formgrid grid"
+            [class]="appMain.isDesktop() ? 'border-right' : ''"
+        >
+            <div class="field col-12 md:col-6">
+                <label class="font-bold" [translate]="'label.type'"></label>
+                <p-dropdown
+                    [options]="dateType"
+                    [(ngModel)]="filter.filterType"
+                    (ngModelChange)="onChangeType($event)"
+                    optionValue="value"
+                    class="w-full"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <ng-template let-item pTemplate="selectedItem">
+                        {{ item.label | translate }}
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                        {{ item.label | translate }}
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <!--start month-->
+                <ng-container *ngIf="filter.filterType === 1">
+                    <label
+                        class="font-bold text-primary"
+                        [translate]="'label.start_month'"
+                    ></label>
+                    <p-dropdown
+                        [options]="types.month"
+                        [(ngModel)]="filter.fromMonth"
+                        [filter]="true"
+                        class="w-full"
+                        (onChange)="getListTaxCode()"
+                    >
+                    </p-dropdown>
+                </ng-container>
+                <!--start date-->
+                <ng-container *ngIf="filter.filterType === 2">
+                    <label
+                        class="font-bold text-primary"
+                        [translate]="'label.start_date'"
+                    ></label>
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="filter.fromDate"
+                        dateFormat="dd-mm-yy"
+                        (onSelect)="getListTaxCode()"
+                    ></p-calendar>
+                </ng-container>
+            </div>
+            <div class="col-12 md:col-6 formgrid grid">
+                <div class="field col-4 flex pt-5">
+                    <p-checkbox
+                        id="fillFullName"
+                        [binary]="true"
+                        [(ngModel)]="filter.fillFullName"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="-mt-3 pr-2"
+                        (onChange)="onCheck($event)"
+                    ></p-checkbox>
+                </div>
+                <div class="field col-8">
+                    <label
+                        class="font-bold text-primary w-6rem"
+                        [translate]="'label.preparedBy'"
+                    ></label>
+                    <input
+                        type="text"
+                        [readonly]="filter.fillFullName == false"
+                        [(ngModel)]="filter.preparedBy"
+                        pInputText
+                        class="w-full"
+                        [disabled]="!filter.fillFullName"
+                    />
+                </div>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <!--end month-->
+                <ng-container *ngIf="filter.filterType === 1">
+                    <label
+                        class="font-bold text-primary"
+                        [translate]="'label.end_month'"
+                    ></label>
+                    <p-dropdown
+                        [options]="types.month"
+                        [(ngModel)]="filter.toMonth"
+                        [filter]="true"
+                        class="w-full"
+                        (onChange)="getListTaxCode()"
+                    >
+                    </p-dropdown>
+                </ng-container>
+                <!--end date-->
+                <ng-container *ngIf="filter.filterType === 2">
+                    <label
+                        class="font-bold text-primary"
+                        [translate]="'label.end_date'"
+                    ></label>
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="filter.toDate"
+                        dateFormat="dd-mm-yy"
+                        (onSelect)="getListTaxCode()"
+                    ></p-calendar>
+                </ng-container>
+            </div>
+        </div>
+        <div
+            *ngIf="showTypes.length > 0"
+            class="col-12 md:col-6 formgrid grid"
+            [class]="appMain.isDesktop() ? 'border-right' : ''"
+        >
+            <div
+                *ngIf="showTypes.includes('account')"
+                class="field"
+                [class.col-4]="showTypes.includes('accountCodeDetail1')"
+                [class.col-12]="!showTypes.includes('accountCodeDetail1')"
+            >
+                <label class="font-bold" [translate]="'label.account'"></label>
+                <p-dropdown
+                    [options]="types.chartOfAccounts"
+                    [optionValue]="'code'"
+                    [appendTo]="'body'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    [(ngModel)]="filter.accountCode"
+                    [ngModelOptions]="{ standalone: false }"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    (onChange)="onChangeAccount($event, 'account')"
+                >
+                    <ng-template
+                        let-chartOfAccount
+                        pTemplate="chartOfAccount"
+                        pTemplate="selectedItem"
+                    >
+                        <span
+                            >{{ chartOfAccount.code }} |
+                            {{ chartOfAccount.name }}</span
+                        >
+                    </ng-template>
+                    <ng-template
+                        let-chartOfAccount
+                        pTemplate="chartOfAccount"
+                        pTemplate="item"
+                    >
+                        <span
+                            >{{ chartOfAccount.code }} |
+                            {{ chartOfAccount.name }}</span
+                        >
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                *ngIf="showTypes.includes('accountCodeDetail1')"
+                class="field col-4"
+            >
+                <label
+                    for="detail_1"
+                    class="font-bold"
+                    [translate]="'label.detail_1'"
+                ></label>
+                <p-dropdown
+                    id="detail_1"
+                    [disabled]="!types.detail1 || types.detail1.length === 0"
+                    [appendTo]="'body'"
+                    [options]="types.detail1"
+                    [optionValue]="'code'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    [(ngModel)]="filter.accountCodeDetail1"
+                    [ngModelOptions]="{ standalone: true }"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    (onChange)="onChangeAccount($event, 'debit1')"
+                >
+                    <ng-template
+                        let-debit1
+                        pTemplate="debit1"
+                        pTemplate="selectedItem"
+                    >
+                        <span>{{ debit1.code }} | {{ debit1.name }}</span>
+                    </ng-template>
+                    <ng-template let-debit1 pTemplate="debit1" pTemplate="item">
+                        <span>{{ debit1.code }} | {{ debit1.name }}</span>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                *ngIf="showTypes.includes('accountCodeDetail2')"
+                class="field col-4"
+            >
+                <label
+                    for="detail_2"
+                    class="font-bold"
+                    [translate]="'label.detail_2'"
+                ></label>
+                <p-dropdown
+                    id="detail_2"
+                    [disabled]="!types.detail2 || types.detail2.length === 0"
+                    [appendTo]="'body'"
+                    [options]="types.detail2"
+                    [optionValue]="'code'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    [(ngModel)]="filter.accountCodeDetail2"
+                    [ngModelOptions]="{ standalone: true }"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                >
+                    <ng-template
+                        let-debit2
+                        pTemplate="debit2"
+                        pTemplate="selectedItem"
+                    >
+                        <span>{{ debit2.code }} | {{ debit2.name }}</span>
+                    </ng-template>
+                    <ng-template let-debit2 pTemplate="debit2" pTemplate="item">
+                        <span>{{ debit2.code }} | {{ debit2.name }}</span>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div *ngIf="showTypes.includes('printType')" class="field col-12">
+                <label
+                    class="font-bold"
+                    [translate]="'label.print_type'"
+                ></label>
+                <p-multiSelect
+                    [options]="types.print"
+                    [(ngModel)]="printType"
+                    [filter]="true"
+                    optionLabel="label"
+                    [ngModelOptions]="{ standalone: false }"
+                    optionValue="value"
+                    class="w-full"
+                    (onChange)="choosePrint()"
+                >
+                </p-multiSelect>
+            </div>
+            <div *ngIf="showTypes.includes('document')" class="field col-12">
+                <label
+                    class="font-bold"
+                    [translate]="'label.type_of_document'"
+                ></label>
+                <p-dropdown
+                    [options]="types.document"
+                    [optionValue]="'code'"
+                    [appendTo]="'body'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    [(ngModel)]="filter.voucherType"
+                    [ngModelOptions]="{ standalone: true }"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                >
+                    <ng-template
+                        let-document
+                        pTemplate="document"
+                        pTemplate="selectedItem"
+                    >
+                        <span>{{ document.code }} | {{ document.name }}</span>
+                    </ng-template>
+                    <ng-template
+                        let-document
+                        pTemplate="document"
+                        pTemplate="item"
+                    >
+                        <span>{{ document.code }} | {{ document.name }}</span>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                *ngIf="showTypes.includes('bookDetailType')"
+                class="field col-12"
+            >
+                <label
+                    for="type_of_book"
+                    class="font-bold"
+                    [translate]="'label.type_of_book'"
+                ></label>
+                <p-dropdown
+                    id="type_of_book"
+                    [options]="types.bookDetailType"
+                    [optionValue]="'value'"
+                    [(ngModel)]="filter.bookDetailType"
+                    [optionLabel]="'label'"
+                    [appendTo]="'body'"
+                    [ngModelOptions]="{ standalone: true }"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                >
+                </p-dropdown>
+            </div>
+            <div *ngIf="showTypes.includes('previousYear')" class="col-12">
+                <div class="p-float-label field w-full">
+                    <input
+                        uppercase
+                        class="w-full"
+                        type="text"
+                        pInputText
+                        [(ngModel)]="filter.previousYear"
+                    />
+                    <label
+                        class="font-bold"
+                        [translate]="'label.previous_year'"
+                    ></label>
+                </div>
+            </div>
+            <div *ngIf="showTypes.includes('taxVat')" class="col-12">
+                <div class="p-float-label field w-full">
+                    <input
+                        uppercase
+                        class="w-full"
+                        type="text"
+                        pInputText
+                        [(ngModel)]="filter.taxVat"
+                    />
+                    <label
+                        class="font-bold"
+                        [translate]="'label.tax_VAT'"
+                    ></label>
+                </div>
+            </div>
+            <ng-container *ngIf="showTypes.includes('document') && hasTaxCode">
+                <div class="field col-6">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.tax_code'"
+                    ></label>
+                    <p-dropdown
+                        [options]="taxCodes"
+                        [optionValue]="'name'"
+                        [optionLabel]="'name'"
+                        [showClear]="true"
+                        [filter]="true"
+                        [filterBy]="'code,name'"
+                        [(ngModel)]="filter.invoiceTaxCode"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="w-full"
+                        [placeholder]="'label.empty' | translate"
+                    >
+                    </p-dropdown>
+                </div>
+                <div class="field col-6">
+                    <label
+                        for="invoiceNumber"
+                        class="font-bold"
+                        [translate]="'label.invoice_number'"
+                    ></label>
+                    <input
+                        id="invoiceNumber"
+                        class="w-full"
+                        type="text"
+                        pInputText
+                        [(ngModel)]="filter.invoiceNumber"
+                        placeholder="Nhập số H.đơn"
+                    />
+                </div>
+            </ng-container>
+            <!-- Tài khoản đối ứng -->
+            <div
+                *ngIf="hasContraAccount && showTypes.includes('account')"
+                class="field col-4"
+            >
+                <label
+                    class="font-bold"
+                    [translate]="'label.contra_account'"
+                ></label>
+                <p-dropdown
+                    [options]="types.chartOfAccounts"
+                    [optionValue]="'code'"
+                    [appendTo]="'body'"
+                    [showClear]="true"
+                    [(ngModel)]="filter.accountCodeReciprocal"
+                    [ngModelOptions]="{ standalone: false }"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    (onChange)="onChangeAccount($event, 'account')"
+                >
+                    <ng-template
+                        let-chartOfAccount
+                        pTemplate="chartOfAccount"
+                        pTemplate="selectedItem"
+                    >
+                        <span
+                            >{{ chartOfAccount.code }} |
+                            {{ chartOfAccount.name }}</span
+                        >
+                    </ng-template>
+                    <ng-template
+                        let-chartOfAccount
+                        pTemplate="chartOfAccount"
+                        pTemplate="item"
+                    >
+                        <span
+                            >{{ chartOfAccount.code }} |
+                            {{ chartOfAccount.name }}</span
+                        >
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                *ngIf="
+                    hasContraAccount && showTypes.includes('accountCodeDetail1')
+                "
+                class="field col-4"
+            >
+                <label
+                    for="contra_detail_1"
+                    class="font-bold"
+                    [translate]="'label.detail_1'"
+                ></label>
+                <p-dropdown
+                    id="contra_detail_1"
+                    [disabled]="!types.detail1 || types.detail1.length === 0"
+                    [appendTo]="'body'"
+                    [(ngModel)]="filter.accountCodeDetail1Reciprocal"
+                    [ngModelOptions]="{ standalone: false }"
+                    [options]="types.detail1"
+                    [optionValue]="'code'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    (onChange)="onChangeAccount($event, 'debit1')"
+                >
+                    <ng-template
+                        let-debit1
+                        pTemplate="debit1"
+                        pTemplate="selectedItem"
+                    >
+                        <span>{{ debit1.code }} | {{ debit1.name }}</span>
+                    </ng-template>
+                    <ng-template let-debit1 pTemplate="debit1" pTemplate="item">
+                        <span>{{ debit1.code }} | {{ debit1.name }}</span>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div
+                *ngIf="
+                    hasContraAccount && showTypes.includes('accountCodeDetail2')
+                "
+                class="field col-4"
+            >
+                <label
+                    for="contra_detail_2"
+                    class="font-bold"
+                    [translate]="'label.detail_2'"
+                ></label>
+                <p-dropdown
+                    id="contra_detail_2"
+                    [disabled]="!types.detail2 || types.detail2.length === 0"
+                    [appendTo]="'body'"
+                    [(ngModel)]="filter.accountCodeDetail2Reciprocal"
+                    [ngModelOptions]="{ standalone: false }"
+                    [options]="types.detail2"
+                    [optionValue]="'code'"
+                    [showClear]="true"
+                    [filter]="true"
+                    [filterBy]="'code,name'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                >
+                    <ng-template
+                        let-debit2
+                        pTemplate="debit2"
+                        pTemplate="selectedItem"
+                    >
+                        <span>{{ debit2.code }} | {{ debit2.name }}</span>
+                    </ng-template>
+                    <ng-template let-debit2 pTemplate="debit2" pTemplate="item">
+                        <span>{{ debit2.code }} | {{ debit2.name }}</span>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="col-12 md:col-2 flex flex-wrap md:flex-column gap-8">
+            <div>
+                <button
+                    pButton
+                    type="button"
+                    [label]="'button.preview' | translate"
+                    (click)="onActionSubmit(onPreview)"
+                ></button>
+            </div>
+            <div *ngIf="hasPrintPDF">
+                <button
+                    pButton
+                    type="button"
+                    [label]="'button.export_pdf' | translate"
+                    (click)="onActionSubmit(onPrint)"
+                    class="p-button-info"
+                ></button>
+            </div>
+            <div *ngIf="showTypes.includes('exportXML')">
+                <button
+                    class="p-button-warning"
+                    pButton
+                    type="button"
+                    [label]="'label.export_xml' | translate"
+                    (click)="onActionSubmit(onPrintXML)"
+                ></button>
+            </div>
+            <div *ngIf="!showTypes.includes('exportXML')">
+                <button
+                    class="p-button-success"
+                    pButton
+                    type="button"
+                    [label]="'label.export_excel' | translate"
+                    (click)="onActionSubmit(onPrintExcel)"
+                ></button>
+            </div>
+        </div>
+    </div>
+</p-panel>

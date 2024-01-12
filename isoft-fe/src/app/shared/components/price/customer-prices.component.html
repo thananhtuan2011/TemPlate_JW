@@ -1,0 +1,12 @@
+<p-dropdown
+    id="price-dropdown"
+    [(ngModel)]="value"
+    (onChange)="onChange.emit()"
+    [options]="prices"
+    [filter]="true"
+    [showClear]
+    [optionLabel]="'display'"
+    [optionValue]="'code'"
+    [placeholder]="'label.empty' | translate"
+>
+</p-dropdown>

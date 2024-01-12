@@ -1,0 +1,130 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="isEdit ? 'label.edit_store' : 'label.add_store'"
+            ></h5>
+            <form [formGroup]="storeForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="code"
+                            >{{ "label.code" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="code"
+                            [(ngModel)]="storeForm.value.code"
+                            formControlName="code"
+                            [ngClass]="checkValidValidator('code')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="storeForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="managerName"
+                            >{{ "label.manager_name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="managerName"
+                            [(ngModel)]="storeForm.value.managerName"
+                            formControlName="managerName"
+                            [ngClass]="checkValidValidator('managerName')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('managerName')"
+                            class="p-error"
+                            [innerHTML]="'info.manager_name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="managerName">{{
+                            "label.branch" | translate
+                        }}</label>
+                        <p-dropdown
+                            [options]="listBranch"
+                            [optionValue]="'id'"
+                            [optionLabel]="'name'"
+                            [formControlName]="'branchId'"
+                            [placeholder]="'label.choose_branch' | translate"
+                            [(ngModel)]="storeForm.value.branchId"
+                        ></p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="shelveIds">{{
+                            "label.shelve" | translate
+                        }}</label>
+                        <p-multiSelect
+                            id="shelveIds"
+                            [options]="wareHouseShelves"
+                            [optionLabel]="'name'"
+                            [showClear]="true"
+                            [optionValue]="'id'"
+                            [appendTo]="'body'"
+                            [(ngModel)]="storeForm.value.shelveIds"
+                            [formControlName]="'shelveIds'"
+                            [ngClass]="checkValidValidator('shelveIds')"
+                        >
+                        </p-multiSelect>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="isSyncChartOfAccount">{{
+                            "label.is_sync_chart_of_account" | translate
+                        }}</label>
+                        <p-checkbox
+                            class="mr-5"
+                            [disabled]="isSyncChartOfAccount === true"
+                            [binary]="true"
+                            [(ngModel)]="storeForm.value.isSyncChartOfAccount"
+                            formControlName="isSyncChartOfAccount"
+                        ></p-checkbox>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onBack()"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

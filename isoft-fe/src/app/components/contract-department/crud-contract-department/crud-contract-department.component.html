@@ -1,0 +1,94 @@
+<ng-container *ngIf="form" [formGroup]="form">
+    <div id="crud-contract-department">
+        <div class="w-full grid">
+            <div class="col-4">
+                <div class="field-custom">
+                    <!-- <input
+                        [pTooltip]="'Mã mẫu hợp đồng'"
+                        [disabled]="!allowChangeCode"
+                        [placeholder]="'label.code' | translate"
+                        autofocus
+                        pInputText
+                        formControlName="code"
+                    /> -->
+                    <p-dropdown
+                        appendTo="body"
+                        [options]="listCode"
+                        optionValue="id"
+                        optionLabel="name"
+                        (onChange)="getList($event)"
+                        formControlName="code"
+                    ></p-dropdown>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="field-custom">
+                    <input
+                        [pTooltip]="'Tên mẫu hợp đồng'"
+                        [placeholder]="'label.name' | translate"
+                        pInputText
+                        formControlName="name"
+                    />
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="field-custom">
+                    <p-dropdown
+                        appendTo="body"
+                        formControlName="contractTypeId"
+                        [options]="contractTypes"
+                        optionValue="id"
+                        optionLabel="name"
+                        [showClear]="true"
+                    ></p-dropdown>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="field-custom">
+                    <p-dropdown
+                        appendTo="body"
+                        formControlName="departmentId"
+                        [options]="departments"
+                        optionValue="id"
+                        optionLabel="name"
+                        [showClear]="true"
+
+                    ></p-dropdown>
+                </div>
+            </div>
+            <div class="col-3">
+                <button
+                    *ngIf="fcFile.value"
+                    pButton
+                    tooltipPosition="left"
+                    [pTooltip]="'Xem file'"
+                    (click)="openFile()"
+                    type="button"
+                    icon="pi pi-file"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+                <p-button
+                    (click)="uploadFile.click()"
+                    label="Chọn file"
+                    styleClass="p-button-warning"
+                    icon="pi pi-upload"
+                ></p-button>
+                <input
+                    #uploadFile
+                    class="hidden"
+                    type="file"
+                    (change)="doAttachFile($event)"
+                />
+            </div>
+        </div>
+        <div class="footer">
+            <p-button
+                [disabled]="!isFormValid"
+                icon="pi pi-check"
+                label="{{ 'button.save' | translate }}"
+                styleClass="p-button-text"
+                (click)="onSave()"
+            ></p-button>
+        </div>
+    </div>
+</ng-container>

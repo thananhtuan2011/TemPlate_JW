@@ -1,0 +1,190 @@
+<div class="m-salary-body mt-2">
+    <p-accordion *ngFor="let item of lstSalary">
+        <p-accordionTab header="{{ item.fullName }}">
+            <div class="m-salary-item">
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Lương Chính </span>
+                    <ng-template
+                        [ngIf]="getParams.isInternal == 3"
+                        [ngIfElse]="insuranceSalary"
+                    >
+                        {{ item.salary | number: "1.0-0" }}
+                    </ng-template>
+                    <ng-template #insuranceSalary>
+                        {{ item.socialInsuranceSalary | number: "1.0-0" }}
+                    </ng-template>
+                </div>
+                <div *ngIf="colAllowances.length" class="m-salary-group">
+                    <h6 class="m-salary-group-header">Phụ Cấp</h6>
+                    <div
+                        *ngFor="
+                            let allowance of colAllowances;
+                            let indexOfelement = index
+                        "
+                        class="m-salary-info flex flex-row"
+                    >
+                        <span class="p-column-title font-bold">
+                            {{ allowance.name }}
+                        </span>
+                        {{
+                            item.allowances[indexOfelement].value
+                                | number: "1.0-0"
+                        }}
+                    </div>
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold">
+                        Tổng Thu Nhập
+                    </span>
+                    {{ item.salaryTotal | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Ngày công </span>
+                    {{ item.dayInOut | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold">
+                        Lương Thực Tế
+                    </span>
+                    {{ item.salaryReal | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold">
+                        Lương Đóng Bảo Hiểm
+                    </span>
+                    {{ item.socialInsuranceSalary | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-group">
+                    <h6 class="m-salary-group-header">
+                        Trích vào chi phí doanh nghiệp
+                    </h6>
+                    <ng-template ngFor let-social [ngForOf]="item.salarySocial">
+                        <ng-template [ngIf]="social.valueCompany != 0">
+                            <ng-container [ngSwitch]="social.code">
+                                <ng-container *ngSwitchCase="'KPCD'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Kinh Phí Công Đoàn
+                                        </span>
+                                        {{ social.valueCompany }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHXH'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Xã Hội
+                                        </span>
+                                        {{ social.valueCompany }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHYT'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Y Tế
+                                        </span>
+                                        {{ social.valueCompany }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHTN'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Thất Nghiệp
+                                        </span>
+                                        {{ social.valueCompany }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'Tong'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Tổng
+                                        </span>
+                                        {{ social.valueCompany }}
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </ng-template>
+                    </ng-template>
+                </div>
+                <div class="m-salary-group mt-2">
+                    <h6 class="m-salary-group-header">
+                        Trích vào lương nhân viên
+                    </h6>
+                    <ng-template ngFor let-social [ngForOf]="item.salarySocial">
+                        <ng-template [ngIf]="social.valueUser != 0">
+                            <ng-container [ngSwitch]="social.code">
+                                <ng-container *ngSwitchCase="'KPCD'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Kinh Phí Công Đoàn
+                                        </span>
+                                        {{ social.valueUser }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHXH'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Xã Hội
+                                        </span>
+                                        {{ social.valueUser }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHYT'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Y Tế
+                                        </span>
+                                        {{ social.valueUser }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'BHTN'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Bảo Hiểm Thất Nghiệp
+                                        </span>
+                                        {{ social.valueUser }}
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'Tong'">
+                                    <div class="m-salary-info flex flex-row">
+                                        <span class="p-column-title font-bold">
+                                            Tổng
+                                        </span>
+                                        {{ social.valueUser }}
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </ng-template>
+                    </ng-template>
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Thuế TNCN </span>
+                    {{ item.thueTNCN | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Tạm ứng </span>
+                    {{ item.tamUng | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Thực lĩnh </span>
+                    {{ item.salarySend | number: "1.0-0" }}
+                </div>
+                <div class="m-salary-info flex flex-row">
+                    <span class="p-column-title font-bold"> Ghi chú </span>
+                    {{ item.note }}
+                </div>
+            </div>
+            <hr />
+            <div
+                *ngIf="item.listChild && item.listChild.length"
+                class="m-salary-employee mt-2 "
+            >
+                <h5 class="m-salary-group-header">Nhân Viên</h5>
+                <app-m-salary
+                    [lstSalary]="item.listChild"
+                    [colAllowances]="colAllowances"
+                    [getParams]="getParams"
+                ></app-m-salary>
+            </div>
+        </p-accordionTab>
+    </p-accordion>
+</div>

@@ -1,0 +1,880 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 class="mb-0" [translate]="'label.user_management'"></h5>
+    <div class="flex row">
+        <div class="col-5 flex flex-column align-items-center pr-0">
+            <span class="text-center">{{
+                "label.user_statistics_gender_chart" | translate
+            }}</span>
+            <p-chart
+                type="pie"
+                [data]="userStatisticsGenderData"
+                height="180px"
+            ></p-chart>
+        </div>
+        <div class="col-7 flex flex-column pl-0">
+            <span class="text-center">{{
+                "label.user_statistics_birthday_in_month_chart" | translate
+            }}</span>
+            <p-chart
+                type="bar"
+                [data]="userStatisticsBirthdayInMonthData"
+                height="180px"
+                (onDataSelect)="onSelectBirthdayMonth($event)"
+            ></p-chart>
+        </div>
+    </div>
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="lstUsers"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getUsers($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [(selection)]="selectedUsers"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex flex-column md:flex-row gap-8 w-full md:w-auto"
+                >
+                    <p-dropdown
+                        [(ngModel)]="getParams.sortField"
+                        (onChange)="onChangeSort($event, 'sortField')"
+                        [options]="sortFields"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                    <p-dropdown
+                        [(ngModel)]="getParams.isSort"
+                        (onChange)="onChangeSort($event, 'sortType')"
+                        [options]="sortTypes"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                </div>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <!--                    <p-fileUpload mode="basic" [chooseLabel]="(appMain.isDesktop()? 'button.import': '') | translate" [chooseIcon]="'pi pi-upload'"-->
+                    <!--                        class="p-danger mb-2 mr-2" accept=".xlsx,.pdf,.csv,.xls" maxFileSize="1000000" (change)="importExcel($event)" ></p-fileUpload>-->
+
+                    <button
+                        pButton
+                        [label]="!isMobile ? ('button.import' | translate) : ''"
+                        class="p-button-success mb-2 mr-2"
+                        icon="pi pi-upload"
+                        (click)="fileInput.click()"
+                    ></button>
+                    <input
+                        id="fileInput"
+                        #fileInput
+                        type="file"
+                        (change)="importExcel($event)"
+                        style="display: none"
+                    />
+
+                    <button
+                        pButton
+                        [label]="
+                            (appMain.isDesktop() ? 'button.export' : '')
+                                | translate
+                        "
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getUsers(null, true)"
+                    ></button>
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHANSU,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="
+                            (appMain.isDesktop() ? 'button.addF7' : '')
+                                | translate
+                        "
+                        class="mb-2 mr-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddUser()"
+                    ></button>
+                    <!-- select display colum -->
+                    <p-button
+                        class="p-button-danger mb-2 relative"
+                        icon="pi pi-th-large"
+                        (click)="op.toggle($event)"
+                    ></p-button>
+                </div>
+            </div>
+            <p-panel
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+                styleClass="mb-3 "
+            >
+                <div class="grid p-fluid formgrid">
+                    <div class="grid col-12">
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="search_For"
+                                [translate]="'label.searchFor'"
+                            ></label>
+                            <div class="flex gap-8 align-items-center">
+                                <div
+                                    *ngFor="let item of searchFor"
+                                    class="field-radiobutton field"
+                                >
+                                    <p-radioButton
+                                        name="chooseSearhBirth"
+                                        [value]="item.value"
+                                        [ngModelOptions]="{ standalone: true }"
+                                        [(ngModel)]="chooseSearhBirth"
+                                        [inputId]="item.key"
+                                        (onClick)="onChangeChoose(item.key)"
+                                    ></p-radioButton>
+                                    <label
+                                        class="mb-0"
+                                        [for]="item.key"
+                                        [translate]="item.label"
+                                    ></label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- search for date -->
+                        <div
+                            class="field col-12 md:col-3 px-3"
+                            *ngIf="chooseSearhBirth"
+                        >
+                            <label htmlFor="startDate"
+                                >{{ "label.birthday_from" | translate
+                                }}<span class="text-pink mr-2"></span
+                            ></label>
+                            <p-inputMask
+                                mask="99/99/9999"
+                                [(ngModel)]="getParams.startDate"
+                                [ngModelOptions]="{ standalone: true }"
+                                class="p-inputtext-sm w-full"
+                            ></p-inputMask>
+                        </div>
+                        <div
+                            class="field col-12 md:col-3 px-3"
+                            *ngIf="chooseSearhBirth"
+                        >
+                            <label htmlFor="startDate"
+                                >{{ "label.birthday_to" | translate
+                                }}<span class="text-pink mr-2"></span
+                            ></label>
+                            <p-inputMask
+                                mask="99/99/9999"
+                                [(ngModel)]="getParams.endDate"
+                                [ngModelOptions]="{ standalone: true }"
+                                class="p-inputtext-sm w-full"
+                            ></p-inputMask>
+                        </div>
+                        <!-- search for age -->
+                        <div
+                            class="field col-6 md:col-3 px-3"
+                            *ngIf="!chooseSearhBirth"
+                        >
+                            <label htmlFor="startAge"
+                                >{{ "label.age_from" | translate
+                                }}<span class="text-pink mr-2"></span
+                            ></label>
+                            <p-inputNumber
+                                [(ngModel)]="getParams.startAge"
+                                [ngModelOptions]="{ standalone: true }"
+                                mode="decimal"
+                                [min]="0"
+                                [max]="100"
+                                [showButtons]="true"
+                            >
+                            </p-inputNumber>
+                        </div>
+                        <div
+                            class="field col-6 md:col-3 px-3"
+                            *ngIf="!chooseSearhBirth"
+                        >
+                            <label htmlFor="endDate"
+                                >{{ "label.age_to" | translate
+                                }}<span class="text-pink mr-2"></span
+                            ></label>
+                            <p-inputNumber
+                                [(ngModel)]="getParams.endAge"
+                                [ngModelOptions]="{ standalone: true }"
+                                mode="decimal"
+                                [min]="getParams.startAge"
+                                [max]="100"
+                                [showButtons]="true"
+                            >
+                            </p-inputNumber>
+                        </div>
+                        <!-- department -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="department"
+                                [translate]="'label.department'"
+                            ></label>
+                            <p-dropdown
+                                [options]="departments"
+                                [ngModelOptions]="{ standalone: true }"
+                                optionLabel="name"
+                                [filter]="true"
+                                filterBy="name"
+                                [(ngModel)]="getParams.departmentId"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.department' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                    </div>
+                    <div class="grid col-12">
+                        <!-- position -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="position"
+                                [translate]="'label.position'"
+                            ></label>
+                            <p-dropdown
+                                [options]="positions"
+                                [ngModelOptions]="{ standalone: true }"
+                                [optionLabel]="'name'"
+                                [filter]="true"
+                                filterBy="name"
+                                [(ngModel)]="getParams.position"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.position' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <!-- target -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="target"
+                                [translate]="'label.target'"
+                            ></label>
+                            <p-dropdown
+                                [options]="targets"
+                                [ngModelOptions]="{ standalone: true }"
+                                [optionLabel]="'name'"
+                                [filter]="true"
+                                filterBy="name"
+                                [(ngModel)]="getParams.targetId"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.target' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <!-- degree -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="degree"
+                                [translate]="'label.degree'"
+                            ></label>
+                            <p-dropdown
+                                [options]="degrees"
+                                [ngModelOptions]="{ standalone: true }"
+                                [optionLabel]="'name'"
+                                [filter]="true"
+                                filterBy="name"
+                                [(ngModel)]="getParams.degreeId"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.degree' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <!-- cetificate -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="certificate"
+                                [translate]="'label.certificate'"
+                            ></label>
+                            <p-dropdown
+                                [options]="certificates"
+                                [ngModelOptions]="{ standalone: true }"
+                                [optionLabel]="'name'"
+                                [filter]="true"
+                                filterBy="name"
+                                [(ngModel)]="getParams.certificateId"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.certificate' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                    </div>
+                    <div class="grid col-12 my-2">
+                        <!-- gender -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label [translate]="'label.gender'"></label>
+                            <p-dropdown
+                                [options]="genders"
+                                [optionLabel]="'key'"
+                                [filter]="true"
+                                filterBy="key"
+                                [optionValue]="'value'"
+                                [(ngModel)]="getParams.gender"
+                                [ngModelOptions]="{ standalone: true }"
+                                [showClear]="true"
+                                [placeholder]="'label.gender' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <!-- status -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="status"
+                                [translate]="'label.status'"
+                            ></label>
+                            <p-dropdown
+                                [options]="status"
+                                optionLabel="key"
+                                [filter]="true"
+                                filterBy="key"
+                                [optionValue]="'value'"
+                                [(ngModel)]="getParams.quit"
+                                [ngModelOptions]="{ standalone: true }"
+                                [showClear]="true"
+                                [placeholder]="'label.status' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <!--request_to_reset_password  -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                htmlFor="request_to_reset_password"
+                                [translate]="'label.request_to_reset_password'"
+                            ></label>
+                            <div class="flex">
+                                <div
+                                    *ngFor="let item of requestPassword"
+                                    class="field-radiobutton field pl-2"
+                                >
+                                    <p-radioButton
+                                        name="requestPassword"
+                                        [value]="item.value"
+                                        [(ngModel)]="getParams.requestPassword"
+                                        [inputId]="item.key"
+                                        [ngModelOptions]="{ standalone: true }"
+                                    ></p-radioButton>
+                                    <label
+                                        class="mt-2"
+                                        [for]="item.key"
+                                        [translate]=""
+                                        ><span
+                                            class="text-primary pr-1"
+                                            *ngIf="item.key === 'request'"
+                                            >{{ totalRequestPassword }}</span
+                                        >{{ item.label | translate }}</label
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <div
+                                class="flex mt-2 md:mt-4 justify-content-center"
+                            >
+                                <p-button
+                                    (click)="resetForm()"
+                                    [label]="'button.reset_form' | translate"
+                                    styleClass="p-button-outlined"
+                                    class="mb-2 mr-2"
+                                ></p-button>
+                                <p-button
+                                    [label]="'button.search' | translate"
+                                    class="mb-2 mr-2"
+                                    (click)="getUsers()"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th class="w-4rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [ngClass]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 130px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-rowIndex="rowIndex"
+            let-user
+        >
+            <tr>
+                <td class="w-4rem flex justify-content-between">
+                    <div class="flex gap-8 align-items-center">
+                        <p-tableCheckbox [value]="user"></p-tableCheckbox>
+                    </div>
+                    <span class="font-bold" *ngIf="isMobile">{{ user.userRoleName }}</span>
+                </td>
+                <ng-container *ngFor="let col of columns">
+                    <td *ngIf="isMobile && col.value === 'headerCustom'">
+                        <div class="row w-full">
+                            <div class="col-12 p-0 flex align-items-center justify-content-between">
+                                <p-avatar
+                                    [image]="serverImg + user.avatar"
+                                    size="large"
+                                    shape="circle"
+                                    [title]="user.fullName"
+                                >
+                                </p-avatar>
+                                <span>{{ user.username }}</span>
+                                <div *ngIf="rowData['gender'] == 0">
+                                    <p-badge
+                                        severity="success"
+                                        [value]="'label.male' | translate"
+                                    ></p-badge>
+                                </div>
+                                <div *ngIf="rowData['gender'] == 1">
+                                    <p-badge
+                                        severity="danger"
+                                        [value]="'label.female' | translate"
+                                    ></p-badge>
+                                </div>
+                            </div>
+                            <div class="field col-12 p-0 mt-1">
+                                <label>{{ user.fullName }}</label>
+                            </div>
+                            <div class="col-12 flex gap-8 p-0">
+                                <div class="field" style="width: 50%;">
+                                    <label class="font-bold">{{ 'label.identify' | translate }}:</label>
+                                    <span class="pl-1">{{ user.identify }}</span>
+                                </div>
+                                <div class="field" style="width: 50%;">
+                                    <label class="font-bold">{{ 'label.birthday' | translate }}:</label>
+                                    <span class="pl-1">{{ user.birthDay | date : 'dd/MM/yyyy' }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 flex gap-8 p-0">
+                                <div class="field" style="width: 50%;">
+                                    <label class="font-bold">{{ 'label.department' | translate }}:</label>
+                                    <span class="pl-1">{{ user.departmentName }}</span>
+                                </div>
+                                <div class="field" style="width: 50%;">
+                                    <label class="font-bold">{{ 'label.phone_number' | translate }}:</label>
+                                    <span class="pl-1">{{ user.phone }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td *ngIf="!isMobile && col.value == 'avatar'" [ngClass]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p-avatar
+                            [image]="serverImg + user.avatar"
+                            size="large"
+                            shape="circle"
+                            [title]="user.fullName"
+                        >
+                        </p-avatar>
+                    </td>
+                    <td *ngIf="!isMobile && col.value == 'gender'" [ngClass]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <div *ngIf="rowData[col.value] == 0">
+                            <p-badge
+                                severity="success"
+                                [value]="'label.male' | translate"
+                            ></p-badge>
+                        </div>
+                        <div *ngIf="rowData[col.value] == 1">
+                            <p-badge
+                                severity="danger"
+                                [value]="'label.female' | translate"
+                            ></p-badge>
+                        </div>
+                    </td>
+
+                    <td
+                        *ngIf="!isMobile && col.display && col.value == 'order'"
+                        [ngClass]="col.width"
+                    >
+                        {{ rowIndex + 1 }}
+                    </td>
+
+                    <td
+                        *ngIf="
+                            !isMobile &&
+                            col.display &&
+                            col.value != 'avatar' &&
+                            col.value != 'order' &&
+                            col.value != 'gender'
+                        "
+                        [ngClass]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p
+                            *ngIf="
+                                col.value == 'birthDay' ||
+                                    col.value == 'lastLogin' ||
+                                    col.value == 'sendSalaryDate' ||
+                                    col.value == 'socialInsuranceCreated';
+                                else elseBlock
+                            "
+                        >
+                            {{ rowData[col.value] | date: "dd/MM/yyyy" }}
+                        </p>
+                        <ng-template #elseBlock>{{
+                            rowData[col.value]
+                        }}</ng-template>
+                    </td>
+                </ng-container>
+
+                <td *ngIf="isMobile" class="w-2">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHANSU,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHANSU,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="width: 130px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        type="button"
+                        pButton
+                        class="p-button-success"
+                        icon="pi pi-print"
+                        (click)="
+                            dataSelectPrintContract.data = user;
+                            tieredMenuTmp?.toggle($event)
+                        "
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHANSU,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHANSU,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No user found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading user data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-user-form
+    #userForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [branches]="branches"
+    [majors]="majors"
+    [positionDetails]="positionDetails"
+    [warehouses]="warehouses"
+    [targets]="targets"
+    [symbols]="symbols"
+    [contractTypes]="contractTypes"
+    [display]="display"
+    (onCancel)="display = false; getUsers(null, false); isReset = false"
+    [isEdit]="isEdit"
+    [provinces]="provinces"
+    [nativeProvinces]="nativeProvinces"
+    [roles]="roles"
+></app-user-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_user_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<p-overlayPanel
+    #op
+    [showCloseIcon]="true"
+    [style]="{ width: '450px' }"
+    focusOnShow="true"
+>
+    <ng-template pTemplate>
+        <p-accordion>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0" [translate]="'label.account'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'account' && col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0"
+                            [translate]="'label.personal_info'"
+                        ></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'personal_info' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0" [translate]="'label.education'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'education' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0"
+                            [translate]="
+                                'label.salary_leave_share_holder_number'
+                            "
+                        ></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify ==
+                                        'salary_leave_share_holder_number' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0" [translate]="'label.personal_tax'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'personal_tax' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+    </ng-template>
+</p-overlayPanel>
+<p-tieredMenu
+    id="tieredMenuTmp"
+    class="menu"
+    name="menu"
+    #tieredMenuTmp
+    [model]="dataSelectPrintContract.menus"
+    [popup]="true"
+></p-tieredMenu>

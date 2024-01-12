@@ -1,0 +1,175 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit ? 'label.add_branch' : 'label.add_achievements'
+                "
+            ></h5>
+            <form [formGroup]="achievementForm" autocomplete="off">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="code">{{
+                            "label.code_achi" | translate
+                        }}</label>
+                        <input
+                            id="float-input"
+                            type="text"
+                            pInputText
+                            [formControlName]="'code'"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="employeesName"
+                            >{{ "label.employee_name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-dropdown
+                            [options]="employees"
+                            [formControlName]="'userId'"
+                            optionLabel="fullName"
+                            [filter]="flase"
+                            filterBy="key"
+                            [showClear]="true"
+                            [placeholder]="'label.employee_name' | translate"
+                            [ngClass]="checkValidValidator('userId')"
+                        >
+                        </p-dropdown>
+                        <small
+                            *ngIf="checkValidValidator('userId')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name">{{
+                            "label.name_achi" | translate
+                        }}</label>
+                        <input
+                            id="float-input"
+                            type="text"
+                            pInputText
+                            [formControlName]="'name'"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="date">{{
+                            "label.date" | translate
+                        }}</label>
+                        <p-calendar
+                            [style]="{ width: '100%' }"
+                            [showIcon]="true"
+                            inputId="icon"
+                            [formControlName]="'date'"
+                        ></p-calendar>
+                        <small
+                            *ngIf="checkValidValidator('date')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="note">{{
+                            "label.note" | translate
+                        }}</label>
+                        <input
+                            id="float-input"
+                            type="text"
+                            pInputText
+                            [formControlName]="'note'"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('note')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="description">{{
+                            "label.workflow_content" | translate
+                        }}</label>
+                        <input
+                            id="float-input"
+                            type="text"
+                            pInputText
+                            [formControlName]="'description'"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('description')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="uploadFile">{{
+                            "Tệp tin" | translate
+                        }}</label>
+                        <button
+                            pButton
+                            icon="pi pi-upload"
+                            (click)="uploadFile.click()"
+                            [label]="'button.import' | translate"
+                        ></button>
+                        <input
+                            #uploadFile
+                            class="hidden"
+                            type="file"
+                            (change)="doAttachFile($event)"
+                            multiple
+                        />
+                        <small
+                            *ngIf="selectedFile"
+                           
+                            class="p-error"
+                            style="cursor: pointer; margin-top: 10px"
+                            >
+                            <span class="pr-2">{{ selectedFile.name }}</span>
+                            <i (click)="selectedFile = null; uploadFile.value = null" class="pi pi-times" ></i>
+                        </small>
+                        <small
+                            *ngIf="
+                                selectedFile == undefined ||
+                                selectedFile == null
+                            "
+                            class="p-error"
+                            style="cursor: pointer; margin-top: 10px"
+                            >{{ fileName }}
+                        </small>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

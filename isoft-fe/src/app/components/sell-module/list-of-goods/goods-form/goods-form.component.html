@@ -1,0 +1,685 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <h5
+        class="px-1"
+        [translate]="isEdit ? 'label.edit_goods' : 'label.add_goods'"
+    ></h5>
+    <form [formGroup]="goodsForm" class="grid w-full">
+        <!--status-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="status">{{ "label.status" | translate }}</label>
+            <p-dropdown
+                #dropdownRef
+                id="status"
+                [options]="types.status"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                showClear="true"
+                [formControlName]="'status'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                [ngClass]="checkValidValidator('status')"
+                filterBy="name"
+            ></p-dropdown>
+            <small
+                *ngIf="checkValidValidator('status')"
+                class="p-error"
+                [innerHTML]="'info.status' | translate"
+            ></small>
+        </div>
+
+        <!--menuType-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="menuType">{{
+                "label.goods_group" | translate
+            }}</label>
+            <p-dropdown
+                id="menuType"
+                [options]="types.menuType"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                showClear="true"
+                [formControlName]="'menuType'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <!--priceList-->
+        <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="priceList">{{
+                "label.price_list" | translate
+            }}</label>
+            <p-dropdown
+                id="priceList"
+                [options]="types.priceList"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                showClear="true"
+                [formControlName]="'priceList'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <!--warehouse-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="warehouse">{{
+                "label.warehouse" | translate
+            }}</label>
+            <p-dropdown
+                id="warehouse"
+                [options]="types.warehouse"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                showClear="true"
+                [formControlName]="'warehouse'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                [disabled]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <ng-container *ngTemplateOutlet="taiKhoanNoTmp"></ng-container>
+        <ng-container *ngTemplateOutlet="chiTietNo1Tmp"></ng-container>
+        <ng-container *ngTemplateOutlet="chiTietNo2Tmp"></ng-container>
+
+        <!--inventory-->
+        <!--        <div *ngIf="!isPriceList" class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="inventory">{{ "label.inventory" | translate }}</label>-->
+        <!--            <p-inputNumber id="inventory" [formControlName]="'inventory'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--type_of_document_code-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="type_of_document_code">{{
+                "label.type_of_document_code" | translate
+            }}</label>
+            <input
+                pInputText
+                id="type_of_document_code"
+                formControlName="documentCode"
+            />
+        </div>
+
+        <!--orderNumber-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="orderNumber">{{
+                "label.display_order" | translate
+            }}</label>
+            <input pInputText id="orderNumber" formControlName="orderNumber" />
+        </div>
+
+        <!--goodsType-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="goodsType">{{
+                "label.goods_type" | translate
+            }}</label>
+            <p-dropdown
+                id="goodsType"
+                [options]="types.goodsType"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                showClear="true"
+                [formControlName]="'goodsType'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <!--        &lt;!&ndash;costPrice&ndash;&gt;-->
+        <!--        <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="costPriceIn">{{ "label.cost_price_in" | translate }}</label>-->
+        <!--            <p-inputNumber id="costPriceIn" [formControlName]="'costPriceIn'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--price-->
+        <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="price">{{ "label.price" | translate }}</label>
+            <p-inputNumber
+                id="price"
+                [formControlName]="'price'"
+            ></p-inputNumber>
+        </div>
+
+        <!--discountPrice-->
+        <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="discountPrice">{{
+                "label.discount_price" | translate
+            }}</label>
+            <p-inputNumber
+                id="discountPrice"
+                [formControlName]="'discountPrice'"
+            ></p-inputNumber>
+        </div>
+
+        <!--salePrice-->
+        <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="salePrice">{{
+                "label.sale_price" | translate
+            }}</label>
+            <p-inputNumber
+                id="salePrice"
+                [formControlName]="'salePrice'"
+            ></p-inputNumber>
+        </div>
+
+        <!--taxVAT-->
+        <!-- <div *ngIf="isPriceList" class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="taxVat">{{ "label.tax_vat" | translate }}</label>
+            <p-inputNumber id="taxVat" [formControlName]="'taxVat'"></p-inputNumber>
+        </div> -->
+
+        <!--taxRateId-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="taxRateId">{{ "label.tax_vat" | translate }}</label>
+            <p-dropdown
+                id="taxRateId"
+                [options]="taxRates"
+                [optionLabel]="'name'"
+                [optionValue]="'id'"
+                showClear="true"
+                [formControlName]="'taxRateId'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <!--manufactureDate-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="dateManufacture">{{
+                "label.dateManufacture" | translate
+            }}</label>
+            <p-calendar
+                id="dateManufacture"
+                [showIcon]="true"
+                [formControlName]="'dateManufacture'"
+            ></p-calendar>
+        </div>
+
+        <!--expiredDate-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="dateExpiration">{{
+                "label.dateExpiration" | translate
+            }}</label>
+            <p-calendar
+                class="w-full"
+                id="dateExpiration"
+                [showIcon]="true"
+                [formControlName]="'dateExpiration'"
+            ></p-calendar>
+        </div>
+
+        <!--delivery-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="code">{{
+                !isPriceList ? "Best Number" : ("label.delivery" | translate)
+            }}</label>
+            <input
+                pInputText
+                id="code"
+                [(ngModel)]="goodsForm.value.delivery"
+                formControlName="delivery"
+                [ngClass]="checkValidValidator('delivery')"
+            />
+            <small
+                *ngIf="checkValidValidator('delivery')"
+                class="p-error"
+                [innerHTML]="'info.delivery' | translate"
+            ></small>
+        </div>
+
+        <!--minStockLevel-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="minStockLevel">{{
+                "label.min_stock_level" | translate
+            }}</label>
+            <p-inputNumber
+                id="minStockLevel"
+                [formControlName]="'minStockLevel'"
+            ></p-inputNumber>
+        </div>
+
+        <!--maxStockLevel-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="maxStockLevel">{{
+                "label.max_stock_level" | translate
+            }}</label>
+            <p-inputNumber
+                id="maxStockLevel"
+                [formControlName]="'maxStockLevel'"
+            ></p-inputNumber>
+        </div>
+
+        <!--position-->
+        <div
+            *ngIf="!isPriceList"
+            class="field col-12 md:col-4 flex flex-column"
+        >
+            <label htmlFor="position">{{ "label.location" | translate }}</label>
+            <p-dropdown
+                id="position"
+                [options]="types.position"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                showClear="true"
+                [formControlName]="'position'"
+                [appendTo]="'body'"
+                [placeholder]="'label.empty' | translate"
+                [filter]="true"
+                filterBy="name"
+            ></p-dropdown>
+        </div>
+
+        <!--menuWeb-->
+        <!--        <div *ngIf="!isPriceList" class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="menuWeb">{{ "label.menu_web" | translate }}</label>-->
+        <!--            <p-dropdown id="menuWeb" [options]="types.menuWeb" [optionLabel]="'name'" [optionValue]="'code'"-->
+        <!--                        showClear="true"-->
+        <!--                        [formControlName]="'menuWeb'" [appendTo]="'body'" [placeholder]="'label.empty' | translate"-->
+        <!--                        [filter]="true"-->
+        <!--                        filterBy="name"></p-dropdown>-->
+        <!--        </div>-->
+
+        <!--salePrice-->
+        <!--        <div class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="salePrice">{{ "label.sale_price" | translate }}</label>-->
+        <!--            <p-inputNumber id="salePrice" [formControlName]="'salePrice'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--price-->
+        <!--        <div class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="price">{{ "label.price" | translate }}</label>-->
+        <!--            <p-inputNumber id="price" [formControlName]="'price'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--discountPrice-->
+        <!--        <div class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="discountPrice">{{ "label.discount_price" | translate }}</label>-->
+        <!--            <p-inputNumber id="discountPrice" [formControlName]="'discountPrice'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--taxVAT-->
+        <!--        <div class="field col-12 md:col-4 flex flex-column">-->
+        <!--            <label htmlFor="taxVat">{{ "label.tax_vat" | translate }}</label>-->
+        <!--            <p-inputNumber id="taxVat" [formControlName]="'taxVat'"></p-inputNumber>-->
+        <!--        </div>-->
+
+        <!--        <div class="col-12">-->
+        <!--            <p-divider></p-divider>-->
+        <!--        </div>-->
+
+        <!--image-->
+        <div class="field col-9 flex flex-column">
+            <label htmlFor="image">{{ "label.image" | translate }}</label>
+
+            <div class="flex gap-8">
+                <button
+                    pButton
+                    icon="pi pi-upload"
+                    (click)="uploadFile.click()"
+                    [label]="'button.import' | translate"
+                ></button>
+                <button
+                    pButton
+                    icon="pi pi-times"
+                    (click)="onRemoveImages()"
+                    [label]="'button.remove' | translate"
+                ></button>
+                <input
+                    #uploadFile
+                    class="hidden"
+                    type="file"
+                    (change)="doAttachFile($event)"
+                    multiple
+                />
+            </div>
+            <div class="flex gap-8 mt-3" *ngIf="fileListStr">
+                <div *ngFor="let url of fileListStr">
+                    <img
+                        id="{{ url }}"
+                        (click)="onImageClick(url)"
+                        class="style_prev_kit"
+                        src="{{ serverUrl + '/' + url }}"
+                        width="120"
+                        height="120"
+                        alt="goods-image"
+                    />
+                </div>
+            </div>
+        </div>
+        <div
+            class="field col-3 flex align-items-center justify-content-end gap-3"
+        >
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>
+<add-edit-account
+    #addEditAccount
+    [accountType]="currentAccountType"
+    (updateSuccessfull)="onAddEditAccountSuccess()"
+></add-edit-account>
+<add-edit-account-details
+    #addEditAccountDetail
+    [accountType]="currentAccountType"
+    (updateSuccessfull)="onAddEditFirstChildAccountSuccess()"
+></add-edit-account-details>
+
+<ng-template #taiKhoanNoTmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit"
+            >{{ "label.account" | translate }}
+            <span class="text-pink-400">*</span></label
+        >
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitCodeTmp
+                    [ngModel]="fc['debitCode'].value"
+                    [suggestions]="debitCodeFilter"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitCode
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [lazy]="true"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="20"
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitCode($event)"
+                    (onFocus)="debitCodeTmp.handleDropdownClick()"
+                    (input)="fc['debitCode'].setValue($event?.target?.value)"
+                    (onClear)="onClearDebitCode()"
+                    (onSelect)="onSelectDebitCode($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>Tính chất {{ debit.accGroup }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{ debit.closingDebit | number: "1.0-0" }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitCodeTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <!-- <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="addEditAccount.show()"
+            ></button> -->
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietNo1Tmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit1" [translate]="'label.detail_1'"></label>
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitDetailCodeFirstTmp
+                    [ngModel]="fc['debitDetailCodeFirst'].value"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitDetailCodeFirst
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="debitDetailCodeFirstFilter"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [delay]="500"
+                    [disabled]="!isDebitCodeHas || !isDebitCodeHasDetails"
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitDetailCodeFirst($event)"
+                    (onFocus)="debitDetailCodeFirstTmp.handleDropdownClick()"
+                    (input)="
+                        fc['debitDetailCodeFirst'].setValue(
+                            $event?.target?.value
+                        )
+                    "
+                    (onKeyUp)="
+                        onKeyUpAutoCompleteLazyLoadding({
+                            event: $event,
+                            key: configAriseEnum.debitDetailCodeFirst
+                        })
+                    "
+                    (onClear)="onClearDebitDetailCodeFirst()"
+                    (onSelect)="onSelectDebitDetailCodeFirst($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            *ngIf="debit"
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div class="w-3rem border-right-1 px-1">
+                                <p>{{ debit.warehouseCode }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>{{ debit.closingStockQuantity || 0 }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{
+                                        debit.closingDebit || 0
+                                            | number: "1.0-0"
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitDetailCodeFirstTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="onAddEditAccountDetail(true)"
+            ></button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietNo2Tmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit2" [translate]="'label.detail_2'"></label>
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitDetailCodeSecondTmp
+                    [ngModel]="fc['debitDetailCodeSecond'].value"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitDetailCodeSecond
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="debitDetailCodeSecondFilter"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [delay]="500"
+                    [disabled]="
+                        !isDebitDetailCodeFirstHasDetails ||
+                        !isDebitDetailCodeFirstHas
+                    "
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitDetailCodeSecond($event)"
+                    (onKeyUp)="
+                        onKeyUpAutoCompleteLazyLoadding({
+                            event: $event,
+                            key: configAriseEnum.debitDetailCodeSecond
+                        })
+                    "
+                    (onFocus)="debitDetailCodeSecondTmp.handleDropdownClick()"
+                    (input)="
+                        fc['debitDetailCodeSecond'].setValue(
+                            $event?.target?.value
+                        )
+                    "
+                    (onClear)="onClearDebitDetailCodeSecond()"
+                    (onSelect)="onSelectDebitDetailCodeSecond($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            *ngIf="debit"
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div class="w-3rem border-right-1 px-1">
+                                <p>{{ debit.warehouseCode }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>{{ debit.closingStockQuantity || 0 }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{
+                                        debit.closingDebit || 0
+                                            | number: "1.0-0"
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitDetailCodeSecondTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="onAddEditAccountDetail(false)"
+            ></button>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,53 @@
+<p-dialog
+    [(visible)]="isVisiblePopupDetail"
+    header="Loại tem"
+    [style]="{ width: '350px' }"
+>
+    <ng-template pTemplate="content">
+        <div class="d-flex">
+            <p-radioButton
+                name="menuType"
+                value="1"
+                [(ngModel)]="printDisplayOption"
+                label="Chỉ in mã"
+            ></p-radioButton>
+            <p-radioButton
+                name="menuType"
+                value="2"
+                [(ngModel)]="printDisplayOption"
+                label="In mã và tên hàng"
+            ></p-radioButton>
+            <p-radioButton
+                name="menuType"
+                value="3"
+                [(ngModel)]="printDisplayOption"
+                label="In mã và giá bán"
+            ></p-radioButton>
+            <p-radioButton
+                name="menuType"
+                value="4"
+                [(ngModel)]="printDisplayOption"
+                label="In đầy đủ thông tin"
+            ></p-radioButton>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            [label]="'button.back' | translate"
+            class="p-button-outlined"
+            (click)="onCancel.emit()"
+        ></button>
+        <button
+            pButton
+            [label]="'button.save' | translate"
+            class="p-button-warning"
+            (click)="onFormOk()"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<app-print-item
+    [listBarCodeItems]="listBarCodeItems"
+    [isVisiblePopup]="isVisiblePrintPopup"
+></app-print-item>

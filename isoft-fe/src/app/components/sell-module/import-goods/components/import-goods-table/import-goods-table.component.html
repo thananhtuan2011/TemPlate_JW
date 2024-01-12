@@ -1,0 +1,177 @@
+<!--Hàng hóa-->
+<p-dataView
+	#dv
+	[value]="goodsList"
+	[rows]="8"
+	filterBy="code"
+	[sortField]="sortField"
+	[sortOrder]="sortOrder"
+	[layout]="layout"
+	[lazy]="true"
+	[totalRecords]="totalRecords"
+	[showFirstLastIcon]="false"
+	[first]="first"
+	(onChangeLayout)="onChangeLayout($event)"
+>
+	<ng-template pTemplate="header">
+		<div class="gap-8 flex flex-column md:flex-row justify-content-end">
+			<div class="flex gap-8 filter-customer-group justify-content-end md:justify-content-end w-full">
+				<div class="filter-customer w-full">
+					<div class="p-inputgroup w-full">
+						<p-autoComplete
+							id="customer"
+							[suggestions]="filteredCustomers"
+							[(ngModel)]="selectedBillTab?.data.customerName"
+							[placeholder]="'label.find_supplier' | translate"
+							[ngModelOptions]="{ standalone: true }"
+							[completeOnFocus]="true"
+							(completeMethod)="filterCustomerName($event)"
+							[forceSelection]="true"
+							[autoHighlight]="true"
+							[showClear]="true"
+							(onSelect)="onCustomerNameSelect($event)"
+							(onClear)="onCustomerNameSelect(null)"
+						>
+						</p-autoComplete>
+						<button pButton pRipple icon="pi pi-plus" (click)="showAddCustomerDialog()"></button>
+					</div>
+				</div>
+				<div class="filter-customer flex gap-8">
+					<button
+						*ngIf="billNotification?.notification && isMobile"
+						class="p-button-info w-10rem history-button"
+						pButton
+						[label]="
+							!isMobile
+								? 'Lịch sử ' + billNotification.notificationCount.toString()
+								: billNotification.notificationCount.toString()
+						"
+						icon="pi pi-history"
+						[disabled]="billNotification.notificationCount === 0"
+						(click)="billNotification.showNotificationDialog()"
+					></button>
+					<p-splitButton
+						[label]="!isMobile ? ('label.import' | translate) : ''"
+						icon="pi pi-upload"
+						(onClick)="uploadFile.click()"
+						[model]="items"
+					></p-splitButton>
+
+					<input #uploadFile class="hidden" type="file" (change)="importByType($event)" multiple />
+					<button
+						pButton
+						class="btn-60px p-button-success"
+						icon="pi pi-qrcode"
+						title="Quét QR"
+						(click)="isQRScannerVisible = true"
+					></button>
+					<p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+				</div>
+			</div>
+		</div>
+
+		<app-qr-scanner [isVisible]="isQRScannerVisible" (onScanSuccess)="onQRScanSuccess($event)" (onHide)="isQRScannerVisible = false">
+		</app-qr-scanner>
+
+		<div class="flex p-0 pt-2 gap-8" [ngClass]="{ 'hide-search': layout === 'list' }">
+			<span class="p-input-icon-left w-full">
+				<i class="pi pi-search"></i>
+				<input
+					#filter
+					[(ngModel)]="getParams.searchText"
+					pInputText
+					type="text"
+					(keypress)="onSearch($event)"
+					[placeholder]="'label.search_by_code_name' | translate"
+					class="w-full"
+				/>
+			</span>
+			<button style="width: 80px !important" (click)="getGoodsForCashiers()" pButton pRipple icon="pi pi-search"></button>
+		</div>
+	</ng-template>
+
+	<ng-template let-index="rowIndex" pTemplate="listItem">
+		<div *ngIf="index == 0" class="p-2 w-full">
+			<div class="mt-2">
+				<p-dropdown
+					id="selectGoods"
+					ngModel="selectedProduct"
+					[options]="allGoodList"
+					showClear="true"
+					[placeholder]="'Chọn sản phấm' | translate"
+					[filter]="true"
+					class="mt-2"
+					[ngStyle]="{ width: '100% !important' }"
+					filterBy="displayName"
+				>
+					<ng-template let-product pTemplate="selectedItem">
+						<span>{{ product.name }}</span>
+					</ng-template>
+					<ng-template let-product pTemplate="item">
+						<div (click)="onProductSelected.emit(product)">
+							<span>{{ product.name }}</span>
+							<div [ngStyle]="{ color: 'var(--green-400)' }" class="mt-1 font-bold text-sm">
+								Tồn: {{ product.quantity || 0 | number }}
+								{{ product.stockUnit }}
+							</div>
+						</div>
+					</ng-template>
+				</p-dropdown>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template let-product pTemplate="gridItem">
+		<div [ngClass]="!isSeller ? 'col-6 md:col-3 mt-2' : 'col-4 mt-2'">
+			<div class="product-grid-item card h-full my-1 mx-1 cursor-pointer" (click)="onProductSelected.emit(product)">
+				<div class="text-center w-full">
+					<div [ngClass]="'mt-1 mb-2 product-name text-sm'">
+						{{ getProductCode(product) }}
+					</div>
+					<div [pTooltip]="product.name" class="mb-1 text-primary text-bold text-sm overflow-hidden text-overflow-ellipsis px-2">
+						{{ product.name }}
+					</div>
+					<img
+						*ngIf="product.image"
+						[width]="!isSeller ? '100%' : '40%'"
+						[height]="!isSeller ? '100' : '60'"
+						[src]="baseUrlImage(product?.image)"
+						[title]="'label.image_1' | translate"
+					/>
+					<img
+						*ngIf="!product.image"
+						[width]="!isSeller ? '100%' : '40%'"
+						[height]="!isSeller ? '100' : '60'"
+						[src]="'assets/layout/images/logo-xl-jwk.png'"
+						[alt]="product.code"
+					/>
+					<div class="flex flex-column justify-content-center">
+						<div [ngStyle]="{ color: 'var(--green-400)' }" class="mt-1 font-bold text-sm">
+							Tồn: {{ product.quantity || 0 | number }}
+							{{ product.stockUnit }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ng-template>
+	<ng-template pTemplate="footer">
+		<p-paginator
+			*ngIf="layout == 'grid'"
+			(onPageChange)="getGoodsForCashiers($event)"
+			[rows]="8"
+			[totalRecords]="totalRecords"
+			[rowsPerPageOptions]="[4, 8, 12, 100, { showAll: 'Tất cả' }]"
+		></p-paginator>
+	</ng-template>
+</p-dataView>
+
+<p-sidebar [(visible)]="showCustomerFormDialog" [fullScreen]="true" [baseZIndex]="10000">
+	<h3>Thêm mới nhà cung cấp</h3>
+	<app-customers-form
+		display="true"
+		[formData]="{}"
+		[type]="customerType"
+		(onCancel)="showCustomerFormDialog = false"
+		(onSuccess)="onAddCustomerSuccess($event)"
+	></app-customers-form>
+</p-sidebar>

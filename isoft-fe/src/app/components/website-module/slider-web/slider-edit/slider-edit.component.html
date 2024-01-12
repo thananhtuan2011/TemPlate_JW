@@ -1,0 +1,79 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.web_slider_edit' : 'label.web_slider_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name">{{ "label.web_slider_name" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên slider"
+                [(ngModel)]="sliderModel.name"
+            />
+        </div>
+        <div class="field col">
+            <label for="name">Vị trí quảng cáo</label>
+            <p-dropdown
+                id="adsensePosition"
+                [options]="adsensePositions"
+                [(ngModel)]="sliderModel.adsensePosition"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Nhập vị trí quảng cáo"
+            ></p-dropdown>
+        </div>
+    </div>
+
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name">{{ "label.web_slider_type" | translate }}</label>
+            <p-dropdown
+                id="type"
+                [options]="languageTypes"
+                [(ngModel)]="sliderModel.type"
+                optionLabel="name"
+                optionValue="value"
+                placeholder="Chọn loại ngôn ngữ"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="name">{{ "label.web_slider_image" | translate }}</label>
+            <div class="w-100 flex align-content-center justify-content-start">
+                <p-fileUpload
+                    mode="basic"
+                    name="demo[]"
+                    class="ml-3"
+                    chooseIcon="pi pi-upload"
+                    (onSelect)="onUploadFile($event)"
+                    styleClass="px-3"
+                ></p-fileUpload>
+                <img
+                    *ngIf="sliderModel.imageUrl"
+                    width="45px"
+                    height="45px"
+                    [src]="sliderModel.imageUrl"
+                    class="ml-3"
+                />
+            </div>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-2">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

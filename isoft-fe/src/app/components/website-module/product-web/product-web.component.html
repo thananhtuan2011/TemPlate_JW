@@ -1,0 +1,425 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.web_product_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getGoods($event)"
+        [scrollable]="!isMobile"
+        scrollDirection="both"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+        <!--        <ng-template pTemplate="caption">-->
+        <!--            <div class="flex justify-content-start md:justify-content-between flex-column md:flex-row">-->
+        <!--                        <span class="p-input-icon-left mb-2">-->
+        <!--                            <i class="pi pi-search"></i>-->
+        <!--                            <input #filter [(ngModel)]="param.searchText" pInputText type="text"-->
+        <!--                                   [placeholder]="'label.search' | translate" class="w-full"/>-->
+        <!--                        </span>-->
+        <!--                &lt;!&ndash;                <div class="flex justify-content-between md:justify-content-end mt-2 md:mt-0">&ndash;&gt;-->
+        <!--                &lt;!&ndash;                    <button pButton [label]="'button.add' | translate" class="mb-2"&ndash;&gt;-->
+        <!--                &lt;!&ndash;                            icon="pi pi-user-plus" (click)="onAddGood()"></button>&ndash;&gt;-->
+        <!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+        <!--            </div>-->
+        <!--        </ng-template>-->
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search_by_name' | translate"
+                        class="w-full"
+                    />
+                </span>
+            </div>
+            <p-panel
+                class="flex flex-column"
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+            >
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.account'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.account"
+                            (onChange)="onChangeAccount($event)"
+                            [filter]="true"
+                            [options]="types.chartOfAccount"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.detail_1'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.detail1"
+                            (onChange)="getGoods()"
+                            [options]="types.detail1"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_group'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.menuType"
+                            (onChange)="getGoods()"
+                            [options]="types.menuType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.price_list'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.priceCode"
+                            (onChange)="getGoods()"
+                            [options]="types.priceList"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.goodType"
+                            (onChange)="getGoods()"
+                            [options]="types.goodsType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.location'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.position"
+                            (onChange)="getGoods()"
+                            [options]="types.position"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.menu_web'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.menuWeb"
+                            (onChange)="getGoods()"
+                            [options]="types.menuWeb"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.sort_field'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.sortField"
+                            (onChange)="onChangeSort($event, 'sortField')"
+                            [options]="sortFields"
+                            [optionLabel]="'label'"
+                            [optionValue]="'code'"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.sort_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.isSort"
+                            (onChange)="onChangeSort($event, 'sortType')"
+                            [options]="sortTypes"
+                            [optionLabel]="'label'"
+                            [optionValue]="'code'"
+                        ></p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.business_state'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.status"
+                            (onChange)="getGoods()"
+                            [options]="statuses"
+                            [optionLabel]="'label'"
+                            [optionValue]="'value'"
+                        ></p-dropdown>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1" pFrozenColumn [frozen]="true">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_good_code'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.web_good_name'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_good_image_1'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_good_image_2'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.web_good_image_3'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_good_image_4'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_good_image_5'"></span>
+                    </div>
+                </th>
+                <th
+                    class="w-1"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-good>
+            <tr>
+                <td class="w-1" pFrozenColumn [frozen]="true">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_code'"
+                    ></span>
+                    {{ getAccountCode(good) }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_name'"
+                    ></span>
+                    {{ getAccountName(good) }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_image_1'"
+                    ></span>
+                    <img
+                        width="40"
+                        height="40"
+                        [src]="baseUrlImage(good?.image1)"
+                    />
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_image_2'"
+                    ></span>
+                    <img
+                        width="40"
+                        height="40"
+                        [src]="baseUrlImage(good?.image2)"
+                    />
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_image_3'"
+                    ></span>
+                    <img
+                        width="40"
+                        height="40"
+                        [src]="baseUrlImage(good?.image3)"
+                    />
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_image_4'"
+                    ></span>
+                    <img
+                        width="40"
+                        height="40"
+                        [src]="baseUrlImage(good?.image4)"
+                    />
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_good_image_5'"
+                    ></span>
+                    <img
+                        width="40"
+                        height="40"
+                        [src]="baseUrlImage(good?.image5)"
+                    />
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-1 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.SANPHAM,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getGoodDetail(good)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.SANPHAM,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDeleteGood(good)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-product-edit
+    [display]="display"
+    [formData]="formData"
+    [types]="types"
+    (onCancel)="onCancelForm($event)"
+></app-product-edit>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_web_slider_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

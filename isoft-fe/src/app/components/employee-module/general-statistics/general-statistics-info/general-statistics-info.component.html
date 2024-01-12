@@ -1,0 +1,37 @@
+<div style="width: 40vw">
+    <p-table
+        #dt1
+        [value]="lst"
+        dataKey="id"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 10vw"></th>
+                <th style="width: 10vw">Tổng</th>
+                <th style="width: 10vw">Nam</th>
+                <th style="width: 10vw">Nữ</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-lst>
+            <tr>
+                <td style="width: 10vw">{{ lst.name }}</td>
+                <td style="width: 10vw" (click)="navigateEmployee(lst.id)">
+                    {{ lst.listChildren[0].soLuong }}
+                </td>
+                <td style="width: 10vw" (click)="navigateEmployee(lst.id)">
+                    {{ lst.listChildren[1].soLuong }}
+                </td>
+                <td style="width: 10vw" (click)="navigateEmployee(lst.id)">
+                    {{ lst.listChildren[2].soLuong }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

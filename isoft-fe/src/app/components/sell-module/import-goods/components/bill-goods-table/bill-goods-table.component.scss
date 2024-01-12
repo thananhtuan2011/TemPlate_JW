@@ -1,0 +1,228 @@
+.sidebar-custom {
+    overflow-y: scroll;
+    height: 430px;
+}
+
+p-speedDial ::ng-deep {
+    .p-speeddial-button {
+        position: absolute;
+        top: -55px;
+        right: 34px;
+    }
+}
+
+p-message ::ng-deep {
+    .p-inline-message-text {
+        line-height: 25px;
+    }
+}
+
+.field {
+    > label {
+        margin-bottom: 0;
+    }
+}
+
+:host ::ng-deep {
+    .min-width-120 {
+        min-width: 120px;
+    }
+
+    button {
+        z-index: 1;
+    }
+
+    .p-tag {
+        font-size: smaller !important;
+    }
+
+    p-autocomplete {
+        width: auto !important;
+    }
+
+    .p-orderlist .p-orderlist-list {
+        min-height: 50vh;
+    }
+
+    .p-inline-message.p-inline-message-info {
+        width: 100%;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only,
+    .p-speeddial-action {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .p-speeddial-direction-left {
+        right: 20px;
+        margin-top: 4px;
+    }
+
+    #surchargeInfo {
+        position: absolute;
+        right: 14px;
+        margin-top: 3px;
+    }
+
+    @media screen and (min-width: 769px) {
+        right: 152px !important;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only .p-button-icon {
+        font-size: inherit;
+    }
+
+    #customer .p-autocomplete .p-autocomplete-input {
+        min-height: 40px;
+        width: auto;
+        min-width: 200px;
+    }
+
+    #totalAmount .p-inputnumber-input {
+        font-weight: bold;
+    }
+
+    #discountProduct .p-inputnumber-input,
+    #totalCustomer .p-inputnumber-input,
+    #totalProduct .p-inputnumber-input {
+        text-align: left;
+    }
+
+    #discountPriceBill .p-inputnumber-input {
+        width: 5rem;
+    }
+
+    #quantity .p-inputnumber-input,
+    #box .p-inputnumber-input,
+    #nec .p-inputnumber-input {
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+        width: 60px;
+        color: var(--green-400);
+    }
+
+    .p-inputgroup-addon:first-child {
+        height: 40px;
+    }
+
+    .p-dialog .p-dialog-footer button {
+        margin: 0;
+    }
+
+    .p-autocomplete-clear-icon {
+        right: 4px !important;
+    }
+
+    .p-orderlist .p-orderlist-list .p-orderlist-item {
+        padding: 0.5rem;
+    }
+
+    .p-component:disabled {
+        opacity: 1;
+    }
+
+    #note {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.bill-goods-table-amount {
+    @media screen and (max-width: 768px) {
+        flex-direction: column !important;
+        .bill-goods-table-vat {
+            flex-direction: column;
+            align-items: flex-start !important;
+
+            .vat-dropdown {
+                align-items: center;
+                width: 100%;
+                .label-vat {
+                    width: 6.8rem;
+                }
+
+                app-list-of-tax-rates.invoice-field-vat {
+                    width: 100%;
+                    
+                    &::ng-deep {
+                        p-dropdown {
+                            .p-dropdown {
+                                width: 100% !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .vat-amount {
+                width: 100%;
+
+                p-inputnumber {
+                    width: 100% !important;
+                }
+            }
+        }
+        .total-amount {
+            justify-content: space-between !important;
+            margin-top: 8px;
+            label {
+                width: 6.8rem;
+            }
+        }
+    }
+
+    @media screen and (min-width: 769px) {
+        justify-content: space-between !important;
+        .bill-goods-table-vat {
+            flex-direction: row;
+            align-items: center !important;
+            justify-content: space-between !important;
+    
+            .vat-dropdown {
+                gap: 8px;
+                align-items: center;
+            }
+
+            .vat-amount {
+
+                p-inputnumber {
+                    width: 10rem !important;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .bill-goods-table-input-field {
+        flex-wrap: wrap;
+
+        &-box {
+            width: 30% !important;
+        }
+        &-nec {
+            width: 33% !important;
+        }
+        &-quantity {
+            width: 32.3% !important;
+        }
+    }
+
+    app-list-of-tax-rates.invoice-field-tax-code {
+        width: 68.2% !important;
+
+        &::ng-deep {
+            p-dropdown {
+                .p-dropdown {
+                    width: 100% !important;
+                }
+            }
+        }
+    }
+}

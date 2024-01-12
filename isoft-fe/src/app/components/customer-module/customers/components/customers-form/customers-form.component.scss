@@ -1,0 +1,40 @@
+:host ::ng-deep {
+    .field {
+        padding-top: unset;
+        padding-bottom: unset;
+    }
+    .ng-dirty .ng-invalid {
+        border: 1.5px solid red !important;
+    }
+
+    .autocomplete-panel-hidden {
+        .p-autocomplete-panel {
+            visibility: hidden;
+        }
+    }
+
+    .p-scroller {
+        min-width: 700px !important;
+        padding: 0 !important;
+        .p-autocomplete-item {
+            height: 35px !important;
+            line-height: 35px !important;
+        }
+    }
+
+    .p-dropdown.p-dropdown-clearable .p-dropdown-label {
+        min-height: 37px;
+    }
+
+    .p-dropdown {
+        min-height: 39px;
+    }
+
+    .p-inputgroup-addon:first-child,
+    .p-inputgroup button:first-child,
+    .p-inputgroup input:first-child,
+    .p-inputgroup > .p-inputwrapper:first-child > .p-component,
+    .p-inputgroup > .p-inputwrapper:first-child > .p-component > .p-inputtext {
+        height: 40px !important;
+    }
+}

@@ -1,0 +1,129 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'left_menu.profit_report'"></h5>
+    <p-table
+        #dt1
+        [value]="lstProfitBeforeTax"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-3">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="startDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày bắt đầu'"
+                        (onSelect)="getDailyReport()"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-3">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="endDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày kết thúc'"
+                        (onSelect)="getDailyReport()"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-3">
+                    <p-dropdown
+                        [options]="genders"
+                        [optionLabel]="'key'"
+                        class="w-full"
+                        [optionValue]="'value'"
+                        [(ngModel)]="cols[3].display"
+                        [ngModelOptions]="{ standalone: true }"
+                    >
+                    </p-dropdown>
+                </div>
+                <div class="field col-12 md:col-3 flex justify-content-end">
+                    <button
+                        class="p-button-warning w-auto"
+                        pButton
+                        type="button"
+                        [label]="'label.export_excel' | translate"
+                        (click)="onChangePrintExcel()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [style]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-lstProfitBeforeTax
+            let-columns="columns"
+        >
+            <tr>
+                <ng-container *ngFor="let col of cols">
+                    <td
+                        *ngIf="col.value == 'updatedDate' && col.display"
+                        [style]="col.width"
+                    >
+                        {{ rowData[col.value] | date: "d/MM/yyyy" }}
+                    </td>
+                    <td
+                        *ngIf="
+                            (col.value == 'goodsName' || col.value == 'note') &&
+                            col.display
+                        "
+                        [style]="col.width"
+                    >
+                        {{ rowData[col.value] }}
+                    </td>
+                    <td
+                        *ngIf="
+                            col.value != 'updatedDate' &&
+                            col.value != 'goodsName' &&
+                            col.value != 'note' &&
+                            col.display
+                        "
+                        [style]="col.width"
+                    >
+                        <p style="margin-left: auto">
+                            {{
+                                (rowData[col.value] ? rowData[col.value] : 0)
+                                    | number
+                            }}
+                        </p>
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    No General Profiit before tax found.
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Profiit before tax Level data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

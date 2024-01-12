@@ -1,0 +1,635 @@
+<p-toast></p-toast>
+<div
+    *ngIf="f"
+    id="add-ledger"
+    class="mt-6 md:mt-0 flex flex-column-reverse md:flex-column h-full"
+>
+    <div class="flex flex-wrap py-1 gap-2">
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINH,
+                action: appConstant.PERMISSION_FUNC.EDIT
+            }"
+        >
+            <button
+                *ngIf="fc['id']?.value === 0"
+                type="button"
+                pButton
+                label="F8. Lưu"
+                [disabled]="!validateForm()"
+                (click)="onF8()"
+                class="p-button-sm p-button-primary"
+                icon="pi pi-save"
+            ></button>
+            <button
+                *ngIf="fc['id']?.value > 0"
+                type="button"
+                pButton
+                label="F8. Lưu (thay đổi)"
+                [disabled]="!validateForm()"
+                (click)="onF8()"
+                class="p-button-sm p-button-primary"
+                icon="pi pi-save"
+            ></button>
+            <button
+                type="button"
+                pButton
+                label="F9. Hủy"
+                (click)="onF9()"
+                class="p-button-sm p-button-secondary"
+                icon="pi pi-trash"
+            ></button>
+        </ng-container>
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINH,
+                action: appConstant.PERMISSION_FUNC.ADD
+            }"
+        >
+            <button
+                type="button"
+                pButton
+                label="F2. Thêm định khoản"
+                class="p-button-sm p-button-success"
+                (click)="onF2()"
+                icon="pi pi-check-square"
+            ></button>
+        </ng-container>
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINH,
+                action: appConstant.PERMISSION_FUNC.EDIT
+            }"
+        >
+            <button
+                type="button"
+                pButton
+                label="F3. Đồng bộ tab"
+                class="p-button-sm p-button-help"
+                [disabled]="
+                    !validateForm() ||
+                    !ariseCrudMultipleV3Component ||
+                    !ariseCrudMultipleV3Component.allowOnF3
+                "
+                (click)="onF3()"
+                icon="pi pi-dollar"
+            ></button>
+        </ng-container>
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINH,
+                action: appConstant.PERMISSION_FUNC.ADD
+            }"
+        >
+            <button
+                pButton
+                [disabled]="!validateForm()"
+                (click)="onF4()"
+                type="button"
+                label="F4. Thêm hóa đơn"
+                class="p-button-sm p-button-warning"
+                icon="pi pi-chart-line"
+            ></button>
+        </ng-container>
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINH,
+                action: appConstant.PERMISSION_FUNC.EDIT
+            }"
+        >
+            <button
+                type="button"
+                *ngIf="isInvoiceCodeHasValue"
+                pButton
+                label="F10. Định khoản thuế"
+                class="p-button-sm p-button-help"
+                [disabled]="!validateForm()"
+                (click)="onF10()"
+                icon="pi pi-dollar"
+            ></button>
+            <button
+                #f7BtnTmp
+                type="button"
+                pButton
+                icon="pi pi-bars"
+                label="F7. Các lệnh khác"
+                class="p-button-sm p-button-info"
+                (click)="tieredMenuTmp.toggle($event)"
+            ></button>
+            <p-tieredMenu
+                id="tieredMenuTmp"
+                class="menu"
+                name="menu"
+                #tieredMenuTmp
+                [model]="buttonMenus"
+                [popup]="true"
+            ></p-tieredMenu>
+        </ng-container>
+    </div>
+
+    <form
+        *appHasAccess="{
+            menu: appConstant.MENU_TYPE.PHATSINH,
+            action: appConstant.PERMISSION_FUNC.EDIT
+        }"
+        [formGroup]="ledgerForm"
+        class="text-sm py-2"
+        pFocusTrap
+        pFocusTrapDisabled="true"
+    >
+        <div class="grid">
+            <ng-container *ngTemplateOutlet="codeAndDateTmp"></ng-container>
+            <ng-container *ngTemplateOutlet="phieuNhapTmp"></ng-container>
+            <ng-container *ngTemplateOutlet="khachHangTmp"></ng-container>
+            <ng-container *ngTemplateOutlet="dienGiaiTmp"></ng-container>
+        </div>
+        <p-divider styleClass="bg-orange-300"></p-divider>
+        <div class="grid">
+            <ng-container *ngTemplateOutlet="hoaDonTmp"></ng-container>
+            <ng-container *ngTemplateOutlet="thueTmp"></ng-container>
+        </div>
+        <p-divider styleClass="bg-orange-300"></p-divider>
+
+        <app-arise-crud-multiple-v3
+            #ariseCrudMultipleV3Component
+            [chartOfAccounts]="chartOfAccounts"
+            [listConfig]="listConfig"
+        >
+        </app-arise-crud-multiple-v3>
+        <ng-container
+            *ngTemplateOutlet="arisingForOriginVoucherNumberTmp"
+        ></ng-container>
+    </form>
+</div>
+
+<ng-template #codeAndDateTmp>
+    <div class="col-12 md:col-4 flex flex-column md:flex-row">
+        <!--orginalVoucherNumber-->
+        <div class="field flex font-bold">
+            <label class="font-bold w-120" [translate]="'label.code'"></label>
+            <input
+                #orginalVoucherNumberTmp
+                type="text"
+                class="p-inputtext-sm w-full md:ml-1"
+                pInputText
+                [formControl]="fc['orginalVoucherNumber']"
+            />
+        </div>
+        <!--orginalBookDate-->
+        <div class="field flex font-bold mt-1 md:mt-0 md:pl-0">
+            <label
+                class="font-bold w-120 md:pl-1"
+                [translate]="'label.date_added'"
+            ></label>
+            <p-inputMask
+                #orginalBookDateTmp
+                mask="99/99/9999"
+                [showClear]="true"
+                [formControl]="fc['orginalBookDate']"
+                (onBlur)="onChangeOrginalBookDate()"
+                class="p-inputtext-sm w-full"
+            >
+            </p-inputMask>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #phieuNhapTmp>
+    <div class="col-12 md:col-8 md:pl-0">
+        <div *ngIf="isShowPhieuNhap" class="flex">
+            <div class="field">
+                <label
+                    class="font-bold w-80"
+                    [translate]="'label.enter_coupon'"
+                ></label>
+            </div>
+            <!--referenceVoucherNumber-->
+            <input
+                #referenceVoucherNumberTmp
+                type="text"
+                class="p-inputtext-sm w-10rem md:ml-3"
+                pInputText
+                [formControl]="fc['referenceVoucherNumber']"
+            />
+            <!--referenceBookDate-->
+            <p-inputMask
+                #referenceBookDateTmp
+                mask="99/99/9999"
+                [showClear]="true"
+                [formControl]="fc['referenceBookDate']"
+                class="p-inputtext-sm ml-2"
+            ></p-inputMask>
+            <!--referenceFullName-->
+            <input
+                #referenceFullNameTmp
+                type="text"
+                class="p-inputtext-sm w-12rem md:ml-2"
+                pInputText
+                [formControl]="fc['referenceFullName']"
+            />
+            <!--referenceAddress-->
+            <input
+                #referenceAddressTmp
+                type="text"
+                class="p-inputtext-sm w-full md:ml-2"
+                pInputText
+                [formControl]="fc['referenceAddress']"
+            />
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #khachHangTmp>
+    <div class="col-12 md:col-4 flex flex-column">
+        <!--orginalCompanyName-->
+        <div class="field flex font-bold">
+            <label class="font-bold w-100">{{ orginalCompanyNameLabel }}</label>
+            <div class="p-inputgroup w-full">
+                <p-autoComplete
+                    #orginalCompanyNameTmp
+                    [ngModel]="fc['orginalCompanyName'].value"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteOrginalCompanyName
+                    }"
+                    [suggestions]="orginalCompanyNameFilter"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [completeOnFocus]="true"
+                    [showClear]="true"
+                    (completeMethod)="filterOrginalCompanyName($event)"
+                    (input)="
+                        fc['orginalCompanyName'].setValue($event?.target?.value)
+                    "
+                    (onFocus)="orginalCompanyNameTmp.handleDropdownClick()"
+                    (onClear)="onClearOrginalCompanyName()"
+                    (onSelect)="onSelectOrginalCompanyName($event)"
+                    field="name"
+                    class="p-inputtext-sm capitalize"
+                >
+                </p-autoComplete>
+                <span
+                    class="p-inputgroup-addon"
+                    [class.bg-blue-500]="isSavePayerName"
+                >
+                    <i
+                        class="pi pi-save"
+                        [class.text-white]="isSavePayerName"
+                        [class.cursor-pointer]="isSavePayerName"
+                        (click)="onSavePayerName.emit(null)"
+                    ></i>
+                </span>
+            </div>
+        </div>
+        <!--orginalAddress-->
+        <div class="field flex font-bold md:pt-1">
+            <label
+                class="font-bold w-100"
+                [translate]="'label.address'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['orginalAddress'].setValue('')"
+                    Class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    type="text"
+                    class="p-inputtext-sm w-full capitalize"
+                    pInputText
+                    [showClear]="true"
+                    (input)="onChangeOrginalAddress()"
+                    [formControl]="fc['orginalAddress']"
+                />
+            </span>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #dienGiaiTmp>
+    <div class="col-12 md:col-8 pl-0">
+        <!--orginalDescription-->
+        <div class="field flex align-items-center font-bold pl-0">
+            <label
+                class="font-bold w-100 pl-1 md:pl-0"
+                [translate]="'label.explain'"
+            ></label>
+            <div class="p-inputgroup w-full">
+                <p-autoComplete
+                    #orginalDescriptionTmp
+                    [ngModel]="fc['orginalDescription'].value"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteOrginalDescription
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="orginalDescriptionFilter"
+                    [showEmptyMessage]="true"
+                    [completeOnFocus]="true"
+                    [showClear]="true"
+                    (onClear)="onClearOrginalDescription()"
+                    (input)="
+                        fc['orginalDescription'].setValue($event?.target?.value)
+                    "
+                    (onSelect)="onSelectOrginalDescription($event)"
+                    (completeMethod)="filterOrginalDescription($event)"
+                    (onFocus)="orginalDescriptionTmp.handleDropdownClick()"
+                    field="name"
+                    class="p-inputtext-sm ml-2"
+                >
+                </p-autoComplete>
+                <span
+                    class="p-inputgroup-addon"
+                    [class.bg-blue-500]="isSaveDescription"
+                >
+                    <i
+                        class="pi pi-save"
+                        [class.text-white]="isSaveDescription"
+                        [class.cursor-pointer]="isSaveDescription"
+                        (click)="onSaveDescription.emit(null)"
+                    ></i>
+                </span>
+            </div>
+        </div>
+        <!--attachVoucher-->
+        <div class="field flex align-items-center font-bold pt-1 pl-0">
+            <label
+                class="font-bold w-100 pl-1 md:pl-0"
+                [translate]="'label.attach_voucher'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['attachVoucher'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #attachVoucherTmp
+                    type="text"
+                    class="p-inputtext-sm w-full ml-2"
+                    pInputText
+                    [formControl]="fc['attachVoucher']"
+                />
+            </span>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #hoaDonTmp>
+    <div class="col-12 md:col-2">
+        <!--invoiceCode-->
+        <div class="field flex align-items-center font-bold">
+            <label
+                class="font-bold"
+                style="min-width: 80px"
+                [translate]="'label.invoice_code'"
+            ></label>
+            <p-autoComplete
+                #invoiceCodeTmp
+                [ngModel]="fc['invoiceCode'].value"
+                [suggestions]="invoiceCodeFilter"
+                [ngClass]="{
+                    'autocomplete-panel-hidden': isHiddenAutoCompleteInvoiceCode
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [showEmptyMessage]="true"
+                [completeOnFocus]="true"
+                [showClear]="true"
+                (input)="fc['invoiceCode'].setValue($event?.target?.value)"
+                (keydown.Tab)="onChangeInputAutoCompleteInvoiceCode(true)"
+                (onBlur)="onBlurInputAutoCompleteInvoiceCode(false)"
+                (onClear)="onClearInvoiceCode()"
+                (onSelect)="onSelectInvoiceCode($event)"
+                (completeMethod)="filterInvoiceCode($event)"
+                (onFocus)="invoiceCodeTmp.handleDropdownClick()"
+                field="code"
+                class="p-inputtext-sm ml-1 uppercase"
+            >
+                <ng-template let-invoice pTemplate="item">
+                    <span>{{ invoice.code }} | {{ invoice.name }} | {{ invoice.percent }}%</span>
+                </ng-template>
+            </p-autoComplete>
+            <p-dropdown
+                #invoiceAdditionalDeclarationCodeTmp
+                id="internalType"
+                [disabled]="!isInvoiceCodeHasValue"
+                [options]="types.billType"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [formControl]="fc['invoiceAdditionalDeclarationCode']"
+                class="ml-2"
+            >
+            </p-dropdown>
+        </div>
+        <!--invoiceSerial-->
+        <div class="field flex align-items-center font-bold pt-1 md:pt-0">
+            <label
+                class="font-bold"
+                style="min-width: 80px"
+                [translate]="'label.invoice_serial'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['invoiceSerial'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #invoiceSerialTmp
+                    type="text"
+                    class="p-inputtext-sm w-full ml-1 uppercase"
+                    pInputText
+                    [formControl]="fc['invoiceSerial']"
+                    [readonly]="!isInvoiceCodeHasValue"
+                />
+            </span>
+        </div>
+    </div>
+    <div class="col-12 md:col-2">
+        <!--invoiceNumber-->
+        <div class="field flex align-items-center font-bold">
+            <label
+                class="font-bold w-120"
+                [translate]="'label.invoice_number'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['invoiceNumber'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #invoiceNumberTmp
+                    type="text"
+                    class="p-inputtext-sm w-full mr-2"
+                    pInputText
+                    [formControl]="fc['invoiceNumber']"
+                    [readonly]="!isInvoiceCodeHasValue"
+                />
+            </span>
+        </div>
+        <!--invoiceDate-->
+        <div class="field flex align-items-center font-bold">
+            <label
+                class="font-bold w-120"
+                [translate]="'label.invoice_date'"
+            ></label>
+            <p-inputMask
+                #invoiceDateTmp
+                mask="99/99/9999"
+                class="p-inputtext-sm w-full ml-1"
+                [formControl]="fc['invoiceDate']"
+                [readonly]="!isInvoiceCodeHasValue"
+            >
+            </p-inputMask>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #thueTmp>
+    <div class="col-12 md:col-4 pl-0">
+        <!--invoiceTaxCode-->
+        <div class="field flex align-items-center font-bold pl-0">
+            <label
+                class="font-bold w-120 pl-1 md:pl-0"
+                [translate]="'label.tax_code'"
+            ></label>
+            <div class="p-inputgroup w-full">
+                <p-autoComplete
+                    #invoiceTaxCodeTmp
+                    [ngModel]="fc['invoiceTaxCode'].value"
+                    [disabled]="!isInvoiceCodeHasValue"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteInvoiceTaxCode
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="invoiceTaxCodeFilter"
+                    [showEmptyMessage]="true"
+                    [completeOnFocus]="true"
+                    [showClear]="true"
+                    (onClear)="onClearInvoiceTaxCode()"
+                    (input)="
+                        fc['invoiceTaxCode'].setValue($event?.target?.value)
+                    "
+                    (onSelect)="onSelectInvoiceTaxCode($event)"
+                    (completeMethod)="filterInvoiceTaxCode($event)"
+                    (onFocus)="invoiceTaxCodeTmp.handleDropdownClick()"
+                    field="taxCode"
+                    class="p-inputtext-sm"
+                >
+                </p-autoComplete>
+                <span
+                    class="p-inputgroup-addon"
+                    [class.bg-blue-500]="isSaveTaxCode"
+                >
+                    <i
+                        class="pi pi-save"
+                        [class.text-white]="isSaveTaxCode"
+                        [class.cursor-pointer]="isSaveTaxCode"
+                        (click)="onSaveTaxCode.emit(null)"
+                    ></i>
+                </span>
+            </div>
+        </div>
+        <!--invoiceName-->
+        <div class="field flex align-items-center font-bold pl-0">
+            <label
+                class="font-bold w-120 pl-1 md:pl-0"
+                [translate]="'label.invoice_name'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['invoiceName'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #invoiceNameTmp
+                    type="text"
+                    class="p-inputtext-sm w-full capitalize"
+                    pInputText
+                    (input)="onChangeInvoiceTaxCode()"
+                    [formControl]="fc['invoiceName']"
+                    [readonly]="!isInvoiceCodeHasValue"
+                />
+            </span>
+        </div>
+    </div>
+    <div class="col-12 md:col-4">
+        <!--invoiceAddress-->
+        <div class="field flex align-items-center font-bold pl-0 md:-ml-1">
+            <label
+                class="font-bold w-150"
+                [translate]="'label.address'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['invoiceAddress'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #invoiceAddressTmp
+                    type="text"
+                    class="p-readonly-sm w-full md:ml-1 capitalize"
+                    pInputText
+                    (input)="onChangeInvoiceTaxCode()"
+                    [formControl]="fc['invoiceAddress']"
+                    [readonly]="!isInvoiceCodeHasValue"
+                />
+            </span>
+        </div>
+        <!--invoiceProductItem-->
+        <div class="field flex align-items-center font-bold md:-ml-1">
+            <label
+                class="font-bold w-150"
+                [translate]="'label.sale_product'"
+            ></label>
+            <span class="w-full p-input-icon-right">
+                <i
+                    (click)="fc['invoiceProductItem'].setValue('')"
+                    class="pi pi-times cursor-pointer"
+                ></i>
+                <input
+                    #invoiceProductItemTmp
+                    type="text"
+                    class="p-inputtext-sm w-full md:ml-1 capitalize"
+                    pInputText
+                    (input)="onChangeInvoiceTaxCode()"
+                    [formControl]="fc['invoiceProductItem']"
+                    [readonly]="!isInvoiceCodeHasValue"
+                />
+            </span>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #arisingForOriginVoucherNumberTmp>
+    <div
+        *ngIf="
+            arisingForOriginVoucherNumber &&
+            arisingForOriginVoucherNumber.totalItem > 0 &&
+            allowWorkForm
+        "
+        class="col-12 pl-0 orginal-voucher-number-summary"
+    >
+        <span>
+            Mã
+            <span class="account">{{ fc["orginalVoucherNumber"].value }}</span>
+            có {{ arisingForOriginVoucherNumber.totalItem }} dòng dữ liệu.
+            <ng-container
+                *ngFor="
+                    let item of arisingForOriginVoucherNumber.ledgers;
+                    let index = index
+                "
+            >
+                <span class="account">{{ item.acountCode }}: </span>
+                <span> {{ item.totalAmount | doubleInString }}đ</span>
+                <span
+                    class="minus"
+                    *ngIf="
+                        index < arisingForOriginVoucherNumber.ledgers.length - 1
+                    "
+                >
+                    -
+                </span>
+            </ng-container>
+        </span>
+    </div>
+</ng-template>

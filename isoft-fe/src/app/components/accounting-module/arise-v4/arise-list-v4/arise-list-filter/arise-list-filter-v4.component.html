@@ -1,0 +1,119 @@
+<div
+    id="app-arise-list-filter-v2"
+    class="flex text-sm p-1 flex-column md:flex-row"
+>
+    <div class="flex align-items-center gap-1 md:w-full md:w-3">
+        <label
+            class="font-bold text-primary w-3 md:text-right"
+            style="min-width: 60px"
+            [translate]="'left_menu.license'"
+        ></label>
+        <p-dropdown
+            [options]="documentList"
+            [(ngModel)]="dataTable.document"
+            (onChange)="onChangeDocument()"
+            [filter]="true"
+            class="w-full px-2 p-inputtext-sm"
+            optionLabel="name"
+        >
+        </p-dropdown>
+    </div>
+    <div class="flex align-items-center gap-1 md:w-full md:w-1">
+        <label
+            class="font-bold text-primary w-3 md:text-right"
+            [translate]="'label.month'"
+        ></label>
+        <p-dropdown
+            [options]="types.month"
+            [(ngModel)]="dataTable.filterMonth"
+            [filter]="true"
+            (onChange)="onFilter.emit()"
+            class="w-full px-2 p-inputtext-sm"
+        >
+        </p-dropdown>
+    </div>
+    <div class="flex align-items-center gap-1 md:w-full md:w-1">
+        <label
+            class="font-bold text-primary w-3 md:text-right"
+            style="min-width: 40px"
+            [translate]="'label.internal'"
+        ></label>
+        <p-dropdown
+            [options]="types.internalType"
+            [(ngModel)]="dataTable.isInternal"
+            (onChange)="onFilter.emit()"
+            optionLabel="name"
+            optionValue="value"
+            class="w-full px-2 p-inputtext-sm"
+        >
+            <ng-template let-item pTemplate="item">
+                <div>
+                    <div>{{ item.name }}</div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <div class="flex align-items-center gap-1 md:w-full md:w-2">
+        <label
+            class="font-bold text-primary w-3 md:text-right"
+            [translate]="'label.key_word'"
+        ></label>
+        <div class="px-2 w-full">
+            <input
+                type="text"
+                [(ngModel)]="dataTable.searchText"
+                (change)="onFilter.emit()"
+                pInputText
+                class="w-full p-inputtext-sm"
+            />
+        </div>
+    </div>
+    <div
+        class="flex flex-grow-1 align-items-center justify-content-start flex-wrap gap-4"
+    >
+        <button
+            pButton
+            type="button"
+            class="p-button-outlined hidden md:flex md:align-content-center md:justify-content-center"
+            icon="pi pi-arrow-left"
+            (click)="onBackHomePage.emit()"
+            [label]="'F6.Quay lại'"
+        ></button>
+        <button
+            pButton
+            type="button"
+            class="p-button-outlined flex align-items-center justify-content-center md:hidden"
+            icon="pi pi-arrow-left"
+        ></button>
+        <button pButton type="button" [translate]="'label.search'"></button>
+        <button
+            pButton
+            type="button"
+            [translate]="'label.import_excel'"
+            (click)="file.click()"
+        ></button>
+        <button
+            pButton
+            type="button"
+            [translate]="'label.export_excel'"
+            (click)="onExportExcel()"
+        ></button>
+        <button
+            pButton
+            type="button"
+            [translate]="'label.export_excel_sample'"
+            class="p-button-success"
+            (click)="onExportExcelSample()"
+        ></button>
+    </div>
+    <form [formGroup]="formInput">
+        <input
+            type="file"
+            #file
+            accept=".xlsx"
+            (change)="onImportExcel(file.files)"
+            style="display: none"
+            formControlName="uploadFile"
+        />
+    </form>
+</div>

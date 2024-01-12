@@ -1,0 +1,189 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.setRevenueScore'"></h5>
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="listData"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getRevenueScore($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2"> </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.DIEMDOANHSO,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAdd()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [ngClass]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+                <th *ngIf="isMobile" class="w-1"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-1"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-item
+        >
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <td *ngIf="col.display"  [ngClass]="!isMobile ? col.width : ''">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <div [ngSwitch]="col.type">
+                            <div *ngSwitchCase="'date'">
+                                {{ rowData[col.value] | date: "dd/mm/yy" }}
+                            </div>
+                            <div *ngSwitchCase="'number'">
+                                {{ rowData[col.value] | number }}
+                            </div>
+                            <div *ngSwitchDefault>{{ rowData[col.value] }}</div>
+                        </div>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile" class="w-1">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.DIEMDOANHSO,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(rowData)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.DIEMDOANHSO,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(rowData.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-1 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.DIEMDOANHSO,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(rowData)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.DIEMDOANHSO,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(rowData.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-revenue-score-form
+    #decideForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getRevenueScore(null, false); isReset = false"
+    [isEdit]="isEdit"
+>
+</app-revenue-score-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            class="mr-3"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

@@ -1,0 +1,130 @@
+<p-toast></p-toast>
+<div class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between">
+        <h5 [translate]="'label.kpi_report'"></h5>
+    </div>
+    <p-tabView>
+        <p-tabPanel [header]="'Biểu đồ'">
+            <div class="flex justify-content-end mb-4">
+                <div>
+                    <p-dropdown
+                        [formControl]="month2"
+                        [options]="months"
+                        optionLabel="name"
+                        optionValue="value"
+                    ></p-dropdown>
+                </div>
+            </div>
+            <!-- (onNodeSelect)="onNodeSelect($event)" -->
+            <ng-template [ngIf]="!isMobile">
+                <p-organizationChart
+                    [value]="data1"
+                    selectionMode="single"
+                    [(selection)]="selectedNode"
+                    styleClass="company"
+                >
+                    <ng-template let-node pTemplate="person">
+                        <div class="node-header">{{ node.label }}</div>
+                        <div class="node-content">
+                            <img
+                                src="assets/layout/images/logo-02.png"
+                                width="32"
+                            />
+                            <div>{{ node.data.name }}</div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-node pTemplate="department">
+                        {{ node.label }}
+                    </ng-template>
+                </p-organizationChart>
+            </ng-template>
+            <ng-template [ngIf]="isMobile">
+                <app-report-kpi-mchart *ngIf="dataMChart" [data]="dataMChart"></app-report-kpi-mchart>
+            </ng-template>
+        </p-tabPanel>
+        <p-tabPanel [header]="'Danh sách'">
+            <p-table
+                #dt
+                [value]="result"
+                [paginator]="false"
+                [showCurrentPageReport]="true"
+                responsiveLayout="stack"
+                [breakpoint]="'1199px'"
+                styleClass="p-datatable-gridlines sidebar-custom"
+                dataKey="id"
+                [loading]="loading"
+                [rowHover]="true"
+                lazy="true"
+                [globalFilterFields]="['userCode', 'userName', 'point']"
+                currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex justify-content-between md:justify-content-end flex-column md:flex-row"
+                    >
+                        <button
+                            pButton
+                            [label]="'button.export' | translate"
+                            (click)="getkpi()"
+                            class="p-button-warning mb-2 mr-2"
+                            icon="pi pi-download"
+                        ></button>
+
+                        <p-dropdown
+                            [formControl]="month"
+                            [options]="months"
+                            optionLabel="name"
+                            optionValue="value"
+                        ></p-dropdown>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th
+                            class="w-3"
+                            *ngFor="let col of cols"
+                            [className]="col.classHeader"
+                        >
+                            <div class="flex align-items-center">
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-target>
+                    <tr>
+                        <td
+                            *ngFor="let col of cols"
+                            [className]="col.classBody"
+                        >
+                            <span
+                                class="p-column-title"
+                                [translate]="col.header"
+                            ></span>
+                            {{
+                                col.slot === "number"
+                                    ? target[col.field] || 0
+                                    : target[col.field]
+                            }}{{ col.field === "percent" ? "%" : "" }}
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr class="p-rowgroup-footer">
+                        <td colspan="10" class="w-full pt-4 pb-4">
+                            {{ "info.no_data" | translate }}
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="10" class="w-full pt-4 pb-4">
+                            {{ "info.loading" | translate }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+    </p-tabView>
+</div>

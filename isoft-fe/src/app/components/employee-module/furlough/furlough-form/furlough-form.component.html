@@ -1,0 +1,98 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        class="px-1"
+        [translate]="formData.id ? 'Chỉnh sửa nghỉ phép' : 'Thêm mới nghỉ phép'"
+    ></h5>
+    <form [formGroup]="furloughForm" class="grid w-full">
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label for="procedureNumber">Số quy trình</label>
+            <input
+                id="procedureNumber"
+                pInputText
+                placeholder="Nhập số quy trình"
+                class="w-full"
+                formControlName="procedureNumber"
+            />
+        </div>
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label for="procedureNumber">Tên</label>
+            <input
+                id="name"
+                pInputText
+                placeholder="Nhập tên"
+                class="w-full"
+                formControlName="name"
+            />
+        </div>
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label for="fromDate">Từ ngày</label>
+            <p-calendar
+                id="fromDate"
+                [(ngModel)]="furloughForm.value.fromDate"
+                [showIcon]="true"
+                placeholder="Từ ngày"
+                dateFormat="dd/mm/yy"
+                hourFormat="24"
+                [showTime]="true"
+                styleClass="w-full"
+                formControlName="fromDate"
+            ></p-calendar>
+        </div>
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label for="toDate">Từ ngày</label>
+            <p-calendar
+                id="toDate"
+                [(ngModel)]="furloughForm.value.toDate"
+                [showIcon]="true"
+                placeholder="Từ ngày"
+                dateFormat="dd/mm/yy"
+                [showTime]="true"
+                styleClass="w-full"
+                formControlName="toDate"
+            ></p-calendar>
+        </div>
+        <div class="field col-12 flex align-items-center">
+            <label for="isLicensed" class="mb-0 mr-4">Nghỉ phép</label>
+            <p-checkbox
+                id="isLicensed"
+                [(ngModel)]="furloughForm.value.isLicensed"
+                [binary]="true"
+                inputId="binary"
+                formControlName="isLicensed"
+            ></p-checkbox>
+        </div>
+        <div class="field col-12 flex flex-column">
+            <label for="reason">Lý do</label>
+            <textarea
+                id="reason"
+                rows="5"
+                class="w-full"
+                pInputTextarea
+                formControlName="reason"
+            ></textarea>
+        </div>
+        <div
+            class="field col-12 flex align-items-center justify-content-end gap-2"
+        >
+            <button
+                *ngIf="formData?.id"
+                pButton
+                class="p-button-danger"
+                (click)="onDelete()"
+            >
+                Xóa (F11)
+            </button>
+            <button pButton (click)="onSave()">Lưu (F8)</button>
+            <button pButton class="p-button-info" (click)="onForward()">
+                Chuyển tiếp (F10)
+            </button>
+            <button
+                pButton
+                class="p-button-secondary"
+                (click)="onCancel.emit({})"
+            >
+                Hủy (F6)
+            </button>
+        </div>
+    </form>
+</div>

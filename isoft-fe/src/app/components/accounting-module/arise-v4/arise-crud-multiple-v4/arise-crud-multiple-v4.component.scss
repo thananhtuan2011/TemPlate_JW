@@ -1,0 +1,21 @@
+:host ::ng-deep {
+    p-datatable .p-datatable-thead > tr > th {
+        padding: 2px 2px;
+        font-size: 11px;
+    }
+
+    .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
+    .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+
+    .p-datatable .p-datatable-thead > tr > th {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .border-right-grey {
+        border-right: 2px solid #dee2e6 !important;
+    }
+}

@@ -1,0 +1,115 @@
+<!-- <p-toast></p-toast>
+<p-dialog *ngIf="PositionDetailForm.value" [header]="title" [(visible)]="display" (onHide)="onCancel.emit({})"
+    [modal]="true" [draggable]="false" [resizable]="false">
+    <form [formGroup]="PositionDetailForm" class="card mb-0">
+        <div class="p-fluid p-formgrid grid mt-2">
+            <div class="field col-12">
+                <label htmlFor="code" [translate]="'label.position'"></label>
+                <p-dropdown id="provinceId" [options]="positions" [optionLabel]="'name'" [optionValue]="'id'"
+                    showClear="true" [formControlName]="'positionId'" [appendTo]="'body'"
+                    [placeholder]="'label.empty' | translate" [filter]="true" filterBy="name"></p-dropdown>
+            </div>
+            <div class="field col-12">
+                <label htmlFor="name" [translate]="'label.name'"></label>
+                <input pInputText id="name" [(ngModel)]="PositionDetailForm.value.name" formControlName="name"
+                    [ngClass]="checkValidValidator('name')" />
+                <small *ngIf="checkValidValidator('name')" class="p-error"
+                    [innerHTML]="'info.name' | translate"></small>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button icon="pi pi-times" (click)="onCancel.emit({})" [label]="'button.back' | translate"
+            styleClass="p-button-outlined"></p-button>
+        <p-button icon="pi pi-check" (click)="onSubmit()" [label]="'button.save' | translate"></p-button>
+    </ng-template>
+</p-dialog> -->
+
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit ? 'label.edit_Position' : 'label.add_Position'
+                "
+            ></h5>
+            <form [formGroup]="PositionDetailForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-6">
+                        <label
+                            htmlFor="code"
+                            [translate]="'label.position'"
+                        ></label>
+                        <p-dropdown
+                            [formControlName]="'positionId'"
+                            [(ngModel)]="PositionDetailForm.value.positionId"
+                            [options]="positions"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                        ></p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label
+                            htmlFor="name"
+                            [translate]="'label.name'"
+                        ></label>
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="PositionDetailForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label
+                            htmlFor="order"
+                            [translate]="'label.job_order'"
+                        ></label>
+                        <p-inputNumber
+                            id="order"
+                            [(ngModel)]="PositionDetailForm.value.order"
+                            formControlName="order"
+                            [ngClass]="checkValidValidator('order')"
+                        ></p-inputNumber>
+                    </div>
+                    <div class="field col-12 flex flex-column">
+                        <p-checkbox
+                            class="mr-5"
+                            [label]="'label.level_manager' | translate"
+                            [binary]="true"
+                            formControlName="isManager"
+                        ></p-checkbox>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

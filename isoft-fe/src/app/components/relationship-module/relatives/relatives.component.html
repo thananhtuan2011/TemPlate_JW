@@ -1,0 +1,607 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 class="mb-0" [translate]="'label.relative_management'"></h5>
+    <div class="flex row">
+        <div class="col-5 flex flex-column align-items-center pr-0">
+            <span class="text-center">{{
+                "label.user_statistics_gender_chart" | translate
+            }}</span>
+            <p-chart
+                type="pie"
+                [data]="statisAgeGroupData"
+                height="180px"
+            ></p-chart>
+        </div>
+        <div class="col-7 flex flex-column pl-0">
+            <span class="text-center">{{
+                "label.relative_statistics_birthday_in_month_chart" | translate
+            }}</span>
+            <p-chart
+                type="bar"
+                [data]="statisAgeGroupByMonth"
+                height="180px"
+                [options]="statisAgeGroupByMonthOptions"
+            >
+            </p-chart>
+        </div>
+    </div>
+
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="lstRelatives"
+        dataKey="id"
+        [rows]="10"
+        [loading]="false"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getRelatives($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.export' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="exportData()"
+                    ></button>
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NGUOITHAN,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2 mr-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                    <p-button
+                        class="p-button-danger mb-2"
+                        icon="pi pi-th-large"
+                        (click)="op.toggle($event)"
+                    >
+                    </p-button>
+                </div>
+            </div>
+            <p-panel
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+                styleClass="mb-3 "
+            >
+                <div class="grid p-fluid formgrid">
+                    <div class="grid col-12 my-2">
+                        <div class="field col-6 md:col-3 px-3">
+                            <label
+                                htmlFor="search_For"
+                                [translate]="'label.searchFor'"
+                            ></label>
+                            <div class="flex gap-8 align-items-center">
+                                <div
+                                    *ngFor="let item of searchFor"
+                                    class="field-radiobutton field"
+                                >
+                                    <p-radioButton
+                                        name="chooseSearhBirth"
+                                        [value]="item.value"
+                                        [(ngModel)]="chooseSearhBirth"
+                                        [inputId]="item.key"
+                                    ></p-radioButton>
+                                    <label
+                                        [for]="item.key"
+                                        [translate]="item.label"
+                                    ></label>
+                                </div>
+                            </div>
+                        </div>
+                        <form
+                            [formGroup]="searchAdvancedForm"
+                            class="grid col-9 my-2"
+                        >
+                            <!-- search for date -->
+                            <div
+                                class="field col-6 md:col-4 px-3"
+                                *ngIf="chooseSearhBirth"
+                            >
+                                <label htmlFor="startDate"
+                                    >{{ "label.birthday_from" | translate
+                                    }}<span class="text-pink mr-2"></span
+                                ></label>
+                                <p-calendar
+                                    [(ngModel)]="
+                                        searchAdvancedForm.value.startDate
+                                    "
+                                    [showIcon]="true"
+                                    inputId="icon"
+                                    [formControlName]="'startDate'"
+                                ></p-calendar>
+                            </div>
+                            <div
+                                class="field col-6 md:col-4 px-3"
+                                *ngIf="chooseSearhBirth"
+                            >
+                                <label htmlFor="startDate"
+                                    >{{ "label.birthday_to" | translate
+                                    }}<span class="text-pink mr-2"></span
+                                ></label>
+                                <p-calendar
+                                    [(ngModel)]="
+                                        searchAdvancedForm.value.endDate
+                                    "
+                                    [showIcon]="true"
+                                    inputId="icon"
+                                    [formControlName]="'endDate'"
+                                ></p-calendar>
+                            </div>
+                            <!-- search for age -->
+                            <div
+                                class="field col-6 md:col-4 px-3"
+                                *ngIf="!chooseSearhBirth"
+                            >
+                                <label htmlFor="startAge"
+                                    >{{ "label.age_from" | translate
+                                    }}<span class="text-pink mr-2"></span
+                                ></label>
+                                <p-inputNumber
+                                    [formControlName]="'startAge'"
+                                    mode="decimal"
+                                    [min]="0"
+                                    [max]="100"
+                                    [showButtons]="true"
+                                >
+                                </p-inputNumber>
+                            </div>
+                            <div
+                                class="field col-6 md:col-4 px-3"
+                                *ngIf="!chooseSearhBirth"
+                            >
+                                <label htmlFor="endDate"
+                                    >{{ "label.age_to" | translate
+                                    }}<span class="text-pink mr-2"></span
+                                ></label>
+                                <p-inputNumber
+                                    [formControlName]="'endAge'"
+                                    mode="decimal"
+                                    [min]="searchAdvancedForm.value.startAge"
+                                    [max]="100"
+                                    [showButtons]="true"
+                                >
+                                </p-inputNumber>
+                            </div>
+                            <!-- name_identify -->
+                            <div class="field col-12 md:col-4 px-3">
+                                <label
+                                    htmlFor="name_identify"
+                                    [translate]="'label.name_identify'"
+                                ></label>
+                                <input
+                                    id="float-input"
+                                    type="text"
+                                    pInputText
+                                    [(ngModel)]="value2"
+                                    [formControlName]="'keyword'"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="grid col-12 my-2">
+                        <form
+                            [formGroup]="searchAdvancedForm"
+                            class="grid col-9 my-2"
+                        >
+                            <!-- degree -->
+                            <div class="field col-12 md:col-4 px-3">
+                                <label
+                                    htmlFor="degree"
+                                    [translate]="'label.degree'"
+                                ></label>
+                                <input
+                                    [formControlName]="'Degree'"
+                                    pInputText
+                                    type="text"
+                                    [placeholder]="'label.degree' | translate"
+                                />
+                            </div>
+                            <!-- cetificate -->
+                            <div class="field col-12 md:col-4 px-3">
+                                <label
+                                    htmlFor="certificate"
+                                    [translate]="'label.certificate'"
+                                ></label>
+                                <input
+                                    [formControlName]="'CertificateOther'"
+                                    pInputText
+                                    type="text"
+                                    [placeholder]="
+                                        'label.certificate' | translate
+                                    "
+                                />
+                            </div>
+                            <!-- gender -->
+                            <div class="field col-12 md:col-4 px-3">
+                                <label
+                                    htmlFor="certificate"
+                                    [translate]="'label.gender'"
+                                ></label>
+                                <p-dropdown
+                                    [options]="genders"
+                                    [formControlName]="'gender'"
+                                    optionLabel="key"
+                                    [filter]="true"
+                                    filterBy="key"
+                                    [showClear]="true"
+                                    [placeholder]="'label.gender' | translate"
+                                >
+                                </p-dropdown>
+                            </div>
+                        </form>
+                        <div class="grid col-3 my-2 justify-content-center">
+                            <div class="flex mt-2 md:mt-4">
+                                <p-button
+                                    (click)="resetForm()"
+                                    [label]="'button.reset_form' | translate"
+                                    styleClass="p-button-outlined"
+                                    class="mb-2 mr-2"
+                                ></p-button>
+                                <p-button
+                                    [label]="'button.search' | translate"
+                                    class="mb-2 mr-2"
+                                    (click)="search()"
+                                >
+                                </p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [ngClass]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-user
+        >
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <td *ngIf="col.value == 'avatar'" [ngClass]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p-avatar
+                            [image]="serverImg + user.avatar"
+                            size="large"
+                            shape="circle"
+                            [title]="user.fullName"
+                        >
+                        </p-avatar>
+                    </td>
+                    <td *ngIf="col.value == 'gender'" [ngClass]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <div *ngIf="rowData[col.value] == 0">
+                            <p-badge
+                                severity="success"
+                                [value]="'label.male' | translate"
+                            ></p-badge>
+                        </div>
+                        <div *ngIf="rowData[col.value] == 1">
+                            <p-badge
+                                severity="danger"
+                                [value]="'label.female' | translate"
+                            ></p-badge>
+                        </div>
+                    </td>
+                    <td
+                        *ngIf="
+                            col.display &&
+                            col.value != 'avatar' &&
+                            col.value != 'gender'
+                        "
+                        [ngClass]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p
+                            *ngIf="
+                                col.value == 'birthDay' ||
+                                    col.value == 'lastLogin' ||
+                                    col.value == 'sendSalaryDate' ||
+                                    col.value == 'socialInsuranceCreated';
+                                else elseBlock
+                            "
+                        >
+                            {{ rowData[col.value] | date: "dd/MM/yyyy" }}
+                        </p>
+                        <ng-template #elseBlock>{{
+                            rowData[col.value]
+                        }}</ng-template>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile" class="w-2">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NGUOITHAN,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NGUOITHAN,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NGUOITHAN,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NGUOITHAN,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No relatives found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading relatives data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-overlayPanel #op [showCloseIcon]="true" [style]="{ width: '450px' }">
+    <ng-template pTemplate>
+        <p-accordion>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0 mr-2"
+                            [translate]="'label.personal_info'"
+                        ></h5>
+                        <div
+                            class="flex align-items-center"
+                            *ngIf="
+                                isInvalidForm &&
+                                checkValidMultiValidator([
+                                    'code',
+                                    'userRoleIds',
+                                    'branchId',
+                                    'warehouseId',
+                                    'departmentId',
+                                    'positionDetailId',
+                                    'targetId',
+                                    'symbolId',
+                                    'language',
+                                    'note'
+                                ])
+                            "
+                        >
+                            <span
+                                class="p-error"
+                                style="margin-top: 2px"
+                                [translate]="
+                                    'info.enter_personal_tax' | translate
+                                "
+                            ></span>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'personal_info' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0 mr-2"
+                            [translate]="'label.literacy'"
+                        ></h5>
+                        <div
+                            class="flex align-items-center"
+                            *ngIf="
+                                isInvalidForm &&
+                                checkValidMultiValidator([
+                                    'code',
+                                    'userRoleIds',
+                                    'branchId',
+                                    'warehouseId',
+                                    'departmentId',
+                                    'positionDetailId',
+                                    'targetId',
+                                    'symbolId',
+                                    'language',
+                                    'note'
+                                ])
+                            "
+                        >
+                            <span
+                                class="p-error"
+                                style="margin-top: 2px"
+                                [translate]="
+                                    'info.enter_personal_tax' | translate
+                                "
+                            ></span>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'literacy' && col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+    </ng-template>
+</p-overlayPanel>
+<!-- add relatives form -->
+<app-relatives-form
+    #relativesForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [branches]="branches"
+    [majors]="majors"
+    [positionDetails]="positionDetails"
+    [warehouses]="warehouses"
+    [targets]="targets"
+    [symbols]="symbols"
+    [contractTypes]="contractTypes"
+    [display]="display"
+    (onCancel)="display = false; getRelatives(null, false); isReset = false"
+    [isEdit]="isEdit"
+    [provinces]="provinces"
+    [nativeProvinces]="nativeProvinces"
+    [roles]="roles"
+></app-relatives-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_user_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

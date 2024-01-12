@@ -1,0 +1,174 @@
+<p-toast></p-toast>
+<div>
+    <h5>{{ selectedItem.name }}</h5>
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="listSalaryAdvanceDetail"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getSalaryAdvanceDetail($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Shnpowing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2"> </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                ></div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [ngClass]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+                <th *ngIf="isMobile"></th>
+                <th
+                    class="w-5"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-item
+        >
+            <tr>
+                <td class="w-5rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ item.id }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.full_name'"
+                    ></span
+                    >{{ item.userId }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.full_name'"
+                    ></span
+                    >{{ item.userName }}
+                </td>
+                <td class="w-2">
+                    <p-inputNumber
+                        class="w-full"
+                        [(ngModel)]="item.value"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></p-inputNumber>
+                </td>
+                <ng-container *ngFor="let col of columns">
+                    <td
+                        *ngIf="col.optionHide && col.display"
+                        [ngClass]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p
+                            *ngIf="
+                                col.value == 'identityCardIssueDate' ||
+                                    col.value == 'identityCardValidUntil';
+                                else elseBlock
+                            "
+                        >
+                            {{ rowData[col.value] | date: "dd/MM/yyyy" }}
+                        </p>
+                        <ng-template #elseBlock>{{
+                            rowData[col.value]
+                        }}</ng-template>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile">
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-save"
+                        (click)="onSave()"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-5 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *ngIf="currentPageRole && currentPageRole.edit"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-save"
+                        (click)="onSave()"
+                    ></button>
+                    <!-- <button *ngIf="currentPageRole && currentPageRole.delete" pButton class="p-button-danger" icon="pi pi-trash"
+            (click)="onDelete()"></button> -->
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="p-fluid p-formgrid grid mt-2">
+            <div class="field col-12 gap-8 flex justify-content-end mt-4 p-0">
+                <p-button
+                    icon="pi pi-times"
+                    (click)="onCancel.emit({})"
+                    [label]="'button.backF6' | translate"
+                    styleClass="p-button-outlined"
+                ></p-button>
+                <p-button
+                    icon="pi pi-check"
+                    (click)="onSubmit()"
+                    [label]="'button.saveF8' | translate"
+                >
+                </p-button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,306 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.tools_fixed_assets_management'"></h5>
+    <p-table
+        #dt1
+        [value]="listToolsFixedAssets"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getFixedAssetsUser($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="
+                            (appMain.isDesktop() ? 'button.import' : '')
+                                | translate
+                        "
+                        (click)="file.click()"
+                        class="p-danger mb-2 mr-2"
+                        icon="pi pi-upload"
+                    ></button>
+                    <button
+                        pButton
+                        [label]="
+                            (appMain.isDesktop() ? 'button.export' : '')
+                                | translate
+                        "
+                        (click)="onExportExcel()"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CCDCTSCDUSER,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        [routerLink]="['/uikit/fixed-assets-user', 0]"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.account'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.detail_1'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.detail_2'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.date_to_use'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.price_money'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.month_depreciation'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.department'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.people_to_use'"></span>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.depreciation'"></span>
+                    </div>
+                </th>
+                <th class="w-2" *ngIf="isMobile"></th>
+                <th
+                    class="w-2"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.account'"
+                    ></span
+                    >{{ user.creditCode }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.detail_1'"
+                    ></span
+                    >{{ user.creditDetailCodeFirst }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.detail_2'"
+                    ></span
+                    >{{ user.creditDetailCodeSecond }}
+                </td>
+                <td class="w-2 cell-number">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.date_to_use'"
+                    ></span
+                    >{{ user.usedDate | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-2 cell-number">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.price_money'"
+                    ></span
+                    >{{ user.historicalCost | number: "1.0-0" }}
+                </td>
+                <td class="w-2 cell-number">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.month_depreciation'"
+                    ></span
+                    >{{ user.totalMonth }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.department'"
+                    ></span
+                    >{{ user.departmentManagerName }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.people_to_use'"
+                    ></span
+                    >{{ user.userManagerName }}
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.depreciation'"
+                    ></span
+                    >{{ user.use === 1 ? "Có" : "Không" }}
+                </td>
+                <td class="w-2" *ngIf="isMobile">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CCDCTSCDUSER,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        [routerLink]="['/uikit/fixed-assets-user', user.id]"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CCDCTSCDUSER,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CCDCTSCDUSER,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        [routerLink]="['/uikit/fixed-assets-user', user.id]"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CCDCTSCDUSER,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No tools fixed asset found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading tools fixed asset data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_tools_fixed_assets'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<input
+    type="file"
+    #file
+    accept=".xlsx"
+    style="display: none"
+    (change)="onImportExcel(file.files)"
+    [formControl]="uploadFile"
+/>

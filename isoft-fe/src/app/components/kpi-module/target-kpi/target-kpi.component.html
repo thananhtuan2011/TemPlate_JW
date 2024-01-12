@@ -1,0 +1,111 @@
+<p-toast></p-toast>
+<div class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between">
+        <h5 [translate]="'label.kpi_target'"></h5>
+    </div>
+    <button
+        *appHasAccess="{
+            menu: appConstant.MENU_TYPE.KPIMUCTIEU,
+            action: appConstant.PERMISSION_FUNC.ADD
+        }"
+        pButton
+        [label]="'button.addF7' | translate"
+        (change)="isUpdate = true"
+        class="block mb-4 btn-kpi-add"
+        [routerLink]="['./', 'create']"
+        icon="pi pi-user-plus"
+    ></button>
+    <p-table
+        #dt
+        [value]="result.data"
+        responsiveLayout="stack"
+        [breakpoint]="'1199px'"
+        [paginator]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        dataKey="id"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [loading]="loading"
+        [rowHover]="true"
+        [totalRecords]="result?.totalItems"
+        lazy="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-between md:justify-content-end flex-column md:flex-row"
+            >
+                <p-dropdown
+                    [formControl]="month"
+                    [options]="months"
+                    optionLabel="name"
+                    optionValue="value"
+                ></p-dropdown>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th *ngFor="let col of cols" [className]="col.classHeader">
+                    <div class="flex align-items-center">
+                        <span [translate]="col.header"></span>
+                    </div>
+                </th>
+                <th alignFrozen="right" pFrozenColumn [frozen]="true"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-target>
+            <tr class="table-target-kpi">
+                <td *ngFor="let col of cols" [className]="col.classBody">
+                    <span
+                        class="p-column-title"
+                        [translate]="col.header"
+                    ></span>
+                    <ng-container [ngSwitch]="col.field">
+                        <input
+                            pInputText
+                            class="w-full"
+                            *ngSwitchCase="'point'"
+                            [(ngModel)]="target[col.field]"
+                            [ngModelOptions]="{ standalone: true }"
+                        />
+                        <span *ngSwitchCase="'createAt'">
+                            {{ target[col.field] | date: "dd/MM/yyyy" }}
+                        </span>
+                        <span *ngSwitchDefault>
+                            {{ target[col.field] }}
+                        </span>
+                    </ng-container>
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w--15 text-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KPIMUCTIEU,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        class="mr-2"
+                        [routerLink]="['./', target.id]"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KPIMUCTIEU,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(target.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

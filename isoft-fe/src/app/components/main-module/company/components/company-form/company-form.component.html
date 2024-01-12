@@ -1,0 +1,538 @@
+<p-toast></p-toast>
+<form
+    *ngIf="isDisplay && companyForm"
+    [formGroup]="companyForm"
+    class="card mb-0"
+>
+    <h4>{{ "label.number_order" | translate }}: {{ companyForm.value.id }}</h4>
+    <div class="p-fluid p-formgrid grid mt-2">
+        <!--name-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="name" [translate]="'label.company_name'"></label>
+            <input
+                pInputText
+                id="name"
+                [(ngModel)]="companyForm.value.name"
+                formControlName="name"
+                [ngClass]="checkValidValidator('name')"
+            />
+            <small
+                *ngIf="checkValidValidator('name')"
+                class="p-error"
+                [innerHTML]="'info.name' | translate"
+            ></small>
+        </div>
+
+        <!--address-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="address" [translate]="'label.address'"></label>
+            <input
+                pInputText
+                id="address"
+                [(ngModel)]="companyForm.value.address"
+                formControlName="address"
+                [ngClass]="checkValidValidator('address')"
+            />
+            <small
+                *ngIf="checkValidValidator('address')"
+                class="p-error"
+                [innerHTML]="'info.address' | translate"
+            ></small>
+        </div>
+
+        <!--tax code-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="mst" [translate]="'label.tax_code'"></label>
+            <input
+                pInputText
+                id="mst"
+                [(ngModel)]="companyForm.value.mst"
+                formControlName="mst"
+                [ngClass]="checkValidValidator('mst')"
+            />
+            <small
+                *ngIf="checkValidValidator('mst')"
+                class="p-error"
+                [innerHTML]="'info.tax_code' | translate"
+            ></small>
+        </div>
+
+        <!--charterCapital-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="charterCapital"
+                [translate]="'label.charter_capital'"
+            ></label>
+            <p-inputNumber
+                id="charterCapital"
+                [(ngModel)]="companyForm.value.charterCapital"
+                formControlName="charterCapital"
+                [ngClass]="checkValidValidator('charterCapital')"
+            ></p-inputNumber>
+            <small
+                *ngIf="checkValidValidator('charterCapital')"
+                class="p-error"
+                [innerHTML]="'info.charter_capital' | translate"
+            ></small>
+        </div>
+
+        <!--signDate-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="signDate" [translate]="'label.sign_date'"></label>
+            <p-inputMask
+                mask="99/99/9999"
+                [(ngModel)]="companyForm.value.signDate"
+                formControlName="signDate"
+                slotChar="dd/mm/yyyy"
+                [class.ng-invalid]="
+                    checkValidValidator('signDate') || invalidSignDate
+                "
+                [class.ng-dirty]="
+                    checkValidValidator('signDate') || invalidSignDate
+                "
+                (ngModelChange)="onChangeSignDate($event)"
+            ></p-inputMask>
+            <small
+                *ngIf="checkValidValidator('signDate') || invalidSignDate"
+                class="p-error"
+                [innerHTML]="'info.sign_date' | translate"
+            ></small>
+        </div>
+
+        <!--businessType-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="businessType"
+                [translate]="'label.business_type'"
+            ></label>
+            <p-dropdown
+                id="businessType"
+                [options]="types.businessType"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.businessType"
+                [formControlName]="'businessType'"
+                [ngClass]="checkValidValidator('businessType')"
+                [filter]="true"
+                filterBy="label"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('businessType')"
+                class="p-error"
+                [innerHTML]="'info.business_type' | translate"
+            ></small>
+        </div>
+
+        <!--accordingAccountingRegime-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="accordingAccountingRegime"
+                [translate]="'label.according_accounting_regime'"
+            ></label>
+            <p-dropdown
+                id="accordingAccountingRegime"
+                [options]="types.accordingAccountingRegime"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.accordingAccountingRegime"
+                [formControlName]="'accordingAccountingRegime'"
+                [ngClass]="checkValidValidator('accordingAccountingRegime')"
+                [filter]="true"
+                filterBy="label"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('accordingAccountingRegime')"
+                class="p-error"
+                [innerHTML]="'info.according_accounting_regime' | translate"
+            ></small>
+        </div>
+
+        <!--methodCalcExportPrice-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="methodCalcExportPrice"
+                [translate]="'label.method_calc_export_price'"
+            ></label>
+            <p-dropdown
+                id="methodCalcExportPrice"
+                [options]="types.methodCalcExportPrice"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.methodCalcExportPrice"
+                [formControlName]="'methodCalcExportPrice'"
+                [ngClass]="checkValidValidator('methodCalcExportPrice')"
+                [filter]="true"
+                filterBy="label"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('methodCalcExportPrice')"
+                class="p-error"
+                [innerHTML]="'info.method_calc_export_price' | translate"
+            ></small>
+        </div>
+
+        <!--phone-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="phone" [translate]="'label.phone_number'"></label>
+            <input
+                pInputText
+                id="phone"
+                [(ngModel)]="companyForm.value.phone"
+                formControlName="phone"
+                [ngClass]="checkValidValidator('phone')"
+            />
+            <small
+                *ngIf="checkValidValidator('phone')"
+                class="p-error"
+                [innerHTML]="'info.phone' | translate"
+            ></small>
+        </div>
+
+        <!--email-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="email" [translate]="'label.email'"></label>
+            <input
+                pInputText
+                id="email"
+                [(ngModel)]="companyForm.value.email"
+                formControlName="email"
+                [ngClass]="checkValidValidator('email')"
+            />
+            <small
+                *ngIf="checkValidValidator('email')"
+                class="p-error"
+                [innerHTML]="'info.email' | translate"
+            ></small>
+        </div>
+
+        <!--nameOfCeo-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="nameOfCeo"
+                [translate]="'label.name_of_ceo'"
+            ></label>
+            <input
+                pInputText
+                id="nameOfCeo"
+                [(ngModel)]="companyForm.value.nameOfCeo"
+                formControlName="nameOfCeo"
+                [ngClass]="checkValidValidator('nameOfCeo')"
+            />
+            <small
+                *ngIf="checkValidValidator('nameOfCeo')"
+                class="p-error"
+                [innerHTML]="'info.nameOfCeo' | translate"
+            ></small>
+        </div>
+
+        <!--noteOfCeo-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="noteOfCeo"
+                [translate]="'label.note_of_ceo'"
+            ></label>
+            <input
+                pInputText
+                id="noteOfCeo"
+                [(ngModel)]="companyForm.value.noteOfCeo"
+                formControlName="noteOfCeo"
+                [ngClass]="checkValidValidator('noteOfCeo')"
+            />
+            <small
+                *ngIf="checkValidValidator('noteOfCeo')"
+                class="p-error"
+                [innerHTML]="'info.note_of_ceo' | translate"
+            ></small>
+        </div>
+
+        <!--nameOfChiefAccountant-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="nameOfChiefAccountant"
+                [translate]="'label.name_of_chief_accountant'"
+            ></label>
+            <input
+                pInputText
+                id="nameOfChiefAccountant"
+                [(ngModel)]="companyForm.value.nameOfChiefAccountant"
+                formControlName="nameOfChiefAccountant"
+                [ngClass]="checkValidValidator('nameOfChiefAccountant')"
+            />
+            <small
+                *ngIf="checkValidValidator('nameOfChiefAccountant')"
+                class="p-error"
+                [innerHTML]="'info.name_of_chief_accountant' | translate"
+            ></small>
+        </div>
+
+        <!--noteOfChiefAccountant-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="noteOfChiefAccountant"
+                [translate]="'label.note_of_chief_accountant'"
+            ></label>
+            <input
+                pInputText
+                id="noteOfChiefAccountant"
+                [(ngModel)]="companyForm.value.noteOfChiefAccountant"
+                formControlName="noteOfChiefAccountant"
+                [ngClass]="checkValidValidator('noteOfChiefAccountant')"
+            />
+            <small
+                *ngIf="checkValidValidator('noteOfChiefAccountant')"
+                class="p-error"
+                [innerHTML]="'info.note_of_chief_accountant' | translate"
+            ></small>
+        </div>
+
+        <!--nameOfStorekeeper-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="nameOfStorekeeper"
+                [translate]="'label.name_of_store_keeper'"
+            ></label>
+            <input
+                pInputText
+                id="nameOfStorekeeper"
+                [(ngModel)]="companyForm.value.nameOfStorekeeper"
+                formControlName="nameOfStorekeeper"
+                [ngClass]="checkValidValidator('nameOfStorekeeper')"
+            />
+            <small
+                *ngIf="checkValidValidator('nameOfStorekeeper')"
+                class="p-error"
+                [innerHTML]="'info.name_of_store_keeper' | translate"
+            ></small>
+        </div>
+
+        <!--nameOfTreasurer-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="nameOfTreasurer"
+                [translate]="'label.name_of_treasurer'"
+            ></label>
+            <input
+                pInputText
+                id="nameOfTreasurer"
+                [(ngModel)]="companyForm.value.nameOfTreasurer"
+                formControlName="nameOfTreasurer"
+                [ngClass]="checkValidValidator('nameOfTreasurer')"
+            />
+            <small
+                *ngIf="checkValidValidator('nameOfTreasurer')"
+                class="p-error"
+                [innerHTML]="'info.name_of_treasurer' | translate"
+            ></small>
+        </div>
+
+        <!--nameOfChiefSupplier-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="nameOfChiefSupplier"
+                [translate]="'label.name_of_chief_supplier'"
+            ></label>
+            <input
+                pInputText
+                id="nameOfChiefSupplier"
+                [(ngModel)]="companyForm.value.nameOfChiefSupplier"
+                formControlName="nameOfChiefSupplier"
+                [ngClass]="checkValidValidator('nameOfChiefSupplier')"
+            />
+            <small
+                *ngIf="checkValidValidator('nameOfChiefSupplier')"
+                class="p-error"
+                [innerHTML]="'info.name_of_chief_supplier' | translate"
+            ></small>
+        </div>
+
+        <!--noteOfChiefSupplier-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="noteOfChiefSupplier"
+                [translate]="'label.note_of_chief_supplier'"
+            ></label>
+            <input
+                pInputText
+                id="noteOfChiefSupplier"
+                [(ngModel)]="companyForm.value.noteOfChiefSupplier"
+                formControlName="noteOfChiefSupplier"
+                [ngClass]="checkValidValidator('noteOfChiefSupplier')"
+            />
+            <small
+                *ngIf="checkValidValidator('noteOfChiefSupplier')"
+                class="p-error"
+                [innerHTML]="'info.note_of_chief_supplier' | translate"
+            ></small>
+        </div>
+
+        <!--assignPerson-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="assignPerson"
+                [translate]="'label.assign_person'"
+            ></label>
+            <input
+                pInputText
+                id="assignPerson"
+                [(ngModel)]="companyForm.value.assignPerson"
+                formControlName="assignPerson"
+                [ngClass]="checkValidValidator('assignPerson')"
+            />
+            <small
+                *ngIf="checkValidValidator('assignPerson')"
+                class="p-error"
+                [innerHTML]="'info.assign_person' | translate"
+            ></small>
+        </div>
+
+        <!--websiteName-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="websiteName"
+                [translate]="'label.website_name'"
+            ></label>
+            <input
+                pInputText
+                id="websiteName"
+                [(ngModel)]="companyForm.value.websiteName"
+                formControlName="websiteName"
+                [ngClass]="checkValidValidator('websiteName')"
+            />
+            <small
+                *ngIf="checkValidValidator('websiteName')"
+                class="p-error"
+                [innerHTML]="'info.website_name' | translate"
+            ></small>
+        </div>
+
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="linkOfBusiness"
+                [translate]="'label.link_of_business'"
+            ></label>
+            <input
+                pInputText
+                id="linkOfBusiness"
+                [(ngModel)]="companyForm.value.linkOfBusiness"
+                formControlName="linkOfBusiness"
+                [ngClass]="checkValidValidator('linkOfBusiness')"
+            />
+            <small
+                *ngIf="checkValidValidator('linkOfBusiness')"
+                class="p-error"
+                [innerHTML]="'info.link_of_business' | translate"
+            ></small>
+        </div>
+
+        <!--isShowBarCode-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="isShowBarCode"
+                [translate]="'label.is_show_bar_code'"
+            ></label>
+            <div>
+                <p-checkbox
+                    [label]="'label.is_show_bar_code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="companyForm.value.isShowBarCode"
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!--fileOfBusinessRegistrationCertificate-->
+        <div class="field col-12 sm:col-6 flex flex-column">
+            <label
+                htmlFor="fileOfBusinessRegistrationCertificate"
+                [translate]="'label.file_of_business'"
+            ></label>
+            <p-button
+                icon="pi pi-plus-circle"
+                (click)="fileOfBusinessRegistrationCertificate.click()"
+                [label]="'button.upload_file' | translate"
+            >
+            </p-button>
+            <div
+                *ngIf="
+                    companyForm.value.fileOfBusinessRegistrationCertificate &&
+                    !companyForm.value.fileOfBusinessRegistrationCertificate.includes(
+                        '.pdf'
+                    )
+                "
+            >
+                <img
+                    class="mt-4"
+                    src="{{
+                        serverURLImage +
+                            '/' +
+                            companyForm.value
+                                .fileOfBusinessRegistrationCertificate
+                    }}"
+                    alt="Image business registration certificate"
+                    width="200"
+                    height="200"
+                />
+            </div>
+            <input
+                #fileOfBusinessRegistrationCertificate
+                class="hidden"
+                type="file"
+                (change)="doAttachFileBusiness($event)"
+            />
+            <small
+                *ngIf="
+                    checkValidValidator('fileOfBusinessRegistrationCertificate')
+                "
+                class="p-error"
+                [innerHTML]="'info.file_of_business' | translate"
+            ></small>
+        </div>
+
+        <!--fileLogo-->
+        <div class="field col-12 sm:col-6 flex flex-column">
+            <label htmlFor="fileLogo" [translate]="'label.file_logo'"></label>
+            <div>
+                <p-button
+                    icon="pi pi-plus-circle"
+                    (click)="fileLogo.click()"
+                    [label]="'button.upload_image' | translate"
+                >
+                </p-button>
+            </div>
+            <img
+                class="mt-4"
+                src="{{ serverURLImage + '/' + companyForm.value.fileLogo }}"
+                alt="Image logo"
+                width="200"
+                height="200"
+            />
+            <input
+                #fileLogo
+                class="hidden"
+                type="file"
+                (change)="doAttachFileLogo($event)"
+            />
+            <small
+                *ngIf="checkValidValidator('fileLogo')"
+                class="p-error"
+                [innerHTML]="'info.file_logo' | translate"
+            ></small>
+        </div>
+    </div>
+
+    <div class="flex justify-content-end gap-8 mt-4">
+        <p-button
+            icon="pi pi-times"
+            (click)="onReloadCompanyInfo()"
+            [label]="'button.backF6' | translate"
+            styleClass="p-button-outlined"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="onSubmit()"
+            [label]="'button.saveF8' | translate"
+        ></p-button>
+    </div>
+</form>

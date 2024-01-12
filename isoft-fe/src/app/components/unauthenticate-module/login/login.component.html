@@ -1,0 +1,172 @@
+<div class="background-all"></div>
+<div
+    class="container h-full surface-0 pt-4 flex align-items-center justify-content-center"
+>
+    <div
+        class="pt-200px container grid justify-content-center p-2 lg:p-0"
+        style="min-width: 80%"
+    >
+        <div
+            class="col-12 xl:col-6"
+            style="
+                border-radius: 56px;
+                padding: 0.3rem;
+                background: linear-gradient(
+                    180deg,
+                    var(--primary-color) 10%,
+                    rgba(33, 150, 243, 0) 30%
+                );
+            "
+        >
+            <div
+                class="w-full m-0 py-3 px-4"
+                style="
+                    border-radius: 53px;
+                    background: linear-gradient(
+                        180deg,
+                        var(--surface-50) 38.9%,
+                        var(--surface-0)
+                    );
+                "
+            >
+                <div class="text-right py-4">
+                    <p-dropdown
+                        id="language"
+                        [options]="languages"
+                        [optionLabel]="'path'"
+                        [optionValue]="'code'"
+                        [(ngModel)]="selectedLanguage"
+                        [ngModelOptions]="{ standalone: true }"
+                        (onChange)="onChangeLanguage($event)"
+                    >
+                        <ng-template let-language pTemplate="selectedItem">
+                            <div class="flex align-items-center">
+                                <img
+                                    [src]="language.path.toLowerCase()"
+                                    width="16"
+                                    height="16"
+                                />
+                                <div class="pl-2">{{ language.name }}</div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-language pTemplate="item">
+                            <div class="flex align-items-center">
+                                <img
+                                    [src]="language.path.toLowerCase()"
+                                    width="16"
+                                    height="16"
+                                />
+                                <div class="pl-2">{{ language.name }}</div>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+                <div class="flex flex-column mb-5">
+                    <div class="flex justify-content-center">
+                        <img
+                            src="../../../../assets/layout/images/logo-xl.png"
+                            width="150"
+                            height="150"
+                            class="mb-3"
+                        />
+                    </div>
+                    <div
+                        class="flex flex-column md:flex-row justify-content-center"
+                    >
+                        <div
+                            class="text-2xl pt-1 md:pl-1 font-bold text-primary text-center"
+                            [translate]="'app_name'"
+                        ></div>
+                    </div>
+                    <span
+                        class="flex justify-content-center text-600 font-medium mt-2"
+                        [translate]="'label.sign_in_to_continue'"
+                    ></span>
+                </div>
+                <form
+                    [formGroup]="loginFrm"
+                    (submit)="doLogin()"
+                    autocomplete="off"
+                >
+                    <div class="w-full md:w-10 mx-auto">
+                        <label
+                            for="companyTax"
+                            class="block text-primary text-xl font-bold mb-1"
+                            [translate]="'label.choose_company'"
+                        ></label>
+                        <input
+                            id="companyTax"
+                            type="text"
+                            [placeholder]="'label.choose_company' | translate"
+                            formControlName="companyTax"
+                            [(ngModel)]="loginFrm.value.companyTax"
+                            pInputText
+                            class="w-full mb-3"
+                            style="padding: 1rem"
+                            (ngModelChange)="setDbName()"
+                        />
+
+                        <label
+                            for="username"
+                            class="block text-primary text-xl font-bold mb-1"
+                            [translate]="'label.username'"
+                        ></label>
+                        <input
+                            id="username"
+                            type="text"
+                            [placeholder]="'label.username' | translate"
+                            formControlName="username"
+                            [(ngModel)]="loginFrm.value.username"
+                            pInputText
+                            class="w-full mb-3"
+                            style="padding: 1rem"
+                        />
+
+                        <label
+                            for="password"
+                            class="block text-primary font-bold text-xl mb-2"
+                            [translate]="'label.password'"
+                        ></label>
+                        <p-password
+                            id="password"
+                            [(ngModel)]="loginFrm.value.password"
+                            placeholder="{{ 'label.password' | translate }}"
+                            formControlName="password"
+                            [toggleMask]="loginFrm.value.password"
+                            styleClass="w-full mb-3"
+                        ></p-password>
+
+                        <div
+                            class="flex align-items-center justify-content-between mb-5"
+                        >
+                            <div class="flex align-items-center">
+                                <p-checkbox
+                                    id="remember"
+                                    [binary]="true"
+                                    styleClass="mr-2"
+                                    formControlName="remember"
+                                ></p-checkbox>
+                                <label
+                                    for="remember"
+                                    [translate]="'label.remember_me'"
+                                ></label>
+                            </div>
+                            <a
+                                class="font-medium no-underline ml-2 text-right cursor-pointer"
+                                [routerLink]="'/forgot-password'"
+                                style="color: var(--primary-color)"
+                                [translate]="'label.forgot_password'"
+                            ></a>
+                        </div>
+                        <button
+                            pButton
+                            pRipple
+                            [label]="'button.sign_in' | translate"
+                            class="w-full p-3 text-xl"
+                        ></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

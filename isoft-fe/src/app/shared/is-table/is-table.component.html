@@ -1,0 +1,770 @@
+<div
+    *ngIf="
+        !currentParentCode ||
+        (currentParentCode &&
+            isTable &&
+            isTable.data &&
+            isTable.data.length > 0)
+    "
+    [class]="styleClass"
+    class="is-table"
+>
+    <p-table
+        *ngIf="isShow"
+        [columns]="isTable.columns"
+        [loading]="isTable.isLoading"
+        [value]="isTable.data"
+        (onLazyLoad)="getPaging($event)"
+        [lazy]="true"
+        [rows]="50"
+        styleClass="p-datatable-gridlines"
+        [dataKey]="isTable.dataKey"
+        [paginator]="
+            currentParentCode &&
+            isTable &&
+            isTable.data &&
+            isTable.data.length > 0
+        "
+        [totalRecords]="isTable.totalRecords"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
+        [responsiveLayout]="scrollable ? 'stack' : 'scroll'"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex flex-column gap-8 md:flex-row md:justify-content-between"
+                *ngIf="
+                    showHeaderButton ||
+                    showHeaderDropdown ||
+                    isTable.isSearchable ||
+                    headerActionItems.length > 0
+                "
+            >
+                <div
+                    class="flex gap-8"
+                    *ngIf="isTable.isSearchable || headerActionItems.length > 0"
+                >
+                    <div class="flex flex-column md:flex-row gap-8 w-full">
+                        <!--debit-->
+                        <div
+                            class="field flex align-items-center font-bold w-full"
+                        >
+                            <label
+                                class="font-bold w-120 pt-2"
+                                [translate]="'label.account'"
+                            ></label>
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    [(ngModel)]="value.debitCode"
+                                    [suggestions]="filteredDebitNames"
+                                    #debit
+                                    (completeMethod)="filterDebitName1($event)"
+                                    [completeOnFocus]="true"
+                                    (onSelect)="onDebitSelect1($event)"
+                                    (onClear)="filterDebitName1($event)"
+                                    [autoHighlight]="true"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    field="value"
+                                    class="p-inputtext-sm"
+                                    appendTo="body"
+                                >
+                                    <ng-template let-debit pTemplate="item">
+                                        <div
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-5rem border-right-1">
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[0]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-12rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        debit.label.split(
+                                                            '|'
+                                                        )[1].length > 27
+                                                    "
+                                                    >{{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[1]
+                                                    }}
+                                                </marquee>
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        debit.label.split(
+                                                            '|'
+                                                        )[1].length <= 27
+                                                    "
+                                                >
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[1]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[2]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[3] | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <span class="p-inputgroup-addon">
+                                    <i
+                                        (click)="showAccountDialog('account')"
+                                        class="pi pi-search cursor-pointer"
+                                    ></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!--debit1-->
+                        <div
+                            class="field flex align-items-center font-bold w-full"
+                        >
+                            <label
+                                class="font-bold w-120 pt-2"
+                                [translate]="'label.detail_1'"
+                            ></label>
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    [(ngModel)]="value.debitDetailCodeFirst"
+                                    [suggestions]="filteredDebit1Names"
+                                    #debit1
+                                    (completeMethod)="filterDebit1Name1($event)"
+                                    [completeOnFocus]="true"
+                                    [disabled]="!debits1.length"
+                                    (onSelect)="onDebit1Select1($event)"
+                                    (onClear)="filterDebit1Name1($event)"
+                                    [autoHighlight]="true"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    field="value"
+                                    class="p-inputtext-sm"
+                                    appendTo="body"
+                                >
+                                    <ng-template let-debit pTemplate="item">
+                                        <div
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-5rem border-right-1">
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[0]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-3rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[1]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-12rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        debit.label.split(
+                                                            '|'
+                                                        )[2].length > 27
+                                                    "
+                                                    >{{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[2]
+                                                    }}
+                                                </marquee>
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        debit.label.split(
+                                                            '|'
+                                                        )[2].length <= 27
+                                                    "
+                                                >
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[2]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[3]
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        debit.label.split(
+                                                            "|"
+                                                        )[4] | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <span
+                                    [style]="{
+                                        'background-color': !(
+                                            debits1 && debits1.length > 0
+                                        )
+                                            ? 'var(--bluegray-200)'
+                                            : ''
+                                    }"
+                                    class="p-inputgroup-addon"
+                                >
+                                    <i
+                                        (click)="showAccountDialog('detail1')"
+                                        class="pi pi-search"
+                                        [class.cursor-pointer]="
+                                            debits1 && debits1.length > 0
+                                        "
+                                    ></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!--debit2-->
+                        <div
+                            class="field flex align-items-center font-bold w-full"
+                        >
+                            <label
+                                class="font-bold w-120 pt-2"
+                                [translate]="'label.detail_2'"
+                            ></label>
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    [(ngModel)]="value.debitDetailCodeSecond"
+                                    [suggestions]="filteredDebit2Names"
+                                    #debit2
+                                    (completeMethod)="filterDebit2Name1($event)"
+                                    [completeOnFocus]="true"
+                                    [disabled]="!debits2.length"
+                                    (onSelect)="onDebit2Select1()"
+                                    (onClear)="filterDebit2Name1($event)"
+                                    [autoHighlight]="true"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    field="value"
+                                    class="p-inputtext-sm"
+                                    appendTo="body"
+                                >
+                                    <ng-template let-debit pTemplate="item">
+                                        <div class="country-item">
+                                            <div>{{ debit.label }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <span
+                                    [style]="{
+                                        'background-color': !(
+                                            debits2 && debits2.length > 0
+                                        )
+                                            ? 'var(--bluegray-200)'
+                                            : ''
+                                    }"
+                                    class="p-inputgroup-addon"
+                                >
+                                    <i
+                                        (click)="showAccountDialog('detail2')"
+                                        class="pi pi-search"
+                                        [class.cursor-pointer]="
+                                            debits2 && debits2.length > 0
+                                        "
+                                    ></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="flex gap-8"
+                    *ngIf="showHeaderButton || showHeaderDropdown"
+                >
+                    <div class="table-header__button" *ngIf="showHeaderButton">
+                        <p-button
+                            [label]="'F6.Quay lại'"
+                            icon="pi pi-arrow-left"
+                            styleClass="bg-white text-primary hidden md:block"
+                            (click)="onBackHomePage()"
+                        ></p-button>
+                        <p-button
+                            icon="pi pi-arrow-left"
+                            styleClass="bg-white text-primary block md:hidden flex align-items-center justify-content-center"
+                            (click)="onBackHomePage()"
+                        ></p-button>
+                    </div>
+                    <div class="table-header__button" *ngIf="showHeaderButton">
+                        <p-button
+                            [label]="'F7.Thêm mới'"
+                            icon="pi pi-plus"
+                            (click)="onHeaderButtonClick()"
+                        ></p-button>
+                    </div>
+                    <div
+                        class="table-header__dropdown"
+                        *ngIf="showHeaderDropdown"
+                    >
+                        <p-dropdown
+                            [options]="headerDropdownOptions"
+                            appendTo="body"
+                            optionLabel="name"
+                            [(ngModel)]="selectedHeaderDropdown"
+                            (onChange)="onChangeHeaderDropdown($event)"
+                        >
+                            <ng-template let-data pTemplate="selectedItem">
+                                <span>{{ data?.name | translate }}</span>
+                            </ng-template>
+                            <ng-template let-data pTemplate="item">
+                                <span>{{ data?.name | translate }}</span>
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                    <div
+                        style="margin-top: 1px"
+                        *ngIf="headerActionItems.length > 0"
+                    >
+                        <button
+                            #btn
+                            type="button"
+                            pButton
+                            icon="pi pi-bars"
+                            [label]="headerActionLabel | translate"
+                            (click)="menu.toggle($event)"
+                        ></button>
+                        <p-tieredMenu
+                            appendTo="body"
+                            #menu
+                            [model]="headerActionItems"
+                            [popup]="true"
+                        ></p-tieredMenu>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Header -->
+        <ng-template pTemplate="header" let-columns>
+            <tr *ngIf="isTable && isTable.data && isTable.data.length > 0">
+                <ng-container *ngFor="let col of columns">
+                    <th
+                        *ngIf="!col.hidden"
+                        pSortableColumn="{{ col.isSortable ? col.field : '' }}"
+                        [ngClass]="col.styleClass"
+                    >
+                        <span [translate]="col.header"></span>
+                        <p-sortIcon
+                            *ngIf="col.isSortable"
+                            [field]="col.field"
+                        ></p-sortIcon>
+                    </th>
+                </ng-container>
+            </tr>
+        </ng-template>
+
+        <!-- Body -->
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            (onRowCollapse)="onRowCollapse($event)"
+        >
+            <tr *ngIf="isTable && isTable.data && isTable.data.length > 0">
+                <ng-container *ngFor="let col of columns">
+                    <td
+                        class="py-2"
+                        [ngStyle]="{
+                            'background-color':
+                                rowData.hasDetails && rowData['type'] === 5
+                                    ? 'var(--pink-100)'
+                                    : ''
+                        }"
+                        *ngIf="!col.hidden"
+                        [ngClass]="col.styleClass"
+                        [class.font-bold]="
+                            (isHighLight && rowData['type'] === 1) ||
+                            (rowData.hasDetails && rowData['type'] === 5)
+                                ? 'font-bold'
+                                : ''
+                        "
+                    >
+                        <ng-container [ngSwitch]="col.type">
+                            <ng-container *ngSwitchCase="columnType.Expand">
+                                <button
+                                    *ngIf="rowData[col.field]"
+                                    type="button"
+                                    pButton
+                                    pRipple
+                                    class="p-button-info p-button-plain"
+                                    [icon]="
+                                        rowData[col.innerFields[0]]
+                                            ? 'pi pi-chevron-down'
+                                            : 'pi pi-chevron-right'
+                                    "
+                                    (click)="onExpand(rowData)"
+                                ></button>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="columnType.Index">
+                                {{ rowIndex }}
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="columnType.AccountAction"
+                            >
+                                <div class="d-flex">
+                                    <button
+                                        pButton
+                                        tooltipPosition="top"
+                                        [pTooltip]="'button.remove' | translate"
+                                        type="button"
+                                        icon="pi pi-times"
+                                        class="p-button p-button-danger mr-1"
+                                        [disabled]="
+                                            !rowData[col.innerFields[1]]
+                                        "
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Delete
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        pButton
+                                        tooltipPosition="top"
+                                        [pTooltip]="'button.update' | translate"
+                                        type="button"
+                                        icon="pi pi-pencil"
+                                        class="p-button mr-1 p-button-warning"
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Edit
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        pButton
+                                        tooltipPosition="top"
+                                        [pTooltip]="
+                                            'button.add_detail' | translate
+                                        "
+                                        type="button"
+                                        icon="pi pi-plus"
+                                        class="p-button"
+                                        [disabled]="
+                                            !rowData[col.innerFields[0]]
+                                        "
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Add
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="columnType.AccountActionDetail2"
+                            >
+                                <div class="d-flex">
+                                    <button
+                                        pButton
+                                        tooltipPosition="top"
+                                        [pTooltip]="'button.remove' | translate"
+                                        type="button"
+                                        icon="pi pi-times"
+                                        class="p-button p-button-danger mr-1"
+                                        [disabled]="
+                                            !rowData[col.innerFields[1]]
+                                        "
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Delete
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        pButton
+                                        tooltipPosition="top"
+                                        [pTooltip]="'button.update' | translate"
+                                        type="button"
+                                        icon="pi pi-pencil"
+                                        class="p-button p-button-warning"
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Edit
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="columnType.ForeignCurrency"
+                            >
+                                {{
+                                    rowData[col.field]
+                                        ? ("label.yes" | translate)
+                                        : ""
+                                }}
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="
+                                    columnType.AccountGroupMultiSelect
+                                "
+                            >
+                                <p-multiSelect
+                                    *ngIf="rowData[col.field]"
+                                    appendTo="body"
+                                    [(ngModel)]="rowData[col.field].model"
+                                    [showClear]="true"
+                                    [options]="
+                                        rowData.accountGroupMultiSelect.options
+                                    "
+                                    optionValue="code"
+                                    [filter]="true"
+                                    filterBy="name,code"
+                                >
+                                    <ng-template
+                                        let-value
+                                        pTemplate="selectedItems"
+                                    >
+                                        {{ value }}
+                                    </ng-template>
+                                    <ng-template let-value pTemplate="item">
+                                        {{ value.code }} | {{ value.name }}
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="
+                                    columnType.AccountGroupSyncActions
+                                "
+                            >
+                                <div class="d-flex">
+                                    <button
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-save"
+                                        class="p-button mr-1"
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Edit
+                                            )
+                                        "
+                                    ></button>
+                                    <button
+                                        pButton
+                                        type="button"
+                                        icon="pi pi-times"
+                                        class="p-button p-button-danger"
+                                        (click)="
+                                            onActionButtonClick(
+                                                $event,
+                                                rowData,
+                                                columnActionType.Delete
+                                            )
+                                        "
+                                    ></button>
+                                </div>
+                            </ng-container>
+
+                            <ng-container
+                                *ngSwitchCase="columnType.DoubleInString"
+                            >
+                                <span
+                                    class="p-column-title"
+                                    [translate]="col.header"
+                                ></span
+                                >{{ rowData[col.field] | doubleInString }}
+                            </ng-container>
+
+                            <ng-container *ngSwitchDefault>
+                                <span
+                                    class="p-column-title"
+                                    [translate]="col.header"
+                                ></span
+                                >{{
+                                    rowData[col.field] == null ||
+                                    rowData[col.field] == undefined
+                                        ? ""
+                                        : rowData[col.field].toString()
+                                }}
+                            </ng-container>
+                        </ng-container>
+                        <input
+                            type="file"
+                            [ngStyle]="{ display: 'none' }"
+                            (change)="onFileSelected($event, rowData)"
+                            #fileUpload
+                        />
+                    </td>
+                </ng-container>
+            </tr>
+
+            <tr
+                *ngIf="
+                    isTable.columns.length > 0 &&
+                    isTable.columns[0].type === columnType.Expand &&
+                    rowData[isTable.columns[0].innerFields[0]]
+                "
+            >
+                <td [colSpan]="isTable.columns.length">
+                    <ng-container *ngFor="let template of templates">
+                        <ng-container [ngSwitch]="template.getType()">
+                            <ng-container
+                                *ngSwitchCase="columnType.Expand.toString()"
+                            >
+                                <ng-container
+                                    *ngTemplateOutlet="expandTemplate"
+                                ></ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="isSearchAccount"
+    [style]="{ 'min-width': '85vw' }"
+    styleClass="h-50rem"
+>
+    <ng-template pTemplate="header">
+        <div class="w-full flex align-items-center justify-content-between">
+            <h6 class="m-0 text-white">{{ dialogHeaderText }}</h6>
+            <input
+                pInputText
+                placeholder="Nhập tìm kiếm"
+                size="large"
+                class="mr-2"
+                (change)="onSearchAccount($event)"
+            />
+        </div>
+    </ng-template>
+    <div class="w-full h-30rem pb-2">
+        <p-table
+            #dt1
+            [value]="dialogData"
+            dataKey="id"
+            [rows]="50"
+            styleClass="p-datatable-gridlines sidebar-custom w-full h-30rem"
+            [responsiveLayout]="scrollable ? 'stack' : 'scroll'"
+            [first]="dialogFirst"
+            [paginator]="formControlName !== 'account'"
+            [totalRecords]="dialogTotalRecords"
+            [rowsPerPageOptions]="[5, 10, 20, 50]"
+            [lazy]="true"
+            [showCurrentPageReport]="true"
+            (onPage)="onChangePage($event)"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-3">
+                        <div class="flex align-items-center">Mã tài khoản</div>
+                    </th>
+                    <th class="w-5">
+                        <div class="flex align-items-center">Tên tài khoản</div>
+                    </th>
+                    <th class="w-2">
+                        <div class="flex align-items-center">Tính chất</div>
+                    </th>
+                    <th alignFrozen="right" pFrozenColumn [frozen]="true"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-account>
+                <tr>
+                    <td class="w-3">{{ account?.code }}</td>
+                    <td class="w-5">{{ account?.name }}</td>
+                    <td class="w-2">Tính chất {{ account?.accGroup }}</td>
+                    <td
+                        alignFrozen="right"
+                        pFrozenColumn
+                        [frozen]="true"
+                        class="flex justify-content-start md:justify-content-center"
+                    >
+                        <button
+                            pButton
+                            class="p-button-warning"
+                            (click)="onSelectAccount(account)"
+                        >
+                            Chọn
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr class="p-rowgroup-footer">
+                    <td colspan="10" class="w-full pt-4 pb-4">
+                        {{ "info.no_data" | translate }}
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="loadingbody">
+                <tr>
+                    <td colspan="10" class="w-full pt-4 pb-4">
+                        {{ "info.loading" | translate }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</p-dialog>

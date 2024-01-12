@@ -1,0 +1,266 @@
+<div *ngIf="display" class="card card-table">
+    <h5 [translate]="'label.web_good_edit'"></h5>
+
+    <!--    Tiếng Việt-->
+    <h3>Tiếng việt</h3>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="code_vn">{{ "label.web_good_code" | translate }}</label>
+            <input
+                pInputText
+                id="code_vn"
+                type="text"
+                class="w-full"
+                disabled
+                [(ngModel)]="goodModel.detail1 || goodModel.detail2"
+            />
+        </div>
+        <div class="field col">
+            <label for="name_vn">{{ "label.web_good_name" | translate }}</label>
+            <input
+                pInputText
+                id="name_vn"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên hàng hóa tiếng Việt"
+                [(ngModel)]="goodModel.webGoodNameVietNam"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="price_vn">{{
+                "label.web_good_price_vn" | translate
+            }}</label>
+            <p-inputNumber
+                id="price_vn"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webPriceVietNam"
+            >
+            </p-inputNumber>
+        </div>
+        <div class="field col">
+            <label for="discount_vn">{{
+                "label.web_good_discount_vn" | translate
+            }}</label>
+            <p-inputNumber
+                id="discount_vn"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webDiscountVietNam"
+            >
+            </p-inputNumber>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="menu_web">{{
+                "label.web_good_menu_web" | translate
+            }}</label>
+            <p-dropdown
+                id="menu_web"
+                [filter]="true"
+                [options]="types.menuWeb"
+                [(ngModel)]="goodModel.menuType"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                placeholder="Chọn menu"
+            ></p-dropdown>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="content_vn">{{
+                "label.web_good_content_vn" | translate
+            }}</label>
+            <p-editor
+                id="content_vn"
+                [(ngModel)]="contentVietnam"
+                [style]="{ height: '320px' }"
+                (onTextChange)="onChangeEditorVietnam($event)"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats></app-ql-formats>
+                </ng-template>
+            </p-editor>
+        </div>
+    </div>
+
+    <!--    Tiếng Hàn-->
+    <h3>Tiếng Hàn</h3>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="code_ko">{{ "label.web_good_code" | translate }}</label>
+            <input
+                pInputText
+                id="code_ko"
+                type="text"
+                class="w-full"
+                disabled
+                [(ngModel)]="goodModel.detail1 || goodModel.detail2"
+            />
+        </div>
+        <div class="field col">
+            <label for="name_ko">{{ "label.web_good_name" | translate }}</label>
+            <input
+                pInputText
+                id="name_ko"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên hàng hóa tiếng Hàn"
+                [(ngModel)]="goodModel.webGoodNameKorea"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="price_ko">{{
+                "label.web_good_price_ko" | translate
+            }}</label>
+            <p-inputNumber
+                id="price_ko"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webPriceKorea"
+            >
+            </p-inputNumber>
+        </div>
+        <div class="field col">
+            <label for="discount_ko">{{
+                "label.web_good_discount_ko" | translate
+            }}</label>
+            <p-inputNumber
+                id="discount_ko"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webDiscountKorea"
+            >
+            </p-inputNumber>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="title_ko">{{
+                "label.web_good_title_ko" | translate
+            }}</label>
+            <input
+                pInputText
+                id="title_ko"
+                [(ngModel)]="goodModel.titleKorea"
+                placeholder="Nhập tiêu đề tiếng Hàn"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="content_ko">{{
+                "label.web_good_content_ko" | translate
+            }}</label>
+            <p-editor
+                id="content_ko"
+                [(ngModel)]="contentKorea"
+                [style]="{ height: '320px' }"
+                (onTextChange)="onChangeEditorKorea($event)"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats></app-ql-formats>
+                </ng-template>
+            </p-editor>
+        </div>
+    </div>
+
+    <!--    Tiếng Anh-->
+    <h3>Tiếng Anh</h3>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="code_en">{{ "label.web_good_code" | translate }}</label>
+            <input
+                pInputText
+                id="code_en"
+                type="text"
+                class="w-full"
+                disabled
+                [(ngModel)]="goodModel.detail1 || goodModel.detail2"
+            />
+        </div>
+        <div class="field col">
+            <label for="name_en">{{ "label.web_good_name" | translate }}</label>
+            <input
+                pInputText
+                id="name_en"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên hàng hóa tiếng Anh"
+                [(ngModel)]="goodModel.webGoodNameEnglish"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="price_en">{{
+                "label.web_good_price_en" | translate
+            }}</label>
+            <p-inputNumber
+                id="price_en"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webPriceEnglish"
+            >
+            </p-inputNumber>
+        </div>
+        <div class="field col">
+            <label for="discount_en">{{
+                "label.web_good_discount_en" | translate
+            }}</label>
+            <p-inputNumber
+                id="discount_en"
+                class="p-inputtext-sm w-full ml-1"
+                [(ngModel)]="goodModel.webDiscountEnglish"
+            >
+            </p-inputNumber>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="title_en">{{
+                "label.web_good_title_en" | translate
+            }}</label>
+            <input
+                pInputText
+                id="title_en"
+                [(ngModel)]="goodModel.titleEnglish"
+                placeholder="Nhập tiêu đề tiếng Anh"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="content_en">{{
+                "label.web_good_content_en" | translate
+            }}</label>
+            <p-editor
+                id="content_en"
+                [(ngModel)]="contentEnglish"
+                [style]="{ height: '320px' }"
+                (onTextChange)="onChangeEditorEnglish($event)"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats></app-ql-formats>
+                </ng-template>
+            </p-editor>
+        </div>
+    </div>
+
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-5">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

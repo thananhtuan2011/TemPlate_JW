@@ -1,0 +1,118 @@
+<!-- <ul class="layout-menu">
+    <ng-container *ngFor="let item of model; let i = index;">
+        <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+        <li *ngIf="item.separator" class="menu-separator"></li>
+    </ng-container>
+    <li>
+        <a href="https://www.primefaces.org/primeblocks-ng/#/">
+            <img src="assets/layout/images/{{layoutService.config.colorScheme === 'light' ? 'banner-primeblocks' : 'banner-primeblocks-dark'}}.png"
+                alt="Prime Blocks" class="w-full mt-3" />
+        </a>
+    </li>
+</ul> -->
+
+<div class="layout-menu-container">
+    <!-- {{user.roleName | json}} -->
+    <div class="flex justify-content-center mb-4">
+        <p-dropdown
+            #selectYearTmp
+            [(ngModel)]="selectedYear"
+            [options]="currentYearSales"
+            (onChange)="onChangeYear($event)"
+            class="px-0 sm:px-3"
+        ></p-dropdown>
+    </div>
+    <div *ngIf="appMain.isMobile()" class="flex justify-content-center mb-4">
+        <p-button
+            icon="pi pi-sign-out"
+            (click)="doLogout()"
+        ></p-button>
+    </div>
+    <ul class="layout-menu" role="menu" (keydown)="onKeydown($event)">
+        <li
+            app-menu
+            class="layout-menuitem-category"
+            *ngFor="let item of model; let i = index"
+            [item]="item"
+            [index]="i"
+            [root]="true"
+            role="none"
+        >
+            <div
+                class="layout-menuitem-root-text"
+                [attr.aria-label]="item.label | translate"
+                [translate]="item.label"
+            ></div>
+            <ul role="menu">
+                <li
+                    app-menuitem
+                    *ngFor="let child of item.items"
+                    [item]="child"
+                    [index]="i"
+                    role="none"
+                ></li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- <p-slideMenu [model]="model" [viewportHeight]="250" [style]="{'min-width':'175px'}">
+    </p-slideMenu> -->
+</div>
+
+<p-confirmDialog
+    key="confirmUpdateNienDoTmp"
+    #confirmUpdateNienDoTmpTmp
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '30vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white">Thay đổi niên độ làm việc</h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            class="p-button-danger"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.no' | translate"
+            (click)="confirmUpdateNienDoTmpTmp.reject()"
+        ></button>
+        <button
+            #yesButtonElm
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.yes' | translate"
+            (click)="confirmUpdateNienDoTmpTmp.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<p-confirmDialog
+    key="confirmMessageDiffCurrentYearTmp"
+    #confirmMessageDiffCurrentYearTmp
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '30vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white">Thay đổi niên độ làm việc</h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            class="p-button-danger"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.no' | translate"
+            (click)="confirmMessageDiffCurrentYearTmp.reject()"
+        ></button>
+        <button
+            #yesButtonElm
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.yes' | translate"
+            (click)="confirmMessageDiffCurrentYearTmp.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

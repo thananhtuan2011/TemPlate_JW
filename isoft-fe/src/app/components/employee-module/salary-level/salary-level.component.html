@@ -1,0 +1,162 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.salary_level'"></h5>
+    <p-table
+        #dt1
+        [value]="salaryLevel"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.BACLUONG,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddDecide()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [style]="col.width">
+                    <span [translate]="col.header"></span>
+                </th>
+                <th *ngIf="isMobile" class="w-2"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-salaryLevel>
+            <tr>
+                <ng-container *ngFor="let col of cols">
+                    <td *ngIf="col.display" [style]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p *ngIf="col.value == 'updateAt'">
+                            {{ rowData[col.value] | date: "d/MM/y" }}
+                        </p>
+                        <p *ngIf="col.value == 'amount'">
+                            {{ rowData[col.value] }}
+                        </p>
+                        <p
+                            *ngIf="
+                                col.value != 'amount' && col.value != 'updateAt'
+                            "
+                        >
+                            {{ rowData[col.value] }}
+                        </p>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile" class="w-2">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.BACLUONG,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(salaryLevel)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.BACLUONG,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(salaryLevel.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.BACLUONG,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(salaryLevel)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.BACLUONG,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(salaryLevel.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No General Salary Level found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading General Salary Level data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-salary-level-form
+    #salaryLevelForm
+    [formData]="formData"
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getSalaryLevel(null, false); isReset = false"
+    [isEdit]="isEdit"
+></app-salary-level-form>

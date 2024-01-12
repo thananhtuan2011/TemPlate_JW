@@ -1,0 +1,878 @@
+<div class="p-fluid grid">
+    <div class="col-12">
+        <p-steps
+            [model]="items"
+            class="w-full px-3 cursor-pointer"
+            [(activeIndex)]="activeIndex"
+            [readonly]="false"
+        ></p-steps>
+    </div>
+    <div class="col-12 grid formgroup mt-3">
+        <!--Tài khoản nợ-->
+        <div class="field col-1">
+            <label for="debit" class="mb-1 font-bold">TK Nợ</label>
+            <p-autoComplete
+                #debitCodeTmp
+                [ngModel]="fc['debitCode'].value"
+                [suggestions]="debitCodeFilter"
+                [ngClass]="{
+                    'autocomplete-panel-hidden': isHiddenAutoCompleteDebitCode
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [lazy]="true"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="20"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterDebitCode($event)"
+                (onFocus)="debitCodeTmp.handleDropdownClick()"
+                (input)="fc['debitCode'].setValue($event?.target?.value)"
+                (onClear)="onClearDebitCode()"
+                (onSelect)="onSelectDebitCode($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ debit.code }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="debit.name?.length > 54">{{
+                                debit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="debit.name?.length <= 54">
+                                {{ debit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>Tính chất {{ debit.accGroup }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>{{ debit.closingDebit | number: "1.0-0" }}</p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+
+        <div class="field col-1">
+            <label for="debitDetail1" class="mb-1 font-bold">C.Tiết 1</label>
+            <p-autoComplete
+                #debitDetailCodeFirstTmp
+                [ngModel]="fc['debitDetailCodeFirst'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteDebitDetailCodeFirst
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="debitDetailCodeFirstFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="!isDebitCodeHas || !isDebitCodeHasDetails"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterDebitDetailCodeFirst($event)"
+                (onFocus)="debitDetailCodeFirstTmp.handleDropdownClick()"
+                (input)="
+                    fc['debitDetailCodeFirst'].setValue($event?.target?.value)
+                "
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.debitDetailCodeFirst
+                    })
+                "
+                (onClear)="onClearDebitDetailCodeFirst()"
+                (onSelect)="onSelectDebitDetailCodeFirst($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div
+                        *ngIf="debit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ debit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ debit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="debit.name?.length > 54">{{
+                                debit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="debit.name?.length <= 54">
+                                {{ debit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ debit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ debit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+        <div class="field col-1">
+            <label for="debitDetail2" class="mb-1 font-bold">C.Tiết 2</label>
+            <p-autoComplete
+                #debitDetailCodeSecondTmp
+                [ngModel]="fc['debitDetailCodeSecond'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteDebitDetailCodeSecond
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="debitDetailCodeSecondFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="
+                    !isDebitDetailCodeFirstHasDetails ||
+                    !isDebitDetailCodeFirstHas
+                "
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterDebitDetailCodeSecond($event)"
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.debitDetailCodeSecond
+                    })
+                "
+                (onFocus)="debitDetailCodeSecondTmp.handleDropdownClick()"
+                (input)="
+                    fc['debitDetailCodeSecond'].setValue($event?.target?.value)
+                "
+                (onClear)="onClearDebitDetailCodeSecond()"
+                (onSelect)="onSelectDebitDetailCodeSecond($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-debit pTemplate="item">
+                    <div
+                        *ngIf="debit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ debit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ debit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="debit.name?.length > 54">{{
+                                debit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="debit.name?.length <= 54">
+                                {{ debit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ debit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ debit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+        <!--Tài khoản có-->
+        <div class="field col-1">
+            <label for="credit" class="mb-1 font-bold">TK Có</label>
+            <p-autoComplete
+                #creditCodeTmp
+                [ngModel]="fc['creditCode'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden': isHiddenAutoCompleteCreditCode
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditCodeFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [lazy]="true"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="20"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditCode($event)"
+                (onFocus)="creditCodeTmp.handleDropdownClick()"
+                (input)="fc['creditCode'].setValue($event?.target?.value)"
+                (onClear)="onClearCreditCode()"
+                (onSelect)="onSelectCreditCode($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div class="w-auto flex flex-nowrap align-content-center">
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name?.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name?.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.accGroup }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>{{ credit.closingDebit | number: "1.0-0" }}</p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+        <div class="field col-1">
+            <label for="creditDetail1" class="mb-1 font-bold">C.Tiết 1</label>
+            <p-autoComplete
+                #creditDetailCodeFirstTmp
+                [ngModel]="fc['creditDetailCodeFirst'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteCreditDetailCodeFirst
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditDetailCodeFirstFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="!isCreditCodeHas || !isCreditCodeHasDetails"
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditDetailCodeFirst($event)"
+                (onFocus)="creditDetailCodeFirstTmp.handleDropdownClick()"
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.creditDetailCodeFirst
+                    })
+                "
+                (input)="
+                    fc['creditDetailCodeFirst'].setValue($event?.target?.value)
+                "
+                (onClear)="onClearCreditDetailCodeFirst()"
+                (onSelect)="onSelectCreditDetailCodeFirst($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div
+                        *ngIf="credit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ credit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name?.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name?.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ credit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+        <div class="field col-1">
+            <label for="creditDetail2" class="mb-1 font-bold">C.Tiết 2</label>
+            <p-autoComplete
+                #creditDetailCodeSecondTmp
+                [ngModel]="fc['creditDetailCodeSecond'].value"
+                [ngClass]="{
+                    'autocomplete-panel-hidden':
+                        isHiddenAutoCompleteCreditDetailCodeSecond
+                }"
+                [emptyMessage]="emptyMessageAutoComplete"
+                [suggestions]="creditDetailCodeSecondFilter"
+                [showEmptyMessage]="true"
+                [autoHighlight]="true"
+                [delay]="500"
+                [disabled]="
+                    !isCreditDetailCodeFirstHasDetails ||
+                    !isCreditDetailCodeFirstHas
+                "
+                [completeOnFocus]="true"
+                [showClear]="false"
+                [autoWidth]="false"
+                (completeMethod)="filterCreditDetailCodeSecond($event)"
+                (onFocus)="creditDetailCodeSecondTmp.handleDropdownClick()"
+                (onKeyUp)="
+                    onKeyUpAutoCompleteLazyLoadding({
+                        event: $event,
+                        key: configAriseEnum.creditDetailCodeSecond
+                    })
+                "
+                (input)="
+                    fc['creditDetailCodeSecond'].setValue($event?.target?.value)
+                "
+                (onClear)="onClearCreditDetailCodeSecond()"
+                (onSelect)="onSelectCreditDetailCodeSecond($event)"
+                field="code"
+                class="p-inputtext-sm capitalize"
+            >
+                <ng-template let-credit pTemplate="item">
+                    <div
+                        *ngIf="credit"
+                        class="w-auto flex flex-nowrap align-content-center"
+                    >
+                        <div class="w-5rem border-right-1">
+                            <p>{{ credit.code }}</p>
+                        </div>
+                        <div class="w-3rem border-right-1 px-1">
+                            <p>{{ credit.warehouseCode }}</p>
+                        </div>
+                        <div
+                            class="w-26rem overflow-hidden border-right-1 px-1"
+                        >
+                            <marquee *ngIf="credit.name.length > 54">{{
+                                credit.name
+                            }}</marquee>
+                            <p class="mb-0" *ngIf="credit.name.length <= 54">
+                                {{ credit.name }}
+                            </p>
+                        </div>
+                        <div class="w-6rem border-right-1 px-1">
+                            <p>{{ credit.closingStockQuantity || 0 }}</p>
+                        </div>
+                        <div class="w-6rem px-1">
+                            <p>
+                                {{ credit.closingDebit || 0 | number: "1.0-0" }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-autoComplete>
+        </div>
+        <div class="filed col-3 flex align-items-center gap-8">
+            <p-checkbox
+                [binary]="true"
+                inputId="binary"
+                [(ngModel)]="isAutoAddDetail"
+                label="Tự động thêm Chi tiết"
+                class="mt-4"
+            ></p-checkbox>
+            <button
+                pButton
+                class="bg-primary w-fit btn-update-ccdc pt-2 p-button-sm mt-4"
+                [ngClass]="{ disabled: !checkButtonSave() }"
+                (click)="onUpdateAccount()"
+            >
+                Lưu
+            </button>
+        </div>
+        <div class="filed col-2 flex align-items-end justify-content-end">
+            <input
+                pInputText
+                type="text"
+                id="keyword"
+                placeholder="Nhập tìm kiếm"
+                class="w-16rem ml-4"
+            />
+        </div>
+        <small *ngIf="isErrorText" class="p-error w--100 mt-3 font-bold"
+            >Bạn cần chọn thêm TSCĐ</small
+        >
+    </div>
+    <div class="col-12 mt-3">
+        <ng-container *ngIf="activeIndex === 0">
+            <p-table
+                #dt1
+                [value]="fixedAssets"
+                dataKey="id"
+                [rows]="10"
+                [loading]="loading"
+                [rowHover]="true"
+                selectionMode="multiple"
+                styleClass="p-datatable-gridlines sidebar-custom"
+                [paginator]="true"
+                [responsiveLayout]="'scroll'"
+                [totalRecords]="totalRecords"
+                [rowsPerPageOptions]="[50]"
+                [showCurrentPageReport]="true"
+                [lazy]="true"
+                (onLazyLoad)="getFixedAssets($event)"
+                scrollDirection="both"
+                [scrollable]="true"
+                [(first)]="first"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 20px; width: 3%">
+                            <p-checkbox
+                                [(ngModel)]="checkAllFixedAsset"
+                                *ngIf="fixedAssets.length"
+                                [binary]="true"
+                                inputId="binary"
+                                (onChange)="onCheckAllFixedAsset()"
+                            ></p-checkbox>
+                        </th>
+                        <th style="min-width: 50px; width: 10%">
+                            <div class="flex align-items-center">
+                                <!--                                <span [translate]="'label.number_order'"></span>-->
+                                Mã
+                            </div>
+                        </th>
+                        <th style="min-width: 150px; width: 20%">
+                            <div class="flex align-items-center">Tên CCDC</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">SL</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">Đơn giá</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                Nguyên giá
+                            </div>
+                        </th>
+                        <th style="min-width: 30px; width: 6%">
+                            <div class="flex align-items-center">Ngày mua</div>
+                        </th>
+                        <th style="min-width: 30px; width: 6%">
+                            <div class="flex align-items-center">SLSD</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                Ngày sử dụng
+                            </div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">Tháng KH</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">TK Nợ</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                C.Tiết Nợ 1
+                            </div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                C.Tiết Nợ 2
+                            </div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">TK Có</div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                C.Tiết Có 1
+                            </div>
+                        </th>
+                        <th style="min-width: 30px; width: 5%">
+                            <div class="flex align-items-center">
+                                C.Tiết Có 1
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-fixedAsset>
+                    <tr>
+                        <td style="min-width: 20px; width: 3%">
+                            <p-checkbox
+                                [(ngModel)]="fixedAsset.checked"
+                                [binary]="true"
+                                inputId="binary"
+                            ></p-checkbox>
+                        </td>
+                        <td style="min-width: 50px; width: 10%">
+                            {{
+                                fixedAsset.creditDetailCodeSecond ||
+                                    fixedAsset.creditDetailCodeFirst
+                            }}
+                        </td>
+                        <td style="min-width: 100px; width: 20%">
+                            {{ fixedAsset.name }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.quantity | number }}
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 5%"
+                            class="pt-1 pb-2 flex align-items-start"
+                        >
+                            <p-inputNumber
+                                id="unitPrice"
+                                [(ngModel)]="fixedAsset.unitPrice"
+                            ></p-inputNumber>
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 5%"
+                            class="text-right"
+                        >
+                            {{ fixedAsset.historicalCost | number }}
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 6%"
+                            class="text-center"
+                        >
+                            {{ fixedAsset.buyDate | date: "dd-MM-YYYY" }}
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 6%"
+                            class="pt-1 pb-2 flex align-items-start"
+                        >
+                            <p-inputNumber
+                                id="usedQuantity"
+                                [(ngModel)]="fixedAsset.usedQuantity"
+                            ></p-inputNumber>
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 5%"
+                            class="pt-1 pb-2 flex align-items-start"
+                        >
+                            <input
+                                pInputText
+                                maxlength="10"
+                                pattern="[0-9]{1,5}"
+                                [(ngModel)]="fixedAsset.usedDate"
+                                placeholder="dd/MM/yyyy"
+                                (keyup)="onKeyDownUsedDate($event, fixedAsset)"
+                            />
+                        </td>
+                        <td
+                            style="min-width: 30px; width: 5%"
+                            class="justify-content-center"
+                        >
+                            {{ fixedAsset.totalMonth }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.debitCode }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.debitDetailCodeFirst }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.debitDetailCodeSecond }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.creditCode }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.creditDetailCodeFirst }}
+                        </td>
+                        <td style="min-width: 30px; width: 5%">
+                            {{ fixedAsset.creditDetailCodeSecond }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-container>
+        <ng-container *ngIf="activeIndex === 1">
+            <p-table
+                #dt2
+                [value]="fixedAssets242"
+                dataKey="id"
+                [rows]="10"
+                [loading]="loading"
+                [rowHover]="true"
+                selectionMode="multiple"
+                [(selection)]="fixedAssetsSelected"
+                styleClass="p-datatable-gridlines sidebar-custom"
+                [paginator]="true"
+                [responsiveLayout]="'scroll'"
+                [totalRecords]="totalRecords"
+                [rowsPerPageOptions]="[50]"
+                [showCurrentPageReport]="true"
+                [lazy]="true"
+                (onLazyLoad)="getFixedAssets($event)"
+                scrollDirection="both"
+                [scrollable]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(first)]="first"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="w-2rem">
+                            <p-checkbox
+                                [(ngModel)]="checkAllFixedAsset242"
+                                [binary]="true"
+                                inputId="binary"
+                                *ngIf="fixedAssets242.length"
+                                (onChange)="onCheckAllFixedAsset242()"
+                            ></p-checkbox>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.code'"></span>
+                            </div>
+                        </th>
+                        <th class="w-2">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.fixed_assets_name'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.stock_quantity'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.original_price'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.use_date'"></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.month_of_customer'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.month_remaining'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.date_of_month_use'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="
+                                        'label.value_of_customer_1_day'
+                                    "
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="
+                                        'label.value_of_customer_current_period'
+                                    "
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.value_remaining'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.debit_code_name'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.detail_1'"></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.detail_2'"></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span
+                                    [translate]="'label.credit_code_name'"
+                                ></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.detail_1'"></span>
+                            </div>
+                        </th>
+                        <th class="w-6rem">
+                            <div class="flex align-items-center">
+                                <span [translate]="'label.detail_2'"></span>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-fixedAsset>
+                    <tr>
+                        <td class="w-2rem">
+                            <p-checkbox
+                                [(ngModel)]="fixedAsset.checked"
+                                [binary]="true"
+                                inputId="binary"
+                            ></p-checkbox>
+                        </td>
+                        <td class="w-6rem">
+                            {{
+                                fixedAsset.creditDetailCodeSecond ||
+                                    fixedAsset.creditDetailCodeFirst
+                            }}
+                        </td>
+                        <td class="w-2">
+                            <span
+                                class="p-column-title"
+                                [translate]="'label.fixed_assets_name'"
+                            ></span
+                            >{{ fixedAsset.name }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.quantity | number }}
+                        </td>
+                        <td class="w-6rem pt-1 pb-2 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="fixedAsset.historicalCost"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.usedDate | date: "dd-MM-YYYY" }}
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="fixedAsset.totalMonth"
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="fixedAsset.totalMonthLeft"
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="
+                                    fixedAsset.totalDayDepreciationOfThisPeriod
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="fixedAsset.depreciationOfOneDay"
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="
+                                    fixedAsset.depreciationOfThisPeriod
+                                "
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem pt-1 pb-06 flex align-items-start">
+                            <p-inputNumber
+                                class="p-inputtext-sm"
+                                [(ngModel)]="fixedAsset.carryingAmount"
+                                [ngModelOptions]="{ standalone: true }"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.debitCode }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.debitDetailCodeFirst }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.debitDetailCodeSecond }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.creditCode }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.creditDetailCodeFirst }}
+                        </td>
+                        <td class="w-6rem">
+                            {{ fixedAsset.creditDetailCodeSecond }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </ng-container>
+    </div>
+    <div class="col-12 flex justify-content-end gap-4 mt-5">
+        <button
+            class="w-auto"
+            type="button"
+            pButton
+            icon="pi pi-arrow-left"
+            (click)="onCancel.emit()"
+            [label]="'button.back' | translate"
+        ></button>
+        <button
+            class="p-button-info w-auto"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.save' | translate"
+            (click)="onSaveAll()"
+        ></button>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="isEdit ? 'label.edit_branch' : 'label.add_branch'"
+            ></h5>
+            <form [formGroup]="branchForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="code"
+                            >{{ "label.code" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="code"
+                            [(ngModel)]="branchForm.value.code"
+                            formControlName="code"
+                            [ngClass]="checkValidValidator('code')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="branchForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="managerName"
+                            >{{ "label.manager_name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="managerName"
+                            [(ngModel)]="branchForm.value.managerName"
+                            formControlName="managerName"
+                            [ngClass]="checkValidValidator('managerName')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('managerName')"
+                            class="p-error"
+                            [innerHTML]="'info.manager_name' | translate"
+                        ></small>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="field col-12 gap-8 flex justify-content-end mt-2 p-0">
+                        <button
+                            icon="pi pi-times"
+                            pButton
+                            class="w-auto p-button-outlined mr-2"
+                            (click)="onCancel.emit({})"
+                            [label]="'button.backF6' | translate"
+                        ></button>
+                        <button
+                            icon="pi pi-check"
+                            class="w-auto"
+                            pButton
+                            (click)="onSubmit()"
+                            [label]="'button.saveF8' | translate"
+                        ></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

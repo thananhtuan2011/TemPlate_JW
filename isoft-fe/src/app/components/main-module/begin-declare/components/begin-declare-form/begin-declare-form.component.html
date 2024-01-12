@@ -1,0 +1,227 @@
+<p-toast></p-toast>
+<form *ngIf="companyForm" [formGroup]="companyForm" class="card mb-0">
+    <div class="p-fluid p-formgrid grid mt-2">
+        <!--quantity-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="quantity"
+                [translate]="'label.quantity_define'"
+            ></label>
+            <input
+                pInputText
+                id="quantity"
+                [(ngModel)]="companyForm.value.quantity"
+                formControlName="quantity"
+                [ngClass]="checkValidValidator('quantity')"
+            />
+            <small
+                *ngIf="checkValidValidator('quantity')"
+                class="p-error"
+                [innerHTML]="'info.quantity_define' | translate"
+            ></small>
+        </div>
+
+        <!--unitCost-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="unitCost"
+                [translate]="'label.unit_cost_define'"
+            ></label>
+            <input
+                pInputText
+                id="unitCost"
+                [(ngModel)]="companyForm.value.unitCost"
+                formControlName="unitCost"
+                [ngClass]="checkValidValidator('unitCost')"
+            />
+            <small
+                *ngIf="checkValidValidator('unitCost')"
+                class="p-error"
+                [innerHTML]="'info.unit_cost_define' | translate"
+            ></small>
+        </div>
+
+        <!--money-->
+        <div class="field col-12 sm:col-6">
+            <label htmlFor="money" [translate]="'label.money_define'"></label>
+            <input
+                pInputText
+                id="money"
+                [(ngModel)]="companyForm.value.money"
+                formControlName="money"
+                [ngClass]="checkValidValidator('money')"
+            />
+            <small
+                *ngIf="checkValidValidator('money')"
+                class="p-error"
+                [innerHTML]="'info.money_define' | translate"
+            ></small>
+        </div>
+
+        <!--currency-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="currency"
+                [translate]="'label.currency_define'"
+            ></label>
+            <input
+                pInputText
+                id="currency"
+                [(ngModel)]="companyForm.value.currency"
+                formControlName="currency"
+                [ngClass]="checkValidValidator('currency')"
+            />
+            <small
+                *ngIf="checkValidValidator('currency')"
+                class="p-error"
+                [innerHTML]="'info.currency_define' | translate"
+            ></small>
+        </div>
+
+        <!--decimalRate-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="decimalRate"
+                [translate]="'label.decimal_rate_define'"
+            ></label>
+            <input
+                pInputText
+                id="decimalRate"
+                [(ngModel)]="companyForm.value.decimalRate"
+                formControlName="decimalRate"
+                [ngClass]="checkValidValidator('decimalRate')"
+            />
+            <small
+                *ngIf="checkValidValidator('decimalRate')"
+                class="p-error"
+                [innerHTML]="'info.decimal_rate_define' | translate"
+            ></small>
+        </div>
+
+        <!--dayType-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="dayType"
+                [translate]="'label.day_type_define'"
+            ></label>
+            <p-dropdown
+                id="dayType"
+                [options]="types.dayType"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.dayType"
+                [formControlName]="'dayType'"
+                [placeholder]="'label.empty' | translate"
+                [ngClass]="checkValidValidator('dayType')"
+                [filter]="true"
+                filterBy="label"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('dayType')"
+                class="p-error"
+                [innerHTML]="'info.day_type_define' | translate"
+            ></small>
+        </div>
+
+        <!--decimalUnit-->
+        <div class="field col-12">
+            <label
+                htmlFor="decimalUnit"
+                [translate]="'label.unit_type'"
+            ></label>
+            <div class="flex gap-8">
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="menuType"
+                        value="vn"
+                        [(ngModel)]="unitType"
+                        (onClick)="onChangeUnit('vn')"
+                        inputId="menuType1"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></p-radioButton>
+                    <label for="menuType1">VietNam</label>
+                </div>
+                <div class="field-radiobutton">
+                    <p-radioButton
+                        name="menuType"
+                        value="en"
+                        [(ngModel)]="unitType"
+                        (onClick)="onChangeUnit('en')"
+                        inputId="menuType2"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></p-radioButton>
+                    <label for="menuType2">English</label>
+                </div>
+            </div>
+        </div>
+
+        <!--thousandUnit-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="thousandUnit"
+                [translate]="'label.thousand_unit_define'"
+            ></label>
+            <p-dropdown
+                id="thousandUnit"
+                [options]="types.thousandUnit"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.thousandUnit"
+                [formControlName]="'thousandUnit'"
+                [ngClass]="checkValidValidator('thousandUnit')"
+                [filter]="true"
+                filterBy="label"
+                [placeholder]="'label.empty' | translate"
+                [disabled]="true"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('thousandUnit')"
+                class="p-error"
+                [innerHTML]="'info.thousand_unit_define' | translate"
+            ></small>
+        </div>
+
+        <!--decimalUnit-->
+        <div class="field col-12 sm:col-6">
+            <label
+                htmlFor="decimalUnit"
+                [translate]="'label.decimal_unit_define'"
+            ></label>
+            <p-dropdown
+                id="decimalUnit"
+                [options]="types.decimalUnit"
+                [optionLabel]="'label'"
+                [optionValue]="'value'"
+                [(ngModel)]="companyForm.value.decimalUnit"
+                [disabled]="true"
+                [formControlName]="'decimalUnit'"
+                [ngClass]="checkValidValidator('decimalUnit')"
+                [filter]="true"
+                filterBy="label"
+                [placeholder]="'label.empty' | translate"
+            >
+            </p-dropdown>
+            <small
+                *ngIf="checkValidValidator('decimalUnit')"
+                class="p-error"
+                [innerHTML]="'info.decimal_unit_define' | translate"
+            ></small>
+        </div>
+    </div>
+
+    <div class="flex justify-content-end gap-8 mt-4">
+        <p-button
+            icon="pi pi-times"
+            (click)="onReloadCompanyInfo()"
+            [label]="'button.backF6' | translate"
+            styleClass="p-button-outlined"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="onSubmit()"
+            [label]="'button.saveF8' | translate"
+        ></p-button>
+    </div>
+</form>

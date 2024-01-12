@@ -1,0 +1,173 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.user_role_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getUserRoles($event)"
+        [scrollable]="!isMobile"
+        scrollDirection="both"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div class="w-full flex justify-content-between">
+                <div class="formgroup-inline"></div>
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.NHOMQUYEN,
+                        action: appConstant.PERMISSION_FUNC.ADD
+                    }"
+                    pButton
+                    [label]="'button.addF7' | translate"
+                    icon="pi pi-save"
+                    (click)="onAddUserRole()"
+                ></button>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.user_role_code" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.user_role_title" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.user_role_note" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.user_role_order" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-2 justify-content-center"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-role>
+            <tr>
+                <td class="w-2 py-2">
+                    <span class="p-column-title">{{
+                        "label.user_role_code" | translate
+                    }}</span>
+                    {{ role.code }}
+                </td>
+                <td class="w-3 py-2">
+                    <span class="p-column-title">{{
+                        "label.user_role_title" | translate
+                    }}</span>
+                    {{ role.title }}
+                </td>
+                <td class="w-3 py-2">
+                    <span class="p-column-title">{{
+                        "label.user_role_note" | translate
+                    }}</span>
+                    {{ role.note }}
+                </td>
+                <td class="w-2 py-2">
+                    <span class="p-column-title">{{
+                        "label.user_role_order" | translate
+                    }}</span>
+                    {{ role.order }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHOMQUYEN,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="onEditUserRole(role)"
+                    ></button>
+                    <ng-container
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.NHOMQUYEN,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                    >
+                        <button
+                            pButton
+                            class="p-button-danger"
+                            icon="pi pi-trash"
+                            *ngIf="!role.isNotAllowDelete"
+                            (click)="onDeleteUserRole(role.id)"
+                        ></button>
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<ng-container
+    *appHasAccess="{
+        menu: appConstant.MENU_TYPE.NHOMQUYEN,
+        action:
+            appConstant.PERMISSION_FUNC.ADD || appConstant.PERMISSION_FUNC.EDIT
+    }"
+>
+    <app-user-role-edit
+        [display]="display"
+        [formData]="formData"
+        (onCancel)="onCancelForm($event)"
+    ></app-user-role-edit>
+</ng-container>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            class="mr-3"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

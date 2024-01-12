@@ -1,0 +1,435 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        class="px-1"
+        [translate]="
+            formData.id ? 'label.edit_promotion' : 'label.add_promotion'
+        "
+    ></h5>
+
+    <form [formGroup]="promotionForm">
+        <div class="grid p-fluid">
+            <div class="field col-12 md:col-4">
+                <label
+                    class="font-bold"
+                    [translate]="'label.promotion_category'"
+                ></label>
+                <p-dropdown
+                    [options]="categories"
+                    optionLabel="name"
+                    optionValue="id"
+                    [filter]="true"
+                    filterBy="name"
+                    formControlName="categoryId"
+                    [placeholder]="'label.empty' | translate"
+                >
+                </p-dropdown>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <label
+                    for="fromAt"
+                    [translate]="'label.promotion_fromAt'"
+                ></label>
+                <p-inputMask
+                    mask="99/99/9999"
+                    formControlName="fromAt"
+                    slotChar="dd/mm/yyyy"
+                ></p-inputMask>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <label for="toAt" [translate]="'label.promotion_toAt'"></label>
+                <p-inputMask
+                    mask="99/99/9999"
+                    formControlName="toAt"
+                    slotChar="dd/mm/yyyy"
+                ></p-inputMask>
+            </div>
+        </div>
+        <div class="grid w-full">
+            <div class="field col-12 flex flex-column">
+                <label
+                    for="items"
+                    class="flex align-items-center justify-content-start"
+                >
+                    <h5 class="mr-4 mb-0">
+                        {{ "label.goods_management" | translate }}
+                    </h5>
+                    <button
+                        *ngIf="!formData?.isFinish"
+                        pButton
+                        style="height: 35px"
+                        type="button"
+                        class="mx-1"
+                        pTooltip="Thêm mới hàng hóa"
+                        (click)="onAddGoods()"
+                    >
+                        <i class="pi pi-plus" aria-hidden="true"></i>
+                    </button>
+
+                    <button
+                        *ngIf="
+                            !formData?.isFinish && goodInventories.length !== 0
+                        "
+                        pButton
+                        style="height: 35px"
+                        class="mx-1 p-button-warning"
+                        (click)="isQRScannerVisible = true"
+                        pTooltip="Quét mã"
+                    >
+                        <i class="pi pi-qrcode" aria-hidden="true"></i>
+                    </button>
+
+                    <button
+                        *ngIf="
+                            !formData?.isFinish && goodInventories.length !== 0
+                        "
+                        pButton
+                        style="height: 35px"
+                        class="mx-1 p-button-success"
+                        (click)="onSave()"
+                        pTooltip="Lưu"
+                    >
+                        <i class="pi pi-save" aria-hidden="true"></i>
+                    </button>
+                </label>
+
+                <p-table
+                    [value]="goodInventories"
+                    styleClass="p-datatable-gridlines sidebar-custom"
+                    [scrollable]="!isMobile"
+                    [paginator]="false"
+                    [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+                    scrollDirection="both"
+                >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="w-1">Mã sản phẩm</th>
+                            <th class="w-3">Tên sản phẩm</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-good>
+                        <tr>
+                            <td class="w-1">
+                                <span
+                                    class="p-column-title"
+                                    [translate]="'Mã sản phẩm'"
+                                ></span
+                                >{{ good.code }}
+                            </td>
+                            <td class="w-3">
+                                <span
+                                    class="p-column-title"
+                                    [translate]="'Tên sản phẩm'"
+                                ></span
+                                >{{ good.name }}
+                            </td>
+                            <td class="w-1" pFrozenColumn [frozen]="true">
+                                <div
+                                    class="w-full py-2 md:py-0 flex justify-content-center"
+                                >
+                                    <button
+                                        pButton
+                                        pRipple
+                                        type="button"
+                                        icon="pi pi-times"
+                                        class="p-button-rounded p-button-danger text-right md:text-center"
+                                        (click)="onRemoveGood(good)"
+                                    ></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div
+                class="field col-12 flex align-items-center justify-content-end gap-2"
+            >
+                <button
+                    pButton
+                    class="p-button-outlined"
+                    (click)="onCancel.emit({})"
+                >
+                    Quay lại (F6)
+                </button>
+                <button
+                    *ngIf="formData?.id && !formData?.isFinish"
+                    pButton
+                    class="p-button-danger"
+                    (click)="onDelete()"
+                >
+                    Xóa (F9)
+                </button>
+                <button *ngIf="!formData?.isFinish" pButton (click)="onSave()">
+                    Lưu (F8)
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<p-dialog
+    [(visible)]="visibleGoodTable"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="w-11 md:w-9 h-auto overflow-auto"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white">Danh sách hàng hóa</h4>
+    </ng-template>
+    <ng-template pTemplate="body">
+        <p-table
+            [value]="goods"
+            styleClass="p-datatable-gridlines sidebar-custom"
+            [scrollable]="!isMobile"
+            [paginator]="false"
+            [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+            scrollDirection="both"
+            [lazy]="true"
+            (onLazyLoad)="getPromotionGoodList($event)"
+        >
+            <ng-template pTemplate="caption">
+                <p-panel
+                    class="flex flex-column"
+                    [header]="'label.search_advanced' | translate"
+                    [toggleable]="true"
+                    [collapsed]="true"
+                >
+                    <div class="grid p-fluid">
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.account'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.account"
+                                (onChange)="onChangeAccount($event)"
+                                [filter]="true"
+                                [options]="types.chartOfAccount"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [placeholder]="'label.empty' | translate"
+                            ></p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.detail_1'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.detail1"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.detail1"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.goods_group'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.menuType"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.menuType"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.price_list'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.priceCode"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.priceList"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.goods_type'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.goodType"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.goodsType"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.location'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.position"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.position"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.menu_web'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.menuWeb"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="types.menuWeb"
+                                showClear="true"
+                                [optionLabel]="'name'"
+                                [optionValue]="'code'"
+                                [filter]="true"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.sort_field'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.sortField"
+                                (onChange)="onChangeSort($event, 'sortField')"
+                                [options]="sortFields"
+                                [optionLabel]="'label'"
+                                [optionValue]="'code'"
+                            ></p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.sort_type'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.isSort"
+                                (onChange)="onChangeSort($event, 'sortType')"
+                                [options]="sortTypes"
+                                [optionLabel]="'label'"
+                                [optionValue]="'code'"
+                            ></p-dropdown>
+                        </div>
+                        <div class="field col-12 md:col-6 lg:col-2">
+                            <label
+                                class="font-bold"
+                                [translate]="'label.business_state'"
+                            ></label>
+                            <p-dropdown
+                                [(ngModel)]="filter.status"
+                                (onChange)="getPromotionGoodList()"
+                                [options]="statuses"
+                                [optionLabel]="'label'"
+                                [optionValue]="'value'"
+                            ></p-dropdown>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <div
+                    class="my-2 mx-2 md:mx-0 flex flex-column md:flex-row gap-8"
+                >
+                    <div class="flex gap-8 w-full justify-content-between">
+                        <!--                        <button pButton type="button" icon="pi pi-search" [label]="'label.search' | translate"-->
+                        <!--                                (click)="getPromotionGoodList()"></button>-->
+                        <button
+                            pButton
+                            class="p-2"
+                            icon="pi pi-plus"
+                            (click)="onAddGoodToInventory()"
+                            [label]="'button.addF7' | translate"
+                        ></button>
+                    </div>
+
+                    <td *ngIf="isMobile" class="mt-4">
+                        <p-checkbox
+                            [(ngModel)]="checkAll"
+                            [binary]="true"
+                            inputId="binary"
+                            (onChange)="onCheckAll()"
+                        ></p-checkbox>
+                        <span class="ml-2 text-primary">{{
+                            "label.select_all" | translate
+                        }}</span>
+                    </td>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-4rem">
+                        <p-checkbox
+                            [(ngModel)]="checkAll"
+                            [binary]="true"
+                            inputId="binary"
+                            (onChange)="onCheckAll()"
+                        ></p-checkbox>
+                    </th>
+                    <th class="w-2">Mã SP</th>
+                    <th class="w-3">Tên SP</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-good>
+                <tr>
+                    <td class="w-4rem">
+                        <p-checkbox
+                            [(ngModel)]="good.checked"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-2">
+                        <span
+                            class="p-column-title"
+                            [translate]="'Mã SP'"
+                        ></span
+                        >{{ good.code }}
+                    </td>
+                    <td class="w-3">
+                        <span
+                            class="p-column-title"
+                            [translate]="'Tên SP'"
+                        ></span
+                        >{{ good.name }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-template>
+</p-dialog>

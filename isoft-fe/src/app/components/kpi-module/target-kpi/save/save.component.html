@@ -1,0 +1,222 @@
+<div class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between">
+        <h5 [translate]="'label.kpi_target'"></h5>
+    </div>
+    <p-table
+        [formGroup]="saveForm"
+        [value]="targetUser"
+        [paginator]="false"
+        [showCurrentPageReport]="true"
+        responsiveLayout="stack"
+        [breakpoint]="'1199px'"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        [totalRecords]="targetUser.length"
+        [globalFilterFields]="['userCode', 'userName', 'point']"
+        [rowTrackBy]="trackByFn"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-4">
+                    <label class="font-bold">
+                        {{ "label.kpi_number" | translate }}
+                        <span class="text-pink">*</span>
+                    </label>
+                    <input pInputText formControlName="procedureNumber" />
+                    <small
+                        *ngIf="inValid('procedureNumber')"
+                        class="p-error font-bold"
+                    >
+                        {{ "info.kpi_procedure_number" | translate }}
+                    </small>
+                </div>
+
+                <div class="field col-12 md:col-4">
+                    <label class="font-bold" [translate]="'label.kpi_name'">
+                        {{ "label.kpi_name" | translate }}
+                        <span class="text-pink">*</span>
+                    </label>
+                    <input pInputText formControlName="name" />
+                    <small *ngIf="inValid('name')" class="p-error font-bold">
+                        {{ "info.kpi_name" | translate }}
+                    </small>
+                </div>
+
+                <div class="field col-12 md:col-4">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.kpi_department'"
+                    ></label>
+                    <p-dropdown
+                        [options]="departments"
+                        optionLabel="name"
+                        optionValue="id"
+                        [filter]="true"
+                        filterBy="name"
+                        formControlName="departmentId"
+                        [placeholder]="'label.empty' | translate"
+                    >
+                    </p-dropdown>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th
+                    class="w-3"
+                    *ngFor="let col of cols"
+                    [className]="col.classHeader"
+                >
+                    <div class="flex align-items-center">
+                        <span [translate]="col.header"></span>
+                    </div>
+                </th>
+
+                <th
+                    class="text-center"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    <button
+                        pButton
+                        icon="pi pi-plus"
+                        (click)="addTargetUser()"
+                    ></button>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" formArrayName="items">
+            <tr *ngFor="let _ of targetArrayForm.controls; index as i">
+                <ng-container [formGroupName]="i">
+                    <td class="py-4 w-4">
+                        <span
+                            class="p-column-title w--20"
+                            [translate]="'label.kpi_no'"
+                        ></span>
+                        <div class="w-full">
+                            <p-dropdown
+                                class="dropdown-table mb-2 w-full"
+                                [options]="users"
+                                optionLabel="id"
+                                optionValue="id"
+                                [filter]="true"
+                                filterBy="id"
+                                [appendTo]="'body'"
+                                [placeholder]="'label.empty' | translate"
+                                formControlName="userId"
+                                (onChange)="
+                                    changeUser(i, $event, 'id', 'userName')
+                                "
+                            >
+                            </p-dropdown>
+                            <small
+                                *ngIf="inValid('items.' + i + '.userId')"
+                                class="p-error font-bold"
+                            >
+                                {{ "info.kpi_user_code" | translate }}
+                            </small>
+                        </div>
+                    </td>
+                    <td class="py-4 w-4">
+                        <span
+                            class="p-column-title w--20"
+                            [translate]="'label.kpi_name_staff'"
+                        ></span>
+                        <div class="w-full">
+                            <p-dropdown
+                                class="dropdown-table mb-2"
+                                [options]="users"
+                                optionLabel="username"
+                                optionValue="username"
+                                [filter]="true"
+                                filterBy="username"
+                                [appendTo]="'body'"
+                                formControlName="userName"
+                                [placeholder]="'label.empty' | translate"
+                                (onChange)="
+                                    changeUser(i, $event, 'username', 'userId')
+                                "
+                            >
+                            </p-dropdown>
+                            <small
+                                *ngIf="inValid('items.' + i + '.userName')"
+                                class="p-error font-bold"
+                            >
+                                {{ "info.kpi_user_name" | translate }}
+                            </small>
+                        </div>
+                    </td>
+                    <td class="py-4 w-3">
+                        <span
+                            class="p-column-title w--20"
+                            [translate]="'label.kpi_score'"
+                        ></span>
+                        <div class="w-full">
+                            <input
+                                pInputText
+                                class="w-full mb-2"
+                                formControlName="point"
+                                type="number"
+                            />
+                            <small
+                                *ngIf="inValid('items.' + i + '.point')"
+                                class="p-error font-bold"
+                            >
+                                {{ "info.kpi_point" | translate }}
+                            </small>
+                        </div>
+                    </td>
+
+                    <td
+                        class="w--15 text-center"
+                        alignFrozen="right"
+                        pFrozenColumn
+                        [frozen]="true"
+                        [ngClass]="{ 'block m-auto': isMobile }"
+                    >
+                        <button
+                            pButton
+                            class="p-button-danger"
+                            icon="pi pi-trash"
+                            [disabled]="targetArrayForm.controls.length == 1"
+                            (click)="deleteTargetUser(i)"
+                        ></button>
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <div class="field col-12 gap-8 flex justify-content-end mt-4 p-0">
+        <p-button
+            icon="pi pi-times"
+            [routerLink]="['../']"
+            [label]="'button.backF6' | translate"
+            styleClass="p-button-outlined"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="onSubmitForm()"
+            [label]="'button.saveF8' | translate"
+        >
+        </p-button>
+    </div>
+</div>

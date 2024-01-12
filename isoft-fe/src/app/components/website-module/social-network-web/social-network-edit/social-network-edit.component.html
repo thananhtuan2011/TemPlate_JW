@@ -1,0 +1,66 @@
+<div *ngIf="display" class="card card-table">
+    <h5 [translate]="isEdit ? 'label.web_social_edit' : 'label.web_social_add'"></h5>
+    <form [formGroup]="socialForm">
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label for="title">{{
+                    "label.web_social_name" | translate
+                    }}</label>
+                <input pInputText id="title" type="text" class="w-full" [ngClass]="{
+                        'input-error':
+                            socialForm.controls.title.invalid && isSubmit
+                    }" placeholder="Nhập tên mạng xã hội" formControlName="title"
+                    [(ngModel)]="socialForm.value.title" />
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label for="link">{{
+                    "label.web_social_link" | translate
+                    }}</label>
+                <input pInputText id="shortContent" type="text" class="w-full,input-error" [ngClass]="{
+                        'input-error':
+                            socialForm.controls.shortContent.invalid && isSubmit
+                    }" placeholder="Nhập đường link" formControlName="shortContent"
+                    [(ngModel)]="socialForm.value.shortContent" />
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label for="iframeYoutube">{{
+                    "label.web_social_content" | translate
+                    }}</label>
+                <textarea pInputText id="content" type="text" class="w-full" placeholder="Nhập nội dung tóm tắt"
+                    [ngClass]="{
+                        'input-error':
+                            socialForm.controls.content.invalid && isSubmit
+                    }" formControlName="content" [(ngModel)]="socialForm.value.content" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="uploadFile">{{
+                    "Tệp tin" | translate
+                    }}</label>
+    
+                <div>
+                    <button style="width: unset;" pButton icon="pi pi-upload" (click)="uploadFile.click()"
+                        [label]="'button.import' | translate"></button>
+                    <input #uploadFile class="hidden" type="file" (click)="uploadFile.value = null" (change)="onUploadFiles($event)" multiple />
+                        <div *ngIf="fileName.length > 0" class="p-error flex gap-2" style="cursor: pointer; margin-top: 10px">
+                            <span>{{ fileName }}</span>
+                            <i class="pi pi-times" (click)="removeFile()" ></i>
+                        </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="w-full col-12 flex align-items-center justify-content-end mt-2">
+            <button icon="pi pi-times" pButton class="w-auto p-button-outlined mr-2"
+                (click)="isSubmit = false; onCancel.emit({})" [label]="'button.backF6' | translate"></button>
+            <button icon="pi pi-check" class="w-auto" pButton (click)="onSave()"
+                [label]="'button.saveF8' | translate"></button>
+        </div>
+    </form>
+</div>

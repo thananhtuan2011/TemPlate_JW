@@ -1,0 +1,300 @@
+<p-toast></p-toast>
+<form
+    *ngIf="customer"
+    class="w-12"
+    [formGroup]="customerForm"
+    autocomplete="off"
+>
+    <div class="grid w-full mx-auto">
+        <!--contact-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="contact"
+                >{{ "Người liên hệ" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <div class="p-inputgroup">
+                <p-autoComplete
+                    formControlName="contactObject"
+                    [dropdown]="true"
+                    [suggestions]="filteredContacts"
+                    (completeMethod)="filterContact($event)"
+                    (onSelect)="fillOutContactInfo($event)"
+                    field="name"
+                >
+                </p-autoComplete>
+                <button
+                    type="button"
+                    pButton
+                    pRipple
+                    icon="pi pi-plus"
+                    class="p-button-info"
+                    (click)="addNewContact()"
+                ></button>
+            </div>
+            <small
+                *ngIf="checkValidValidator('contact')"
+                class="p-error"
+                [innerHTML]="'info.customer_contact_required' | translate"
+            ></small>
+        </div>
+
+        <!--position-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="position">{{ "Chức vụ" | translate }}</label>
+            <input
+                pInputText
+                id="position"
+                [(ngModel)]="customerForm.value.position"
+                formControlName="position"
+            />
+        </div>
+
+        <!--phone-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="phone"
+                >{{ "Số điện thoại" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <input
+                [readonly]="true"
+                pInputText
+                id="phone"
+                [(ngModel)]="customerForm.value.phone"
+                formControlName="phone"
+            />
+        </div>
+
+        <!--start time-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="startTime"
+                >{{ "Thời gian bắt đầu"
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [(ngModel)]="customerForm.value.startTime"
+                formControlName="startTime"
+                [showTime]="true"
+                appendTo="body"
+            ></p-calendar>
+        </div>
+
+        <!--end time-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="endTime"
+                >{{ "Thời gian kết thúc"
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-calendar
+                [(ngModel)]="customerForm.value.endTime"
+                formControlName="endTime"
+                [showTime]="true"
+                appendTo="body"
+            ></p-calendar>
+        </div>
+
+        <!--next time-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="nextTime" xs
+                >{{ "Thời gian liên hệ lại"
+                }}<span class="text-pink-400">*</span></label
+            >
+            <div class="p-inputgroup">
+                <p-calendar
+                    [(ngModel)]="customerForm.value.nextTime"
+                    formControlName="nextTime"
+                    [showTime]="true"
+                    appendTo="body"
+                ></p-calendar>
+                <button
+                    type="button"
+                    pButton
+                    pRipple
+                    icon="pi pi-times"
+                    class="p-button-danger"
+                    (click)="customerForm.patchValue({ nextTime: null })"
+                ></button>
+            </div>
+        </div>
+
+        <!--exchangeContent-->
+        <div class="field col-12 flex flex-column">
+            <label htmlFor="exchangeContent">{{
+                "Nội dung" | translate
+            }}</label>
+            <p-editor
+                [(ngModel)]="customerForm.value.exchangeContent"
+                [style]="{ height: '300px' }"
+                formControlName="exchangeContent"
+                [class.ng-invalid]="checkValidValidator('exchangeContent')"
+                [class.ng-dirty]="checkValidValidator('exchangeContent')"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats></app-ql-formats>
+                </ng-template>
+            </p-editor>
+        </div>
+
+        <!--customerJob-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="customerJob"
+                >{{ "Công việc" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <div class="p-inputgroup">
+                <p-dropdown
+                    appendTo="body"
+                    class="w-full"
+                    [options]="customerJobs"
+                    [(ngModel)]="customerForm.value.jobsId"
+                    [placeholder]="'label.empty' | translate"
+                    class="w-full"
+                    formControlName="jobsId"
+                    [optionValue]="'id'"
+                >
+                    <ng-template let-item pTemplate="selectedItem">
+                        <div class="flex justify-content-between">
+                            <div>{{ item.name }}</div>
+                            <div
+                                class="w-1 h-1 block"
+                                [style]="{ 'background-color': item.color }"
+                            ></div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                        <div class="flex justify-content-between">
+                            <div>{{ item.name }}</div>
+                            <div
+                                class="w-1 h-1 block"
+                                [style]="{ 'background-color': item.color }"
+                            ></div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+                <button
+                    type="button"
+                    pButton
+                    pRipple
+                    class="p-button-info"
+                    icon="pi pi-plus"
+                    (click)="displayJob = true"
+                ></button>
+            </div>
+            <small
+                *ngIf="checkValidValidator('jobsId')"
+                class="p-error"
+                [innerHTML]="'info.customer_job_required' | translate"
+            ></small>
+        </div>
+
+        <!--customerStatus-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="customerStatus"
+                >{{ "Trạng thái" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <div class="p-inputgroup">
+                <p-dropdown
+                    appendTo="body"
+                    [options]="customerStatus"
+                    [(ngModel)]="customerForm.value.statusId"
+                    [placeholder]="'label.empty' | translate"
+                    class="w-full"
+                    formControlName="statusId"
+                    [optionValue]="'id'"
+                >
+                    <ng-template let-item pTemplate="selectedItem">
+                        <div class="flex justify-content-between">
+                            <div>{{ item.name }}</div>
+                            <div
+                                class="w-1 h-1 block"
+                                [style]="{ 'background-color': item.color }"
+                            ></div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                        <div class="flex justify-content-between">
+                            <div>{{ item.name }}</div>
+                            <div
+                                class="w-1 h-1 block"
+                                [style]="{ 'background-color': item.color }"
+                            ></div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+                <button
+                    type="button"
+                    pButton
+                    pRipple
+                    class="p-button-info"
+                    icon="pi pi-plus"
+                    (click)="displayStatus = true"
+                ></button>
+            </div>
+            <small
+                *ngIf="checkValidValidator('statusId')"
+                class="p-error"
+                [innerHTML]="'info.customer_status_required' | translate"
+            ></small>
+        </div>
+
+        <!--uploadFile-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="uploadFile">{{ "Tệp tin" | translate }}</label>
+            <button
+                pButton
+                icon="pi pi-upload"
+                (click)="uploadFile.click()"
+                [label]="'button.import' | translate"
+            ></button>
+            <input
+                #uploadFile
+                class="hidden"
+                type="file"
+                (change)="doAttachFile($event)"
+                multiple
+            />
+            <small
+                *ngIf="selectedFile"
+                (click)="selectedFile = null; uploadFile.value = null"
+                class="p-error"
+                style="cursor: pointer; margin-top: 10px"
+                >{{ selectedFile.name }}
+                <i
+                    class="pi pi-times"
+                    style="color: red; font-weight: 500; margin-left: 3px"
+                ></i>
+            </small>
+        </div>
+    </div>
+    <div class="col-12 flex justify-content-end">
+        <p-button
+            icon="pi pi-times"
+            (click)="onCancel.emit({})"
+            [label]="'button.back' | translate"
+            styleClass="p-button-outlined"
+            class="pr-2"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            (click)="onSubmit()"
+            [label]="'button.save' | translate"
+        ></p-button>
+    </div>
+</form>
+
+<app-contact-form
+    #contactFormRef
+    (onSuccess)="onAddNewContactSuccess($event)"
+></app-contact-form>
+
+<p-dialog id="addJob" [header]="'label.add_job_infor' | translate"
+          [(visible)]="displayJob" [modal]="true" [draggable]="false" [resizable]="false">
+    <app-customer-job-form [isEdit]="false" [display]="true" [hiddenTitle]="true"
+        (onCancel)="displayJob = false; getCustomerJobs();"></app-customer-job-form>
+</p-dialog>
+
+<p-dialog id="addStatus" [header]="'label.add_customer_status' | translate"
+          [(visible)]="displayStatus" [modal]="true" [draggable]="false" [resizable]="false">
+    <app-customer-status-form [isEdit]="false" [display]="true" [hiddenTitle]="true"
+                           (onCancel)="displayStatus = false; getCustomerStatus();"></app-customer-status-form>
+</p-dialog>

@@ -1,0 +1,194 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.relation_update' : 'label.relation_add'"
+    ></h5>
+    <form [formGroup]="RelationForm">
+        <div class="grid w-full">
+            <div class="field col-12 md:col-12 flex flex-column">
+                <label htmlFor="relation">{{
+                    "label.relation" | translate
+                }}</label>
+                <p-dropdown
+                    [translate]="'label.relation' | translate"
+                    [(ngModel)]="RelationForm.value.type"
+                    [formControlName]="'type'"
+                    [options]="typeLists"
+                    [optionLabel]="'name'"
+                    [optionValue]="'value'"
+                >
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="employee_name">{{
+                    "label.employee_name" | translate
+                }}</label>
+                <p-dropdown
+                    [(ngModel)]="RelationForm.value.employeeId"
+                    [formControlName]="'employeeId'"
+                    [options]="listInCompany"
+                    [optionValue]="'id'"
+                    [filter]="true"
+                    filterBy="fullName"
+                >
+                    <ng-template
+                        let-listInCompany
+                        pTemplate="listInCompany"
+                        pTemplate="selectedItem"
+                    >
+                        <span
+                            >{{ listInCompany.username }} -
+                            {{ listInCompany.fullName }}</span
+                        >
+                    </ng-template>
+                    <ng-template
+                        let-listInCompany
+                        pTemplate="listInCompany"
+                        pTemplate="item"
+                    >
+                        <span
+                            >{{ listInCompany.username }} -
+                            {{ listInCompany.fullName }}</span
+                        >
+                    </ng-template>
+                </p-dropdown>
+                <small
+                    *ngIf="checkValidValidator('employeeId')"
+                    class="p-error"
+                    [innerHTML]="'info.please_check_again' | translate"
+                ></small>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="profess_myself">{{
+                    "label.profess_myself" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="profess_myself"
+                    [(ngModel)]="RelationForm.value.claimingYourself"
+                    formControlName="claimingYourself"
+                />
+                <small
+                    *ngIf="checkValidValidator('claimingYourself')"
+                    class="p-error"
+                    [innerHTML]="'info.please_check_again' | translate"
+                ></small>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="name_people_opposite">{{
+                    "label.name_people_opposite" | translate
+                }}</label>
+                <ng-container
+                    *ngIf="RelationForm.value.type === 2; else company"
+                >
+                    <p-dropdown
+                        [(ngModel)]="RelationForm.value.personOppositeId"
+                        [formControlName]="'personOppositeId'"
+                        [options]="userLists"
+                        [optionValue]="'id'"
+                        [filter]="true"
+                        filterBy="fullName"
+                    >
+                        <ng-template
+                            let-userLists
+                            pTemplate="userLists"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ userLists.username }} -
+                                {{ userLists.fullName }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-userLists
+                            pTemplate="userLists"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ userLists.username }} -
+                                {{ userLists.fullName }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('personOppositeId')"
+                        class="p-error"
+                        [innerHTML]="'info.please_check_again' | translate"
+                    ></small>
+                </ng-container>
+                <ng-template #company>
+                    <p-dropdown
+                        [(ngModel)]="RelationForm.value.personOppositeId"
+                        [formControlName]="'personOppositeId'"
+                        [options]="listInCompany"
+                        [optionValue]="'id'"
+                        [filter]="true"
+                        filterBy="fullName"
+                    >
+                        <ng-template
+                            let-userLists
+                            pTemplate="userLists"
+                            pTemplate="selectedItem"
+                        >
+                            <span
+                                >{{ userLists.username }} -
+                                {{ userLists.fullName }}</span
+                            >
+                        </ng-template>
+                        <ng-template
+                            let-userLists
+                            pTemplate="userLists"
+                            pTemplate="item"
+                        >
+                            <span
+                                >{{ userLists.username }} -
+                                {{ userLists.fullName }}</span
+                            >
+                        </ng-template>
+                    </p-dropdown>
+                    <small
+                        *ngIf="checkValidValidator('personOppositeId')"
+                        class="p-error"
+                        [innerHTML]="'info.please_check_again' | translate"
+                    ></small>
+                </ng-template>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="confess_opposite">{{
+                    "label.confess_opposite" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="confess_opposite"
+                    [(ngModel)]="RelationForm.value.proclaimedOpposite"
+                    formControlName="proclaimedOpposite"
+                />
+                <small
+                    *ngIf="checkValidValidator('proclaimedOpposite')"
+                    class="p-error"
+                    [innerHTML]="'info.please_check_again' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="p-fluid p-formgrid grid mt-2">
+                <div
+                    class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                >
+                    <p-button
+                        icon="pi pi-times"
+                        (click)="onBack()"
+                        [label]="'button.backF6' | translate"
+                        styleClass="p-button-outlined"
+                    ></p-button>
+                    <p-button
+                        icon="pi pi-check"
+                        (click)="onSubmit()"
+                        [label]="'button.saveF8' | translate"
+                    >
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

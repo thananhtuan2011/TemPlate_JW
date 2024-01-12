@@ -1,0 +1,200 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'left_menu.sale-by-good-customer-report'"></h5>
+    <p-table
+        #dt1
+        [value]="lstGoodReport"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+        rowGroupMode="subheader"
+        groupRowsBy="goodGroup.name"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-2">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="startDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày bắt đầu'"
+                        (onSelect)="getCustomer()"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-2">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="endDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày kết thúc'"
+                        (onSelect)="getCustomer()"
+                    ></p-calendar>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <p-dropdown
+                        [options]="customers"
+                        [ngModelOptions]="{ standalone: true }"
+                        [optionLabel]="'name'"
+                        [filter]="true"
+                        filterBy="name"
+                        [(ngModel)]="getParams.customerId"
+                        [optionValue]="'id'"
+                        [showClear]="true"
+                        [placeholder]="'label.customer_name' | translate"
+                        (onChange)="getGoodReportSale()"
+                    >
+                        <ng-template let-item pTemplate="item">
+                            <marquee> {{ item.name }} </marquee>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-2 flex justify-content-end">
+                    <button
+                        class="p-button-warning w-auto"
+                        pButton
+                        type="button"
+                        [label]="'label.export_excel' | translate"
+                        (click)="onChangePrintExcel()"
+                    ></button>
+                    &nbsp;
+                    <button
+                        class="p-button-warning w-auto"
+                        pButton
+                        type="button"
+                        [label]="'button.export_pdf' | translate"
+                        (click)="onChangePrintpdf()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [style]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="groupheader" let-good>
+            <tr pRowGroupHeader>
+                <td colspan="4" style="width: 54%">
+                    <span class="font-bold"
+                        >Mã nhóm VTHH: {{ good.goodGroup.code }} ({{
+                            good.goodGroup.rowTotal
+                        }})</span
+                    >
+                </td>
+                <td style="width: 12%">
+                    <span class="font-bold">{{
+                        good.goodGroup.quantity | number
+                    }}</span>
+                </td>
+
+                <td style="width: 12%">
+                    <span class="font-bold">{{
+                        good.goodGroup.amount | number
+                    }}</span>
+                </td>
+
+                <td style="width: 12%">
+                    <span class="font-bold">{{
+                        good.goodGroup.quantityBack | number
+                    }}</span>
+                </td>
+
+                <td style="width: 12%">
+                    <span class="font-bold">{{
+                        good.goodGroup.amountBack | number
+                    }}</span>
+                </td>
+
+                <td style="width: 12%">
+                    <span class="font-bold">{{
+                        good.goodGroup.amountProfit | number
+                    }}</span>
+                </td>
+
+                <td style="width: 12%"></td>
+            </tr>
+        </ng-template>
+
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-lstGoodReport
+            let-columns="columns"
+        >
+            <tr>
+                <ng-container *ngFor="let col of cols">
+                    <td *ngIf="col.display" [style]="col.width">
+                        <span
+                            *ngIf="col.specType == 'number'; else normal_type"
+                            >{{ rowData[col.value] || 0 | number }}</span
+                        >
+                        <ng-template #normal_type>
+                            {{ rowData[col.value] }}
+                        </ng-template>
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    No General Profiit before tax found.
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Profiit before tax Level data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <tr pRowGroupHeader>
+                <td colspan="4" style="width: 54%">
+                    Số dòng {{ lstGoodReport ? lstGoodReport.length : 0 }}
+                </td>
+
+                <td style="width: 12%">
+                    {{ totalData.quantity | number }}
+                </td>
+
+                <td style="width: 12%">
+                    {{ totalData.amount | number }}
+                </td>
+
+                <td style="width: 12%">
+                    {{ totalData.quantityBack | number }}
+                </td>
+
+                <td style="width: 12%">
+                    {{ totalData.amountBack | number }}
+                </td>
+
+                <td style="width: 12%">
+                    {{ totalData.amountProfit | number }}
+                </td>
+
+                <td style="width: 12%"></td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

@@ -1,0 +1,66 @@
+:host ::ng-deep {
+    .p-dropdown {
+        min-height: 40px;
+        min-width: 150px;
+    }
+
+    .p-dialog .p-dialog-content {
+        padding: 2rem 1.5rem 0.5rem 1.5rem;
+    }
+
+    .card-table {
+        min-height: 80vh !important;
+    }
+
+    .p-paginator {
+        padding: 0 !important;
+    }
+
+    .p-orderlist .p-orderlist-header,
+    .p-orderlist .p-orderlist-filter-container {
+        display: none;
+    }
+
+    .p-tabview .p-tabview-panels {
+        padding: 0;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav .p-tabview-ink-bar {
+        display: none;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+        padding: 0.95rem;
+        border-right: 1px solid #dee2e6;
+        border-top-right-radius: 0;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+        border-color: #dee2e6;
+    }
+
+    #tabBills .p-tabview .p-tabview-nav-btn.p-link {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #receivedPrice .p-inputnumber-input,
+    #discountPrice .p-inputnumber-input {
+        text-align: left;
+    }
+
+    .p-splitter-panel-nested {
+        /* flex-basis: auto !important; */
+    }
+
+    @media screen and (min-width: 769px) {
+        #user .p-dropdown .p-dropdown-panel {
+            min-width: 300px;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        #user .p-dropdown .p-dropdown-panel {
+            min-width: 230px;
+        }
+    }
+}

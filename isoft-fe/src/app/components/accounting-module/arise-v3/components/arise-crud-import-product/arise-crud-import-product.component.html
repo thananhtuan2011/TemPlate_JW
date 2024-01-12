@@ -1,0 +1,887 @@
+<div [formGroup]="ledgerTableForm">
+    <div formArrayName="ledgers">
+        <!-- <p-contextMenu #contextMenu [model]="items"></p-contextMenu> -->
+        <p-table #ariseMulTableProduct [value]="ledgers.controls">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.debit_code_name'"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.debit_1_code_name'"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.debit_2_code_name'"
+                        class="border-right-grey"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.credit_code_name'"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.credit_1_code_name'"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.credit_2_code_name'"
+                        class="border-right-grey"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.project_code'"
+                        *ngIf="checkAllowInputColumn([6], 'classification')"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.depreciation_month'"
+                        *ngIf="
+                            checkAllowInputColumn([4, 5, 7], 'classification')
+                        "
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.foreign_currency'"
+                        *ngIf="
+                            checkAllowInputColumn([true], 'isForeignCurrency')
+                        "
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.exchange_rate'"
+                        *ngIf="
+                            checkAllowInputColumn([true], 'isForeignCurrency')
+                        "
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.stock_quantity'"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.unit_price'"
+                        class="border-right-grey"
+                    ></th>
+                    <th
+                        style="min-width: 2rem; width: 2%"
+                        [translate]="'label.amount'"
+                    ></th>
+                    <th style="min-width: 2rem; width: 2%">Thao tác</th>
+                </tr>
+            </ng-template>
+
+            <ng-template
+                pTemplate="body"
+                let-rowData
+                let-controls
+                let-i="rowIndex"
+            >
+                <ng-container [formGroupName]="i">
+                    <tr class="edit-row-tbl">
+                        <td style="min-width: 2rem; width: 2%">
+                            <div class="p-inputgroup w-full">
+                                <div class="p-inputgroup w-full">
+                                    <p-autoComplete
+                                        #debitCodeTmp
+                                        formControlName="debitCode"
+                                        [suggestions]="debitCodeFilter"
+                                        [ngClass]="{
+                                            'autocomplete-panel-hidden':
+                                                isHiddenAutoCompleteDebitCode(i)
+                                        }"
+                                        [emptyMessage]="
+                                            emptyMessageAutoComplete
+                                        "
+                                        [showEmptyMessage]="true"
+                                        [autoHighlight]="true"
+                                        [lazy]="true"
+                                        [virtualScroll]="true"
+                                        [virtualScrollItemSize]="20"
+                                        [completeOnFocus]="true"
+                                        [showClear]="false"
+                                        [autoWidth]="false"
+                                        (onFocus)="
+                                            debitCodeTmpComponents['_results'][
+                                                i
+                                            ].handleDropdownClick()
+                                        "
+                                        (completeMethod)="
+                                            filterDebitCode($event, i)
+                                        "
+                                        (onClear)="onClearDebitCode(true, i)"
+                                        (onSelect)="
+                                            onSelectDebitCode($event, true, i)
+                                        "
+                                        field="code"
+                                        class="p-inputtext-sm capitalize"
+                                    >
+                                        <ng-template let-debit pTemplate="item">
+                                            <div
+                                                class="w-auto flex flex-nowrap align-content-center"
+                                            >
+                                                <div
+                                                    class="w-10rem border-right-1"
+                                                >
+                                                    <p>{{ debit.code }}</p>
+                                                </div>
+                                                <div
+                                                    class="w-26rem overflow-hidden border-right-1 px-1"
+                                                >
+                                                    <marquee
+                                                        *ngIf="
+                                                            debit.name?.length >
+                                                            54
+                                                        "
+                                                        >{{ debit.name }}
+                                                    </marquee>
+                                                    <p
+                                                        class="mb-0"
+                                                        *ngIf="
+                                                            debit.name
+                                                                ?.length <= 54
+                                                        "
+                                                    >
+                                                        {{ debit.name }}
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="w-6rem border-right-1 px-1"
+                                                >
+                                                    <p>
+                                                        Tính chất
+                                                        {{ debit.accGroup }}
+                                                    </p>
+                                                </div>
+                                                <div class="w-6rem px-1">
+                                                    <p>
+                                                        {{
+                                                            debit.closingDebit
+                                                                | number
+                                                                    : "1.0-0"
+                                                        }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </p-autoComplete>
+                                    <div
+                                        (click)="
+                                            debitCodeTmpComponents['_results'][
+                                                i
+                                            ].clear()
+                                        "
+                                        class="p-inputgroup-addon cursor-pointer"
+                                    >
+                                        <i class="pi pi-times"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%">
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    #debitDetailCodeFirstTmp
+                                    formControlName="debitDetailCodeFirst"
+                                    [ngClass]="{
+                                        'autocomplete-panel-hidden':
+                                            isHiddenAutoCompleteDebitDetailCodeFirst(
+                                                i
+                                            )
+                                    }"
+                                    [emptyMessage]="emptyMessageAutoComplete"
+                                    [suggestions]="debitDetailCodeFirstFilter"
+                                    [showEmptyMessage]="true"
+                                    [autoHighlight]="true"
+                                    [delay]="500"
+                                    [disabled]="
+                                        !isDebitCodeHas ||
+                                        !isDebitCodeHasDetails(i)
+                                    "
+                                    [completeOnFocus]="true"
+                                    [showClear]="false"
+                                    [autoWidth]="false"
+                                    (completeMethod)="
+                                        filterDebitDetailCodeFirst($event, i)
+                                    "
+                                    (onFocus)="
+                                        debitDetailCodeFirstTmpComponents[
+                                            '_results'
+                                        ][i].handleDropdownClick()
+                                    "
+                                    (onKeyUp)="
+                                        onKeyUpAutoCompleteLazyLoadding({
+                                            event: $event,
+                                            key: configAriseEnum.debitDetailCodeFirst
+                                        })
+                                    "
+                                    (onClear)="onClearDebitDetailCodeFirst(i)"
+                                    (onSelect)="
+                                        onSelectDebitDetailCodeFirst($event, i)
+                                    "
+                                    field="code"
+                                    class="p-inputtext-sm capitalize"
+                                >
+                                    <ng-template let-debit pTemplate="item">
+                                        <div
+                                            *ngIf="debit"
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-10rem border-right-1">
+                                                <p>{{ debit.code }}</p>
+                                            </div>
+                                            <div
+                                                class="w-3rem border-right-1 px-1"
+                                            >
+                                                <p>{{ debit.warehouseCode }}</p>
+                                            </div>
+                                            <div
+                                                class="w-26rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        debit.name?.length > 54
+                                                    "
+                                                    >{{ debit.name }}
+                                                </marquee>
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        debit.name?.length <= 54
+                                                    "
+                                                >
+                                                    {{ debit.name }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        debit.closingStockQuantity ||
+                                                            0
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        debit.closingDebit || 0
+                                                            | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <div
+                                    (click)="
+                                        debitDetailCodeFirstTmpComponents[
+                                            '_results'
+                                        ][i].clear()
+                                    "
+                                    class="p-inputgroup-addon cursor-pointer"
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            class="border-right-grey"
+                        >
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    #debitDetailCodeSecondTmp
+                                    formControlName="debitDetailCodeSecond"
+                                    [ngClass]="{
+                                        'autocomplete-panel-hidden':
+                                            isHiddenAutoCompleteDebitDetailCodeSecond(
+                                                i
+                                            )
+                                    }"
+                                    [emptyMessage]="emptyMessageAutoComplete"
+                                    [suggestions]="debitDetailCodeSecondFilter"
+                                    [showEmptyMessage]="true"
+                                    [autoHighlight]="true"
+                                    [delay]="500"
+                                    [disabled]="
+                                        !isDebitDetailCodeFirstHasDetails(i) ||
+                                        !isDebitDetailCodeFirstHas(i)
+                                    "
+                                    [completeOnFocus]="true"
+                                    [showClear]="false"
+                                    [autoWidth]="false"
+                                    (completeMethod)="
+                                        filterDebitDetailCodeSecond($event, i)
+                                    "
+                                    (onKeyUp)="
+                                        onKeyUpAutoCompleteLazyLoadding({
+                                            event: $event,
+                                            key: configAriseEnum.debitDetailCodeSecond
+                                        })
+                                    "
+                                    (onFocus)="
+                                        debitDetailCodeSecondTmpComponents[
+                                            '_results'
+                                        ][i].handleDropdownClick()
+                                    "
+                                    (onClear)="onClearDebitDetailCodeSecond(i)"
+                                    (onSelect)="
+                                        onSelectDebitDetailCodeSecond($event, i)
+                                    "
+                                    field="code"
+                                    class="p-inputtext-sm capitalize"
+                                >
+                                    <ng-template let-debit pTemplate="item">
+                                        <div
+                                            *ngIf="debit"
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-10rem border-right-1">
+                                                <p>{{ debit.code }}</p>
+                                            </div>
+                                            <div
+                                                class="w-3rem border-right-1 px-1"
+                                            >
+                                                <p>{{ debit.warehouseCode }}</p>
+                                            </div>
+                                            <div
+                                                class="w-26rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        debit.name?.length > 54
+                                                    "
+                                                    >{{ debit.name }}</marquee
+                                                >
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        debit.name?.length <= 54
+                                                    "
+                                                >
+                                                    {{ debit.name }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        debit.closingStockQuantity ||
+                                                            0
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        debit.closingDebit || 0
+                                                            | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <div
+                                    (click)="
+                                        debitDetailCodeSecondTmpComponents[
+                                            '_results'
+                                        ][i].clear()
+                                    "
+                                    class="p-inputgroup-addon cursor-pointer"
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%">
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    #creditCodeTmp
+                                    formControlName="creditCode"
+                                    [ngClass]="{
+                                        'autocomplete-panel-hidden':
+                                            isHiddenAutoCompleteCreditCode(i)
+                                    }"
+                                    [emptyMessage]="emptyMessageAutoComplete"
+                                    [suggestions]="creditCodeFilter"
+                                    [showEmptyMessage]="true"
+                                    [autoHighlight]="true"
+                                    [lazy]="true"
+                                    [virtualScroll]="true"
+                                    [virtualScrollItemSize]="20"
+                                    [completeOnFocus]="true"
+                                    [showClear]="false"
+                                    [autoWidth]="false"
+                                    (completeMethod)="
+                                        filterCreditCode($event, i)
+                                    "
+                                    (onFocus)="
+                                        creditCodeTmpComponents['_results'][
+                                            i
+                                        ].handleDropdownClick()
+                                    "
+                                    (onClear)="onClearCreditCode(true, i)"
+                                    (onSelect)="
+                                        onSelectCreditCode($event, true, i)
+                                    "
+                                    field="code"
+                                    class="p-inputtext-sm capitalize"
+                                >
+                                    <ng-template let-credit pTemplate="item">
+                                        <div
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-5rem border-right-1">
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.code.length > 35
+                                                    "
+                                                    >{{ credit.code }}</marquee
+                                                >
+                                                <p
+                                                    *ngIf="
+                                                        credit.code.length <= 35
+                                                    "
+                                                >
+                                                    {{ credit.code }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-26rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.name.length > 35
+                                                    "
+                                                    >{{ credit.name }}</marquee
+                                                >
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        credit.name.length <= 54
+                                                    "
+                                                >
+                                                    {{ credit.name }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>{{ credit.accGroup }}</p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        credit.closingCredit
+                                                            | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <div
+                                    (click)="
+                                        creditCodeTmpComponents['_results'][
+                                            i
+                                        ].clear()
+                                    "
+                                    class="p-inputgroup-addon cursor-pointer"
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%">
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    #creditDetailCodeFirstTmp
+                                    formControlName="creditDetailCodeFirst"
+                                    [ngClass]="{
+                                        'autocomplete-panel-hidden':
+                                            isHiddenAutoCompleteCreditDetailCodeFirst(
+                                                i
+                                            )
+                                    }"
+                                    [emptyMessage]="emptyMessageAutoComplete"
+                                    [suggestions]="creditDetailCodeFirstFilter"
+                                    [showEmptyMessage]="true"
+                                    [autoHighlight]="true"
+                                    [delay]="500"
+                                    [disabled]="
+                                        !isCreditCodeHas(i) ||
+                                        !isCreditCodeHasDetails(i)
+                                    "
+                                    [completeOnFocus]="true"
+                                    [showClear]="false"
+                                    [autoWidth]="false"
+                                    (completeMethod)="
+                                        filterCreditDetailCodeFirst($event, i)
+                                    "
+                                    (onFocus)="
+                                        creditDetailCodeFirstTmpComponents[
+                                            '_results'
+                                        ][i].handleDropdownClick()
+                                    "
+                                    (onKeyUp)="
+                                        onKeyUpAutoCompleteLazyLoadding({
+                                            event: $event,
+                                            key: configAriseEnum.creditDetailCodeFirst
+                                        })
+                                    "
+                                    (onClear)="onClearCreditDetailCodeFirst(i)"
+                                    (onSelect)="
+                                        onSelectCreditDetailCodeFirst($event, i)
+                                    "
+                                    field="code"
+                                    class="p-inputtext-sm capitalize"
+                                >
+                                    <ng-template let-credit pTemplate="item">
+                                        <div
+                                            *ngIf="credit"
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-5rem border-right-1">
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.code.length > 35
+                                                    "
+                                                    >{{ credit.code }}</marquee
+                                                >
+                                                <p
+                                                    *ngIf="
+                                                        credit.code.length <= 35
+                                                    "
+                                                >
+                                                    {{ credit.code }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-3rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{ credit.warehouseCode }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-26rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.name.length > 54
+                                                    "
+                                                    >{{ credit.name }}</marquee
+                                                >
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        credit.name.length <= 54
+                                                    "
+                                                >
+                                                    {{ credit.name }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        credit.closingStockQuantity ||
+                                                            0
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        credit.closingCredit ||
+                                                            0 | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <div
+                                    (click)="
+                                        creditDetailCodeFirstTmpComponents[
+                                            '_results'
+                                        ][i].clear()
+                                    "
+                                    class="p-inputgroup-addon cursor-pointer"
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            class="border-right-grey"
+                        >
+                            <div class="p-inputgroup w-full">
+                                <p-autoComplete
+                                    #creditDetailCodeSecondTmp
+                                    formControlName="creditDetailCodeSecond"
+                                    [ngClass]="{
+                                        'autocomplete-panel-hidden':
+                                            isHiddenAutoCompleteCreditDetailCodeSecond(
+                                                i
+                                            )
+                                    }"
+                                    [emptyMessage]="emptyMessageAutoComplete"
+                                    [suggestions]="creditDetailCodeSecondFilter"
+                                    [showEmptyMessage]="true"
+                                    [autoHighlight]="true"
+                                    [delay]="500"
+                                    [disabled]="
+                                        !isCreditDetailCodeFirstHasDetails(i) ||
+                                        !isCreditDetailCodeFirstHas(i)
+                                    "
+                                    [completeOnFocus]="true"
+                                    [showClear]="false"
+                                    [autoWidth]="false"
+                                    (completeMethod)="
+                                        filterCreditDetailCodeSecond($event, i)
+                                    "
+                                    (onFocus)="
+                                        creditDetailCodeSecondTmpComponents[
+                                            '_results'
+                                        ][i].handleDropdownClick()
+                                    "
+                                    (onKeyUp)="
+                                        onKeyUpAutoCompleteLazyLoadding({
+                                            event: $event,
+                                            key: configAriseEnum.creditDetailCodeSecond
+                                        })
+                                    "
+                                    (onClear)="
+                                        onClearCreditDetailCodeSecond(true, i)
+                                    "
+                                    (onSelect)="
+                                        onSelectCreditDetailCodeSecond(
+                                            $event,
+                                            i
+                                        )
+                                    "
+                                    field="code"
+                                    class="p-inputtext-sm capitalize"
+                                >
+                                    <ng-template let-credit pTemplate="item">
+                                        <div
+                                            *ngIf="credit"
+                                            class="w-auto flex flex-nowrap align-content-center"
+                                        >
+                                            <div class="w-5rem border-right-1">
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.code.length > 35
+                                                    "
+                                                    >{{ credit.code }}</marquee
+                                                >
+                                                <p
+                                                    *ngIf="
+                                                        credit.code.length <= 35
+                                                    "
+                                                >
+                                                    {{ credit.code }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-3rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{ credit.warehouseCode }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-26rem overflow-hidden border-right-1 px-1"
+                                            >
+                                                <marquee
+                                                    *ngIf="
+                                                        credit.name.length > 54
+                                                    "
+                                                    >{{ credit.name }}</marquee
+                                                >
+                                                <p
+                                                    class="mb-0"
+                                                    *ngIf="
+                                                        credit.name.length <= 54
+                                                    "
+                                                >
+                                                    {{ credit.name }}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-6rem border-right-1 px-1"
+                                            >
+                                                <p>
+                                                    {{
+                                                        credit.closingStockQuantity ||
+                                                            0
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="w-6rem px-1">
+                                                <p>
+                                                    {{
+                                                        credit.closingCredit ||
+                                                            0 | number: "1.0-0"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-autoComplete>
+                                <div
+                                    (click)="
+                                        creditDetailCodeSecondTmpComponents[
+                                            '_results'
+                                        ][i].clear()
+                                    "
+                                    class="p-inputgroup-addon cursor-pointer"
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            *ngIf="checkAllowInputColumn([6], 'classification')"
+                        >
+                            <input
+                                formControlName="projectCode"
+                                [readonly]="!setAllowProjectCode(false, i)"
+                                [tabIndex]="
+                                    !setAllowProjectCode(false, i) ? -1 : 0
+                                "
+                                type="text"
+                                class="text-right p-inputtext-sm w-full ml-1"
+                                pInputText
+                            />
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            *ngIf="
+                                checkAllowInputColumn(
+                                    [4, 5, 7],
+                                    'classification'
+                                )
+                            "
+                        >
+                            <p-inputNumber
+                                #depreciaMonthTmp
+                                class="p-inputtext-sm w-full ml-1"
+                                formControlName="depreciaMonth"
+                                [disabled]="!setAllowDepreciaMonth(false, i)"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            *ngIf="
+                                checkAllowInputColumn(
+                                    [true],
+                                    'isForeignCurrency'
+                                )
+                            "
+                        >
+                            <p-inputNumber
+                                #orginalCurrencyTmp
+                                formControlName="orginalCurrency"
+                                [disabled]="!setAllowForeignCurrency(false, i)"
+                                class="p-inputtext-sm w-full ml-1"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            *ngIf="
+                                checkAllowInputColumn(
+                                    [true],
+                                    'isForeignCurrency'
+                                )
+                            "
+                        >
+                            <p-inputNumber
+                                #exchangeRateTmp
+                                formControlName="exchangeRate"
+                                [disabled]="!setAllowForeignCurrency(false, i)"
+                                (keyup)="onChangeExchangeRate($event, i)"
+                                class="p-inputtext-sm w-full ml-1"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%">
+                            <p-inputNumber
+                                #quantityTmp
+                                [disabled]="
+                                    !setAllowInputQuantityAndUnitPrice(false, i)
+                                "
+                                formControlName="quantity"
+                                (onBlur)="onChangeQuantity($event, i)"
+                                class="p-inputtext-sm w-full ml-1"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td
+                            style="min-width: 2rem; width: 2%"
+                            class="border-right-grey"
+                        >
+                            <p-inputNumber
+                                #unitPriceTmp
+                                formControlName="unitPrice"
+                                [disabled]="
+                                    !setAllowInputQuantityAndUnitPrice(false, i)
+                                "
+                                (onBlur)="onChangeUnitPrice($event, i)"
+                                class="p-inputtext-sm w-full ml-1"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%">
+                            <p-inputNumber
+                                #amountTmp
+                                class="p-inputtext-sm w-full ml-1"
+                                formControlName="amount"
+                                (onBlur)="onChangeAmount($event, i)"
+                            >
+                            </p-inputNumber>
+                        </td>
+                        <td style="min-width: 2rem; width: 2%" class="">
+                            <div class="flex">
+                                <button
+                                    (click)="removeLedgerForm(i)"
+                                    [disabled]="i === 0 && ledgers.length == 1"
+                                    class="p-element p-button-sm p-button-danger p-button p-component mr-2"
+                                >
+                                    Xóa
+                                </button>
+                                <button
+                                    (click)="resetFormControl(i)"
+                                    class="p-element p-button-sm p-button-info p-button p-component"
+                                >
+                                    Làm mới
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="info-row-tbl">
+                        <td colspan="3">
+                            <strong>{{ getDebitNameRowData(rowData) }}</strong>
+                        </td>
+                        <td colspan="3">
+                            <strong>{{ getCreditNameRowData(rowData) }}</strong>
+                        </td>
+                        <td colspan="8"></td>
+                    </tr>
+                </ng-container>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

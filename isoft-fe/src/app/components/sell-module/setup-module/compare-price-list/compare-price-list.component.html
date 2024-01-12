@@ -1,0 +1,491 @@
+<div *ngIf="existCompare" class="card card-table">
+    <h5 [translate]="'label.compare_price_list'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+        (onLazyLoad)="getdata($event)"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <p-multiSelect
+                    class="p-input-icon-left mb-2"
+                    placeholder="Chọn bảng giá để so sánh"
+                    optionLabel="name"
+                    optionValue="code"
+                    [options]="types.priceList"
+                    [(ngModel)]="getParams.priceLists"
+                ></p-multiSelect>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0 gap-1"
+                >
+                    <button
+                        pButton
+                        [label]="'button.preview' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        (click)="preview()"
+                    ></button>
+                    <button
+                        pButton
+                        [label]="'button.export_excel' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getReligions(null, true)"
+                    ></button>
+                </div>
+            </div>
+            <!-- <div class="flex justify-content-start md:justify-content-between flex-column md:flex-row">
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input #filter [(ngModel)]="getParams.searchText" pInputText type="text"
+                           (keypress)="onSearch($event)" [placeholder]="'label.search_by_name' | translate"
+                           class="w-full"/>
+                </span>
+            </div> -->
+            <p-panel
+                class="flex flex-column"
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+            >
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.account'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.account"
+                            (onChange)="onChangeAccount($event)"
+                            [filter]="true"
+                            [options]="types.chartOfAccount"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.detail_1'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.detail1"
+                            (onChange)="getdata()"
+                            [options]="types.detail1"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.store'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.warehouse"
+                            [filter]="true"
+                            (onChange)="getdata()"
+                            [options]="types.lstStore"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_group'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.menuType"
+                            (onChange)="getdata()"
+                            [options]="types.menuType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.goodType"
+                            (onChange)="getdata()"
+                            [options]="types.goodsType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.location'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.position"
+                            (onChange)="getdata()"
+                            [options]="types.position"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template
+            pTemplate="headergrouped"
+            style="display: block !important"
+        >
+            <tr>
+                <th style="width: 100px; text-align: center" rowspan="2">
+                    Hình ảnh
+                </th>
+                <th style="width: 100px; text-align: center" rowspan="2">
+                    Mã hàng
+                </th>
+                <th style="width: 200px; text-align: center" rowspan="2">
+                    Tên hàng
+                </th>
+                <th style="width: 200px; text-align: center" rowspan="2">
+                    Kho
+                </th>
+                <th
+                    colspan="4"
+                    style="text-align: center"
+                    *ngFor="let item of listSelected"
+                >
+                    {{ getNameColspan(item) }}
+                </th>
+            </tr>
+            <tr>
+                <ng-container *ngFor="let item of listSelected">
+                    <th style="text-align: center" class="col-custom">
+                        Giá bán
+                    </th>
+                    <th style="text-align: center" class="col-custom">
+                        Thuế VAT
+                    </th>
+                    <th style="text-align: center" class="col-custom">Tổng</th>
+                    <th style="text-align: center" class="col-custom">
+                        Chênh lệch %
+                    </th>
+                </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user let-i="rowIndex">
+            <tr>
+                <td style="width: 100px">
+                    <a [href]="baseUrlImage(user?.image1)" target="_bank">
+                        <img
+                            width="50"
+                            height="50"
+                            [src]="baseUrlImage(user?.image1)"
+                            [title]="'label.image_1' | translate"
+                            [atl]="'label.image_1' | translate"
+                        />
+                    </a>
+                    <!-- <span class="p-column-title" [translate]="'label.code'"></span> {{user.image1}} -->
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.employee_name'"
+                    ></span>
+                    {{ user.code }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code_target'"
+                    ></span>
+                    {{ user.name }}
+                </td>
+                <td style="width: 200px">
+                    {{ user.warehouseName }}
+                </td>
+                <ng-container *ngFor="let item of user.listItem">
+                    <td style="width: 200px; justify-content: end">
+                        {{ item.salePrice | number }}
+                    </td>
+                    <td style="width: 200px; justify-content: end">
+                        {{ item.taxVat | number }}
+                    </td>
+                    <td style="width: 200px; justify-content: end">
+                        {{ item.amount | number }}
+                    </td>
+                    <td style="width: 200px; justify-content: end">
+                        {{ item.differentSalePrice | number }}
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<div *ngIf="!existCompare" class="card card-table">
+    <h5 [translate]="'label.compare_price_list'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+        (onLazyLoad)="getdata($event)"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <p-multiSelect
+                    class="p-input-icon-left mb-2"
+                    placeholder="Chọn bảng giá để so sánh"
+                    optionLabel="name"
+                    optionValue="code"
+                    [options]="types.priceList"
+                    [(ngModel)]="getParams.priceLists"
+                ></p-multiSelect>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0 gap-1"
+                >
+                    <button
+                        pButton
+                        [label]="'button.preview' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        (click)="preview()"
+                    ></button>
+                    <button
+                        pButton
+                        [label]="'button.export_excel' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getReligions(null, true)"
+                    ></button>
+                </div>
+            </div>
+            <!-- <div class="flex justify-content-start md:justify-content-between flex-column md:flex-row">
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input #filter [(ngModel)]="getParams.searchText" pInputText type="text"
+                           (keypress)="onSearch($event)" [placeholder]="'label.search_by_name' | translate"
+                           class="w-full"/>
+                </span>
+            </div> -->
+            <p-panel
+                class="flex flex-column"
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+            >
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.account'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.account"
+                            (onChange)="onChangeAccount($event)"
+                            [filter]="true"
+                            [options]="types.chartOfAccount"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.detail_1'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.detail1"
+                            (onChange)="getdata()"
+                            [options]="types.detail1"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.store'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.warehouse"
+                            [filter]="true"
+                            (onChange)="getdata()"
+                            [options]="types.lstStore"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_group'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.menuType"
+                            (onChange)="getdata()"
+                            [options]="types.menuType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.goods_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.goodType"
+                            (onChange)="getdata()"
+                            [options]="types.goodsType"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-2">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.location'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.position"
+                            (onChange)="getdata()"
+                            [options]="types.position"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            [placeholder]="'label.empty' | translate"
+                        >
+                        </p-dropdown>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 100px; text-align: center" rowspan="2">
+                    Hình ảnh
+                </th>
+                <th style="width: 100px; text-align: center" rowspan="2">
+                    Mã hàng
+                </th>
+                <th style="width: 200px; text-align: center" rowspan="2">
+                    Tên hàng
+                </th>
+                <th style="width: 200px; text-align: center" rowspan="2">
+                    Kho
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user let-i="rowIndex">
+            <tr>
+                <td style="width: 100px">
+                    <a [href]="baseUrlImage(user?.image1)" target="_bank">
+                        <img
+                            width="50"
+                            height="50"
+                            [src]="baseUrlImage(user?.image1)"
+                            [title]="'label.image_1' | translate"
+                            [atl]="'label.image_1' | translate"
+                        />
+                    </a>
+                    <!-- <span class="p-column-title" [translate]="'label.code'"></span> {{user.image1}} -->
+                </td>
+                <td style="width: 100px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span>
+                    {{ user.code }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span>
+                    {{ user.name }}
+                </td>
+                <td style="width: 200px">
+                    {{ user.warehouseName }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

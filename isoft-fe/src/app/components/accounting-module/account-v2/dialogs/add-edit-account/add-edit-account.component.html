@@ -1,0 +1,256 @@
+<p-dialog
+    [(visible)]="display"
+    (onHide)="onClose.emit(true)"
+    [modal]="true"
+    [header]="
+        title
+            | translate: { number: parent?.accGroup, codeParent: parent?.code }
+    "
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: appMain.isMobile() ? '95vw' : '60vw' }"
+>
+    <ng-container [formGroup]="formGroup" *ngIf="formGroup && display">
+        <div class="flex flex-column gap-8 md:flex-row mb-4">
+            <div
+                class="field-custom"
+                [ngClass]="!appMain.isMobile() ? 'w--50' : 'w-full'"
+            >
+                <input
+                    #codeInputTmp
+                    tooltipPosition="left"
+                    [pTooltip]="'label.code' | translate"
+                    uppercase
+                    type="text"
+                    id="code"
+                    aria-describedby="code-help"
+                    [placeholder]="'label.code' | translate"
+                    pInputText
+                    formControlName="code"
+                    (blur)="onBlurCode()"
+                />
+                <small
+                    *ngIf="
+                        formGroup.controls?.code?.touched &&
+                        formGroup.controls?.code?.invalid
+                    "
+                    class="p-error"
+                >
+                    {{ "info.account_code" | translate }}
+                </small>
+            </div>
+            <div
+                class="field-custom"
+                [ngClass]="!appMain.isMobile() ? 'w--50' : 'w-full'"
+            >
+                <input
+                    type="text"
+                    id="name"
+                    tooltipPosition="left"
+                    [pTooltip]="'label.name' | translate"
+                    [placeholder]="'label.name' | translate"
+                    pInputText
+                    formControlName="name"
+                />
+                <small
+                    *ngIf="
+                        formGroup.controls?.name?.touched &&
+                        formGroup.controls?.name?.invalid
+                    "
+                    class="p-error"
+                >
+                    {{
+                        "info.field_not_empty"
+                            | translate: { field: "label.name" | translate }
+                    }}
+                </small>
+            </div>
+
+            <div
+                class="flex"
+                [ngClass]="!appMain.isMobile() ? 'w--50' : 'w-full'"
+            >
+                <ng-container *ngIf="accountType === accountTypes.HT">
+                    <ng-container
+                        *ngTemplateOutlet="
+                            DebtOpeningControlTemplate;
+                            context: {
+                                controlDebt: 'openingDebit',
+                                controlOpening: 'openingCredit'
+                            }
+                        "
+                    >
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="accountType === accountTypes.NB">
+                    <ng-container
+                        *ngTemplateOutlet="
+                            DebtOpeningNBControlTemplate;
+                            context: {
+                                controlDebt: 'openingDebitNb',
+                                controlOpening: 'openingCreditNb'
+                            }
+                        "
+                    >
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="flex flex-column gap-8 md:flex-row align-items-center mb-4">
+            <div
+                class="field-custom"
+                [ngClass]="!appMain.isMobile() ? 'w--50' : 'w-full'"
+            >
+                <p-checkbox
+                    [label]="'label.is_foreign_currency' | translate"
+                    [binary]="true"
+                    formControlName="isForeignCurrency"
+                >
+                </p-checkbox>
+            </div>
+
+            <div
+                class="flex"
+                [ngClass]="!appMain.isMobile() ? 'w--50' : 'w-full'"
+            >
+                <ng-container *ngIf="accountType === accountTypes.HT">
+                    <ng-container
+                        *ngTemplateOutlet="
+                            DebtOpeningControlTemplate;
+                            context: {
+                                controlDebt: 'openingForeignDebit',
+                                controlOpening: 'openingForeignCredit'
+                            }
+                        "
+                    >
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="accountType === accountTypes.NB">
+                    <ng-container
+                        *ngTemplateOutlet="
+                            DebtOpeningNBControlTemplate;
+                            context: {
+                                controlDebt: 'openingForeignDebitNb',
+                                controlOpening: 'openingForeignCreditNb'
+                            }
+                        "
+                    >
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="field flex gap-8 md:w-full flex-column md:flex-row">
+            <is-dropdown
+                class="w-full"
+                [label]="'label.duration_time' | translate"
+                formControlName="duration"
+                [options]="durationList"
+                [optionLabel]="'name'"
+                optionValue="value"
+            ></is-dropdown>
+            <is-dropdown
+                class="w-full"
+                [label]="'label.account_group' | translate"
+                formControlName="accGroup"
+                [options]="groupList"
+                [optionLabel]="'name'"
+                optionValue="value"
+                [countIdentity]="true"
+            ></is-dropdown>
+            <is-dropdown
+                class="w-full"
+                [label]="'label.type' | translate"
+                formControlName="classification"
+                [options]="classificationList"
+                [optionLabel]="'name'"
+                optionValue="value"
+                [countIdentity]="true"
+            ></is-dropdown>
+            <is-dropdown
+                class="w-full"
+                [label]="'label.credit_number' | translate"
+                formControlName="protected"
+                [options]="protectedList"
+                [optionLabel]="'name'"
+                optionValue="value"
+                [countIdentity]="true"
+            ></is-dropdown>
+        </div>
+
+        <ng-template
+            #DebtOpeningControlTemplate
+            let-controlDebt="controlDebt"
+            let-controlOpening="controlOpening"
+        >
+            <div class="field-custom w--50 pr-3">
+                <p-inputNumber
+                    mode="decimal"
+                    [pTooltip]="'label.residual_debt' | translate"
+                    [placeholder]="'label.residual_debt' | translate"
+                    [formControlName]="controlDebt"
+                ></p-inputNumber>
+            </div>
+            <div class="field-custom w--50">
+                <p-inputNumber
+                    mode="decimal"
+                    [pTooltip]="'label.residual_opening' | translate"
+                    [placeholder]="'label.residual_opening' | translate"
+                    [formControlName]="controlOpening"
+                ></p-inputNumber>
+            </div>
+        </ng-template>
+        <ng-template
+            #DebtOpeningNBControlTemplate
+            let-controlDebt="controlDebt"
+            let-controlOpening="controlOpening"
+        >
+            <div class="field-custom w--50 pr-3">
+                <p-inputNumber
+                    mode="decimal"
+                    [pTooltip]="'label.residual_debt_nb' | translate"
+                    [placeholder]="'label.residual_debt_nb' | translate"
+                    [formControlName]="controlDebt"
+                ></p-inputNumber>
+            </div>
+            <div class="field-custom w--50">
+                <p-inputNumber
+                    mode="decimal"
+                    [pTooltip]="'label.residual_opening_nb' | translate"
+                    [placeholder]="'label.residual_opening_nb' | translate"
+                    [formControlName]="controlOpening"
+                ></p-inputNumber>
+            </div>
+        </ng-template>
+    </ng-container>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            *ngIf="!currentAccount"
+            icon="pi pi-plus"
+            [disabled]="!valid"
+            (click)="displayBasic = false"
+            label="{{ 'button.save_continue_F10' | translate }}"
+            styleClass="p-button-text"
+            (click)="onAddContinue($event)"
+        ></p-button>
+        <p-button
+            icon="pi pi-times"
+            (click)="displayBasic = false"
+            label="{{ 'button.cancelF9' | translate }}"
+            styleClass="p-button-text"
+            (click)="onCancel()"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            [disabled]="!valid"
+            (click)="displayBasic = false"
+            label="{{ 'button.saveF8' | translate }}"
+            styleClass="p-button-text"
+            (click)="onAdd($event)"
+        ></p-button>
+    </ng-template>
+</p-dialog>

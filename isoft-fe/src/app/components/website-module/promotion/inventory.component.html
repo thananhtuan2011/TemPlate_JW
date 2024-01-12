@@ -1,0 +1,216 @@
+<div *ngIf="!displayForm" class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between pb-3">
+        <h5 [translate]="'label.promotion_management'"></h5>
+        <div class="flex flex-1 justify-content-end gap-2"></div>
+    </div>
+
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getPromotion($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="param.searchText"
+                        pInputText
+                        type="text"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                        (change)="getPromotion()"
+                    />
+                </span>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.PROMOTION,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-plus"
+                        (click)="onAddPromotion()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-4">
+                    <div class="flex align-items-center">Tên danh mục</div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Từ ngày
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Đến ngày
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Ngày tạo
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Người tạo
+                    </div>
+                </th>
+                <th
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-promotion>
+            <tr>
+                <td class="w-4">
+                    <span class="p-column-title"> Tên danh mục</span
+                    >{{ promotion.categoryName }}
+                </td>
+                <td class="w-2">
+                    <span class="p-column-title"> Từ ngày</span
+                    >{{ promotion.fromAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-2">
+                    <span class="p-column-title"> Đến ngày </span
+                    >{{ promotion.toAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-2">
+                    <span class="p-column-title">Ngày tạo</span
+                    >{{ promotion.createAt | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'Người tạo'"
+                    ></span
+                    >{{ promotion.userCreatedName }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.PROMOTION,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        pTooltip="Chỉnh sửa"
+                        tooltipPosition="bottom"
+                        (click)="getDetail(promotion.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.PROMOTION,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        pTooltip="Xóa"
+                        tooltipPosition="bottom"
+                        (click)="onDelete(promotion.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<ng-container
+    *appHasAccess="{
+        menu: appConstant.MENU_TYPE.PROMOTION,
+        action:
+            appConstant.PERMISSION_FUNC.ADD || appConstant.PERMISSION_FUNC.EDIT
+    }"
+>
+    <app-promotion-form
+        [display]="displayForm"
+        [formData]="formData"
+        (onCancel)="onCancelForm($event)"
+    ></app-promotion-form>
+</ng-container>
+
+<p-dialog
+    [(visible)]="display"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white" [translate]="'label.add_comment'"></h4>
+    </ng-template>
+    <ng-template pTemplate="body">
+        <p-editor
+            [(ngModel)]="noteStr"
+            [ngModelOptions]="{ standalone: true }"
+            [style]="{ height: '300px' }"
+        >
+            <ng-template pTemplate="header">
+                <app-ql-formats></app-ql-formats>
+            </ng-template>
+        </p-editor>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton class="p-2 p-button-outlined" (click)="display = false">
+            Cancel
+        </button>
+        <button pButton class="p-2" (click)="onSaveComment(noteStr)">
+            Save
+        </button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,88 @@
+:host ::ng-deep {
+    .field {
+        margin: 0 !important;
+    }
+
+    .p-inputtext,
+    .p-dropdown {
+        min-height: 40px;
+    }
+
+    .p-calendar {
+        width: 100%;
+    }
+
+    .ng-dirty .ng-invalid {
+        border: 1.5px solid red !important;
+    }
+
+    .autocomplete-panel-hidden {
+        .p-autocomplete-panel {
+            visibility: hidden;
+        }
+    }
+
+    .p-scroller {
+        min-width: 700px !important;
+        padding: 0 !important;
+        .p-autocomplete-item {
+            height: 35px !important;
+            line-height: 35px !important;
+        }
+    }
+
+    .p-dropdown.p-dropdown-clearable .p-dropdown-label {
+        min-height: 37px;
+    }
+
+    .p-dropdown {
+        min-height: 39px;
+    }
+
+    .p-inputgroup-addon:first-child,
+    .p-inputgroup button:first-child,
+    .p-inputgroup input:first-child,
+    .p-inputgroup > .p-inputwrapper:first-child > .p-component,
+    .p-inputgroup > .p-inputwrapper:first-child > .p-component > .p-inputtext {
+        height: 40px !important;
+    }
+}
+
+.style_prev_kit {
+    display: inline-block;
+    border: 0;
+    width: 128px;
+    height: 128px;
+    position: relative;
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(1);
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(1);
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(1);
+    transition: all 200ms ease-in;
+    transform: scale(1);
+}
+
+.style_prev_kit:hover {
+    box-shadow: 0 0 40px #000000;
+    z-index: 999;
+    -webkit-transition: all 200ms ease-in;
+    -webkit-transform: scale(2);
+    -ms-transition: all 200ms ease-in;
+    -ms-transform: scale(2);
+    -moz-transition: all 200ms ease-in;
+    -moz-transform: scale(2);
+    transition: all 200ms ease-in;
+    transform: scale(2);
+    cursor: pointer;
+}
+
+img {
+    border-radius: 4px;
+    border: 3px solid var(--primary-color);
+}
+
+img:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,91 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit ? 'label.edit_department' : 'label.add_department'
+                "
+            ></h5>
+            <form [formGroup]="departmentForm">
+                <div class="p-fluid formgrid grid mt-4">
+                    <div class="field col">
+                        <label htmlFor="code"
+                            >{{ "label.code" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="code"
+                            [(ngModel)]="departmentForm.value.code"
+                            formControlName="code"
+                            style="text-transform: uppercase"
+                            [ngClass]="checkValidValidator('code')"
+                            (ngModelChange)="onChangeCode()"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.code' | translate"
+                        ></small>
+                    </div>
+                </div>
+                <div class="p-fluid formgrid grid mt-4">
+                    <div class="field col">
+                        <label htmlFor="name"
+                            >{{ "label.name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="departmentForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.name' | translate"
+                        ></small>
+                    </div>
+                </div>
+                <div class="p-fluid formgrid grid mt-4">
+                    <div class="field col">
+                        <label htmlFor="managerName">{{
+                            "label.branch" | translate
+                        }}</label>
+                        <p-dropdown
+                            [options]="listBranch"
+                            [optionValue]="'id'"
+                            [optionLabel]="'name'"
+                            [placeholder]="'label.choose_branch' | translate"
+                            formControlName="branchId"
+                            [(ngModel)]="departmentForm.value.branchId"
+                        ></p-dropdown>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

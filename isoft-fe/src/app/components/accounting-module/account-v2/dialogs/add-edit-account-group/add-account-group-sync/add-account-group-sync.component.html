@@ -1,0 +1,48 @@
+<p-dialog
+    [(visible)]="display"
+    styleClass="add-account-group-sync"
+    [modal]="true"
+    [header]="'label.add_group' | translate"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <form [formGroup]="formGroup" class="flex flex-column">
+        <div class="mb-3 flex flex-column">
+            <label for="">{{ "label.group_number" | translate }}</label>
+            <input
+                class="w--100 mt-2"
+                type="text"
+                [placeholder]="'label.code' | translate"
+                pInputText
+                formControlName="code"
+            />
+        </div>
+
+        <div class="flex flex-column">
+            <label for="">{{ "label.group_name" | translate }}</label>
+            <input
+                class="w--100 mt-2"
+                type="text"
+                [placeholder]="'label.name' | translate"
+                pInputText
+                formControlName="name"
+            />
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-times"
+            label="{{ 'button.cancel' | translate }}"
+            styleClass="p-button-text"
+            (click)="onCancel()"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            [disabled]="formGroup?.invalid"
+            label="{{ 'button.save' | translate }}"
+            styleClass="p-button-text"
+            (click)="onAdd()"
+        ></p-button>
+    </ng-template>
+</p-dialog>

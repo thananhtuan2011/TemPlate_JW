@@ -1,0 +1,131 @@
+<div class="card card-table">
+    <p-table
+        #dt1
+        [value]="payers"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getPayers($event)"
+        scrollDirection="both"
+        [scrollable]="true"
+        [(selection)]="selectedPayers"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div class="flex justify-content-start">
+                <span class="p-input-icon-right mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <p-dropdown
+                    class="ml-4"
+                    (onChange)="onChangeType($event)"
+                    [(ngModel)]="getParams.payerType"
+                    [options]="types"
+                    [optionLabel]="'name'"
+                    optionValue="value"
+                >
+                </p-dropdown>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1 flex justify-content-center">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th class="w-5">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.name'"></span>
+                    </div>
+                </th>
+                <th class="w-5">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.address'"></span>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td class="w-1 flex justify-content-center">
+                    <p-tableCheckbox [value]="customer"></p-tableCheckbox>
+                </td>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ customer.id }}
+                </td>
+                <td class="w-5">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span
+                    >{{ customer.name }}
+                </td>
+                <td class="w-5">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.address'"
+                    ></span
+                    >{{ customer.address }}
+                </td>
+            </tr></ng-template
+        >
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No payer found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading payer data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<div class="flex justify-content-end gap-8 mt-4">
+    <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        [label]="'button.back' | translate"
+        (click)="onCancel.emit({})"
+    ></button>
+    <button
+        class="p-button-danger"
+        type="button"
+        pButton
+        icon="pi pi-check"
+        [label]="'button.remove' | translate"
+        (click)="remove()"
+    ></button>
+</div>

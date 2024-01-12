@@ -1,0 +1,66 @@
+<form [formGroup]="editOrderForm" class="grid">
+    <span class="col-12 text-primary" [translate]="'label.adjust'"></span>
+    <div class="col-12 md:col-6 p-inputgroup">
+        <p-inputNumber
+            inputId="integeronly"
+            [(ngModel)]="editOrderForm.value.editOrderStart"
+            formControlName="editOrderStart"
+            class="w-5"
+            [min]="0"
+        >
+        </p-inputNumber>
+        <div class="p-inputgroup-addon w-2">~</div>
+        <p-inputNumber
+            inputId="integeronly"
+            [(ngModel)]="editOrderForm.value.editOrderEnd"
+            formControlName="editOrderEnd"
+            class="w-5"
+            [min]="0"
+        >
+        </p-inputNumber>
+    </div>
+    <div class="col-12 md:col-6 p-inputgroup flex justify-content-end">
+        <p-dropdown
+            [options]="types"
+            [optionLabel]="'label'"
+            [optionValue]="'value'"
+            [(ngModel)]="editOrderForm.value.orderType"
+            formControlName="orderType"
+        >
+        </p-dropdown>
+        <p-inputNumber
+            inputId="integeronly"
+            [(ngModel)]="editOrderForm.value.editValue"
+            formControlName="editValue"
+            [min]="0"
+        >
+        </p-inputNumber>
+    </div>
+</form>
+
+<div class="flex justify-content-end gap-8 mt-4">
+    <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        [label]="'button.back' | translate"
+        (click)="onCancel.emit({})"
+    ></button>
+    <button
+        class="p-button-success"
+        type="button"
+        pButton
+        icon="pi pi-check"
+        [label]="'button.auto' | translate"
+        (click)="onAuto()"
+    ></button>
+    <button
+        [disabled]="editOrderForm.invalid"
+        class="p-button-info"
+        type="button"
+        pButton
+        icon="pi pi-check"
+        [label]="'button.save' | translate"
+        (click)="onSave()"
+    ></button>
+</div>

@@ -1,0 +1,703 @@
+<div class="cashier grid m-0 p-0">
+    <div class="relative col-12 md:col-6 p-0">
+        <!-- add button -->
+        <!-- onAddRoomTable -->
+        <div
+            class="relative md:absolute flex align-items-center p-0 justify-content-center gap-8 mt-3 md:mt-2 md:right-0 md:pr-3"
+            style="z-index: 1"
+        >
+            <button
+                *ngIf="!isOnShift"
+                class="p-button-primary p-button-sm"
+                pButton
+                [label]="!isMobile ? 'Vào ca' : ''"
+                icon="pi pi-play"
+                (click)="startOnShift()"
+            ></button>
+
+            <button
+                *ngIf="isOnShift"
+                class="p-button-success"
+                pButton
+                [label]="!isMobile ? 'Kết ca' : ''"
+                icon="pi pi-stop-circle"
+                (click)="endOfShift()"
+            ></button>
+
+            <p-dropdown
+                [(ngModel)]="billTypeSelected"
+                [options]="billTypes"
+                class="w-auto p-button-sm"
+                [optionLabel]="'code'"
+                [optionValue]="'code'"
+                [placeholder]="'label.empty' | translate"
+                (onChange)="onBillTypeChanged()"
+            >
+            </p-dropdown>
+
+            <p-splitButton
+                [label]="!isMobile ? ('label.import' | translate) : ''"
+                icon="pi pi-upload"
+                class="p-button-sm"
+                (onClick)="uploadFile.click()"
+                [model]="items"
+            ></p-splitButton>
+
+            <input
+                #uploadFile
+                class="hidden"
+                type="file"
+                (change)="importByType($event)"
+                multiple
+            />
+
+            <button
+                *ngIf="billNotification.notification"
+                class="p-button-info p-button-sm"
+                pButton
+                [label]="
+                    !isMobile
+                        ? 'HĐ mới ' + billNotification.notificationCount
+                        : billNotification.notificationCount
+                "
+                icon="pi pi-bell"
+                [disabled]="billNotification.notificationCount === 0"
+                (click)="billNotification.showNotificationDialog()"
+            ></button>
+        </div>
+
+        <div
+            *ngIf="isOnShift"
+            class="card p-0 pr-1 mt-3 md:mt-0"
+            [class.card-table]="!isMobile"
+        >
+            <!-- Phòng bàn / Hàng hóa-->
+            <p-tabView [(activeIndex)]="activeTableOrGoods">
+                <p-tabPanel
+                    *ngIf="
+                        !(
+                            floors &&
+                            floors.length === 1 &&
+                            desks &&
+                            desks.length === 1
+                        )
+                    "
+                >
+                    <ng-template pTemplate="header">
+                        Phòng bàn
+                        <i *ngIf="
+                                !(
+                                    floors &&
+                                    floors.length === 1 &&
+                                    desks &&
+                                    desks.length === 1
+                                )
+                            "
+                           class="pl-2 pi pi-plus cursor-pointer"
+                           (click)="onAddRoomTable()"></i>
+                    </ng-template>
+                    <app-desk-table
+                        #appDeskTable
+                        [floorTabs]="floorTabs"
+                        (addBill)="addBill($event)"
+                    ></app-desk-table>
+                </p-tabPanel>
+                <p-tabPanel
+                    [disabled]="!(billTabs.length === 1)"
+                    [header]="'Hàng hóa'"
+                >
+                    <app-goods-table
+                        #goodsTable
+                        [users]="users"
+                        [selectedUser]="selectedUser"
+                        (onProductSelected)="addProduct($event)"
+                        [(selectedBillTab)]="selectedBillTab"
+                        (onChangeFilterCustomer)="onChangeCustomer($event)"
+                        [customers]="customers"
+                    >
+                    </app-goods-table>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+    <!--Bill-->
+    <div class="col-12 md:col-6 p-0 relative">
+        <div class="card card-table h-full p-0 pr-1">
+            <p-tabView
+                id="tabBills"
+                class="w-full"
+                [scrollable]="true"
+                (onChange)="onChangeTab($event)"
+            >
+                <p-tabPanel
+                    [selected]="billTab.tabId === selectedBillTabId"
+                    [cache]="false"
+                    *ngFor="let billTab of billTabs; let i = index"
+                    class="w-full"
+                >
+                    <!--custom header bill tabview-->
+                    <ng-template pTemplate="header">
+                        <!-- {{billTab.tabId}} -->
+                        <div
+                            class="flex align-items-center justify-content-between"
+                            [style.color]="
+                                billTab.tabId === selectedBillTabId
+                                    ? 'var(--primary-color)'
+                                    : 'var(--light-primary-color)'
+                            "
+                        >
+                            <div
+                                *ngIf="billTab.isDefault"
+                                style="padding: 0.24rem"
+                            >
+                                <span class="w-5rem">{{
+                                    billTab.title | translate
+                                }}</span>
+                            </div>
+                            <span *ngIf="!billTab.isDefault" class="w-10rem">{{
+                                billTab.title | translate
+                            }}</span>
+                            <div
+                                *ngIf="!billTab.isDefault"
+                                style="z-index: 1"
+                                (click)="closeBill(billTab.tabId)"
+                            >
+                                <i
+                                    class="ml-2 cursor-pointer pi pi-times border-1 p-1 border-solid border-round"
+                                ></i>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <!-- tab default -->
+                    <span
+                        *ngIf="billTab.tabId == 0 && !selectedBillTabId"
+                        class="flex align-items-center flex-column h-full"
+                    >
+                        <img
+                            [src]="'assets/layout/images/order-bill.png'"
+                            width="100%"
+                            height="100%"
+                        />
+                        <div class="grid">
+                            <div class="col-12 md:col-6 p-0">
+                                <img
+                                    [src]="'assets/layout/images/foods.jpg'"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </div>
+                            <div class="col-12 md:col-6 p-0">
+                                <img
+                                    [src]="
+                                        'assets/layout/images/food-delivery.jpg'
+                                    "
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </div>
+                        </div>
+                        <h3
+                            class="font-italic text-primary mt-4 font-bold mb-6"
+                        >
+                            {{ billTab.content | translate }}
+                        </h3>
+                        <h6
+                            class="font-italic text-primary absolute font-bold"
+                            style="bottom: 0"
+                        >
+                            {{ "~~~Chúc bạn một ngày tốt lành~~~" | translate }}
+                        </h6>
+                    </span>
+                    <!--others tab-->
+                    <span *ngIf="billTab.tabId != 0">
+                        <app-bill-table
+                            #appBillTable
+                            [billTab]="billTab"
+                            [users]="users"
+                            [surchargeData]="surchargeData"
+                            [selectedUser]="selectedUser"
+                            [selectedCustomer]="selectedCustomer"
+                            [customers]="customers"
+                            (closeBillTab)="closeBill($event)"
+                            (onShowSplitMerge)="onShowSplitMerge($event)"
+                            (onShowPayment)="
+                                onShowPayment($event, true, 'payment')
+                            "
+                            (onSendToChef)="
+                                onShowPayment($event, false, 'sendToChef')
+                            "
+                            (onSaveTemp)="
+                                onShowPayment($event, false, 'saveTemp')
+                            "
+                            (onSaveTempXK)="
+                                onShowPayment($event, false, 'saveTemp', 'XK')
+                            "
+                            (onSaveTempXD)="
+                                onShowPayment($event, false, 'saveTemp', 'XD')
+                            "
+                            (onSaveTempPX)="
+                                onShowExportBill()
+                            "
+                            (onChangeFilterCustomer)="
+                                onChangeFilterCustomer($event)
+                            "
+                        >
+                        </app-bill-table>
+                    </span>
+
+                    <!----------------------dialog edit discount price in bill---------------------------->
+                    <p-dialog
+                        *ngIf="!appUtil.isEmpty(selectedBillTab)"
+                        [header]="
+                            'label.edit_discount_price_in_bill' | translate
+                        "
+                        [(visible)]="displayDiscountPrice"
+                        [modal]="true"
+                        [style]="{
+                            width: appMain.isMobile() ? '85vw' : '70vw'
+                        }"
+                        [draggable]="false"
+                        [resizable]="false"
+                    >
+                        <p-splitter
+                            [layout]="
+                                appMain.isMobile() ? 'vertical' : 'horizontal'
+                            "
+                        >
+                            <ng-template pTemplate>
+                                <div
+                                    class="col py-4 flex flex-column text-center relative"
+                                >
+                                    <div
+                                        class="w-full flex flex-column text-center"
+                                    >
+                                        <h5 class="m-0">
+                                            {{
+                                                "label.total_amount_in_bill"
+                                                    | translate
+                                            }}:
+                                            {{
+                                                selectedBillTab.data &&
+                                                selectedBillTab.data.totalAmount
+                                                    ? appUtil.formatCurrencyVND(
+                                                          selectedBillTab.data
+                                                              .totalAmount
+                                                      )
+                                                    : "0"
+                                            }}
+                                        </h5>
+                                    </div>
+                                    <!--currency or percent choice-->
+                                    <div class="flex gap-8">
+                                        <div class="field field-radiobutton">
+                                            <p-radioButton
+                                                id="discountType1"
+                                                name="discountType"
+                                                value="money"
+                                                [(ngModel)]="
+                                                    selectedBillTab.data
+                                                        .discountType
+                                                "
+                                                [ngModelOptions]="{
+                                                    standalone: true
+                                                }"
+                                            >
+                                            </p-radioButton>
+                                            <label
+                                                class="mt-2"
+                                                for="discountType1"
+                                                [translate]="'label.currency'"
+                                            ></label>
+                                        </div>
+                                        <div class="field field-radiobutton">
+                                            <p-radioButton
+                                                id="discountType2"
+                                                name="discountType"
+                                                value="percent"
+                                                [(ngModel)]="
+                                                    selectedBillTab.data
+                                                        .discountType
+                                                "
+                                                [ngModelOptions]="{
+                                                    standalone: true
+                                                }"
+                                            >
+                                            </p-radioButton>
+                                            <label
+                                                class="mt-2"
+                                                for="discountType2"
+                                                [translate]="'label.percent'"
+                                            ></label>
+                                        </div>
+                                    </div>
+                                    <!--input currency of percent-->
+                                    <div class="p-inputgroup w-full mt-2">
+                                        <span class="p-inputgroup-addon">
+                                            <i
+                                                [ngClass]="
+                                                    selectedBillTab.data
+                                                        .discountType ===
+                                                    'percent'
+                                                        ? 'pi pi-percentage'
+                                                        : 'pi pi-dollar'
+                                                "
+                                            ></i>
+                                        </span>
+                                        <p-inputNumber
+                                            id="discountPrice"
+                                            [(ngModel)]="
+                                                selectedBillTab.data
+                                                    .discountPrice
+                                            "
+                                            [ngModelOptions]="{
+                                                standalone: true
+                                            }"
+                                            class="p-inputtext-sm w-full"
+                                        >
+                                        </p-inputNumber>
+                                    </div>
+                                    <!--input discount description-->
+                                    <div class="p-inputgroup w-full mt-4">
+                                        <span class="p-inputgroup-addon"
+                                            ><i class="pi pi-comment"></i
+                                        ></span>
+                                        <input
+                                            type="text"
+                                            class="p-inputtext-sm w-full"
+                                            pInputText
+                                            [ngModelOptions]="{
+                                                standalone: true
+                                            }"
+                                            [(ngModel)]="
+                                                selectedBillTab.data.note
+                                            "
+                                            [placeholder]="'Nhập ghi chú'"
+                                        />
+                                    </div>
+                                    <div
+                                        class="w-full flex flex-column text-center mt-4"
+                                    >
+                                        <h5 class="m-0">
+                                            {{
+                                                "label.total_amount_in_bill_after_desc"
+                                                    | translate
+                                            }}:
+                                            {{
+                                                selectedBillTab.data &&
+                                                selectedBillTab.data.totalAmount
+                                                    ? appUtil.formatCurrencyVND(
+                                                          getDiscountBillMoney()
+                                                      )
+                                                    : "0"
+                                            }}
+                                        </h5>
+                                    </div>
+                                    <div
+                                        *ngIf="surchargeData"
+                                        class="absolute w-full flex flex-column mb-2 font-italic"
+                                        style="bottom: 0"
+                                    >
+                                        <h5 class="m-0">
+                                            {{
+                                                "Phụ thu khác (" +
+                                                    surchargeData.name +
+                                                    ")" | translate
+                                            }}: {{ surchargeData.value | number
+                                            }}{{
+                                                surchargeData.type === "percent"
+                                                    ? "%"
+                                                    : ""
+                                            }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate>
+                                <div
+                                    class="col py-4 flex flex-column align-items-center"
+                                >
+                                    <div class="grid">
+                                        <div
+                                            class="col-6 md:col-3 flex justify-content-center"
+                                            *ngFor="let money of moneys"
+                                        >
+                                            <button
+                                                class="text-sm"
+                                                (click)="
+                                                    onChangeSupportMoney(money)
+                                                "
+                                                pButton
+                                                [label]="
+                                                    money.name === 0
+                                                        ? 'Mặc định'
+                                                        : money.count +
+                                                          ' - ' +
+                                                          (money.name | number)
+                                                "
+                                            ></button>
+                                        </div>
+                                    </div>
+                                    <h5 class="m-0">
+                                        {{
+                                            "label.amount_given_by_customer"
+                                                | translate
+                                        }}
+                                    </h5>
+                                    <div class="p-inputgroup w-full mt-2">
+                                        <span class="p-inputgroup-addon"
+                                            ><i class="pi pi-dollar"></i
+                                        ></span>
+                                        <p-inputNumber
+                                            id="receivedPrice"
+                                            [(ngModel)]="
+                                                selectedBillTab.data
+                                                    .amountReceivedByCus
+                                            "
+                                            [ngModelOptions]="{
+                                                standalone: true
+                                            }"
+                                            class="p-inputtext-sm w-full"
+                                        >
+                                        </p-inputNumber>
+                                    </div>
+                                    <div
+                                        class="col py-4 flex flex-column align-items-center"
+                                    >
+                                        <h5 class="m-0">
+                                            {{
+                                                "label.amount_paid_by_customer"
+                                                    | translate
+                                            }}
+                                        </h5>
+                                        <h4
+                                            [style]="{
+                                                color: 'var(--green-400)'
+                                            }"
+                                        >
+                                            {{
+                                                selectedBillTab.data &&
+                                                selectedBillTab.data.totalAmount
+                                                    ? appUtil.formatCurrencyVND(
+                                                          (selectedBillTab.data
+                                                              .amountReceivedByCus ||
+                                                              0) -
+                                                              getDiscountBillMoney()
+                                                      )
+                                                    : "0"
+                                            }}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-splitter>
+                        <ng-template pTemplate="footer">
+                            <div class="flex justify-content-end gap-8">
+                                <p-button
+                                    styleClass="p-button-outlined"
+                                    icon="pi pi-times"
+                                    (click)="
+                                        displayDiscountPrice = false;
+                                        resetMoneys()
+                                    "
+                                    [label]="'button.cancel' | translate"
+                                ></p-button>
+                                <p-button
+                                    icon="pi pi-check"
+                                    *ngIf="getDiscountBillMoney() >= 0"
+                                    (click)="onSaveBillConfirm()"
+                                    [label]="'button.save' | translate"
+                                ></p-button>
+                            </div>
+                        </ng-template>
+                    </p-dialog>
+
+                    <!-----------------------dialog edit split merge bill---------------------->
+                    <p-dialog
+                        [header]="'label.edit_split_merge_bill' | translate"
+                        [(visible)]="displaySplitMerge"
+                        [modal]="true"
+                        [style]="{ width: '50vw' }"
+                        [draggable]="false"
+                        [resizable]="false"
+                        [closable]="false"
+                        (onHide)="mergeBillTab = {}"
+                    >
+                        <!--split or merge choice-->
+                        <div class="flex gap-8 mb-4">
+                            <div class="field field-radiobutton">
+                                <p-radioButton
+                                    id="splitMergeType1"
+                                    name="splitMergeType"
+                                    value="split"
+                                    [(ngModel)]="mergeBillTab.splitMergeType"
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                </p-radioButton>
+                                <label
+                                    class="mt-2 font-bold"
+                                    for="splitMergeType1"
+                                    [translate]="'label.split_bill'"
+                                ></label>
+                            </div>
+                            <div class="field field-radiobutton">
+                                <p-radioButton
+                                    id="splitMergeType2"
+                                    name="splitMergeType"
+                                    value="merge"
+                                    [(ngModel)]="mergeBillTab.splitMergeType"
+                                    [ngModelOptions]="{ standalone: true }"
+                                >
+                                </p-radioButton>
+                                <label
+                                    class="mt-2 font-bold"
+                                    for="splitMergeType2"
+                                    [translate]="'label.merge_bill'"
+                                ></label>
+                            </div>
+                            <p-dropdown
+                                [options]="floors"
+                                [(ngModel)]="mergeBillTab.mergeFloorId"
+                                optionLabel="name"
+                                optionValue="id"
+                                [filter]="true"
+                                appendTo="body"
+                                (ngModelChange)="onChangeMergeFloors($event)"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                            <p-dropdown
+                                [options]="desksTemp"
+                                [(ngModel)]="mergeBillTab.mergeDeskId"
+                                optionLabel="name"
+                                optionValue="id"
+                                [filter]="true"
+                                appendTo="body"
+                                [placeholder]="'label.empty' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <!--table goods split merge -->
+                        <div
+                            class="flex align-items-center justify-content-between mb-2"
+                            *ngFor="let goods of mergeGoods"
+                        >
+                            <div class="flex align-items-center gap-8">
+                                <p-inputSwitch
+                                    [(ngModel)]="goods.checked"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (click)="
+                                        switchMergeGoods(goods, goods.checked)
+                                    "
+                                ></p-inputSwitch>
+                                <span
+                                    class="text-primary font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                                    >{{ getAccountName(goods) }}</span
+                                >
+                            </div>
+                            <div class="flex justify-content-end gap-8">
+                                <p-inputNumber
+                                    [disabled]="!goods.checked"
+                                    id="totalProduct"
+                                    [(ngModel)]="goods.mergeQuantity"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Số lượng món'"
+                                    class="w-10rem"
+                                    [max]="goods.billQuantity"
+                                    [min]="0"
+                                    [pTooltip]="'Số lượng món'"
+                                >
+                                </p-inputNumber>
+                                <p-inputNumber
+                                    id="price"
+                                    [(ngModel)]="goods.salePrice + goods.taxVat"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Giá gốc'"
+                                    class="w-10rem"
+                                    [disabled]="true"
+                                    [pTooltip]="'Giá gốc'"
+                                >
+                                </p-inputNumber>
+                                <p-inputNumber
+                                    id="discountPrice"
+                                    [(ngModel)]="goods.discountPrice"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [placeholder]="'Giảm giá'"
+                                    class="w-10rem"
+                                    [disabled]="true"
+                                    [pTooltip]="'Giảm giá'"
+                                >
+                                </p-inputNumber>
+                            </div>
+                        </div>
+                        <!--end table goods split merge-->
+                        <ng-template pTemplate="footer">
+                            <div class="flex justify-content-end gap-8">
+                                <p-button
+                                    styleClass="p-button-outlined"
+                                    icon="pi pi-times"
+                                    (click)="
+                                        mergeBillTab = {};
+                                        displaySplitMerge = false
+                                    "
+                                    [label]="'button.cancel' | translate"
+                                ></p-button>
+                                <p-button
+                                    icon="pi pi-check"
+                                    (click)="onEditSplitMerge()"
+                                    [label]="'button.save' | translate"
+                                ></p-button>
+                            </div>
+                        </ng-template>
+                    </p-dialog>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    [header]="'label.add_room_table' | translate"
+    [(visible)]="display"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <app-room-table-form
+        #roomTableForm
+        [display]="true"
+        (onCancel)="display = false"
+        [isEdit]="false"
+    >
+    </app-room-table-form>
+</p-dialog>
+
+<app-bill-notification
+    #billNotification
+    [selectedUser]="selectedUser"
+    [authUser]="authUser"
+    [billTabs]="billTabs"
+    [desks]="desks"
+    [floors]="floors"
+    [customers]="customers"
+    (onAddBillFromEmployee)="onAddBillFromEmployee($event)"
+>
+</app-bill-notification>
+
+<app-till-form
+    #tillForm
+    [display]="isShowOnShiftDialog"
+    [isEdit]="true"
+    [isFinish]="isOnShift"
+    (onCancel)="isShowOnShiftDialog = false"
+    (onSuccess)="onEndOfShiftSuccess($event)"
+>
+</app-till-form>
+
+<PX
+    id="PX"
+    *ngIf="isDisplayXuatKho_Ledger === true"
+    [company]="company"
+    [dataPrint]="dataPrint"
+></PX>

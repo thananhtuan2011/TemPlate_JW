@@ -1,0 +1,265 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit
+                        ? 'label.tools_fixed_assets_edit'
+                        : 'label.tools_fixed_assets_add'
+                "
+            ></h5>
+            <form [formGroup]="PositionDetailForm">
+                <div class="grid w-full">
+                    <!-- debit -->
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="debit"
+                            >{{ "label.account" | translate }}
+                            <span class="text-pink-400">*</span></label
+                        >
+                        <div class="flex">
+                            <div class="p-inputgroup w-full mr-2">
+                                <p-autoComplete
+                                    id="debit"
+                                    [showEmptyMessage]="true"
+                                    [suggestions]="filteredDebitNames"
+                                    #debit
+                                    (onSelect)="onDebitSelect($event)"
+                                    [disabled]="debits1.length > 0"
+                                    (completeMethod)="filterDebitName($event)"
+                                    [minLength]="1"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    class="p-inputtext-sm"
+                                    [completeOnFocus]="true"
+                                    [ngClass]="
+                                        checkValidValidator('creditCode')
+                                    "
+                                    [formControlName]="'creditCode'"
+                                >
+                                </p-autoComplete>
+                                <div
+                                    class="p-inputgroup-addon cursor-pointer"
+                                    (click)="
+                                        onChangeCreditDebit(null, 'debit');
+                                        onFocus(vcDebit)
+                                    "
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                            <button
+                                pButton
+                                icon="pi pi-plus"
+                                class="w-4rem"
+                            ></button>
+                        </div>
+                        <small
+                            *ngIf="checkValidValidator('creditCode')"
+                            class="p-error"
+                            [innerHTML]="'info.account' | translate"
+                        ></small>
+                    </div>
+
+                    <!-- debit1 -->
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="debit1"
+                            [translate]="'label.detail_1'"
+                        ></label>
+                        <div class="flex">
+                            <div class="p-inputgroup w-full mr-2">
+                                <p-autoComplete
+                                    id="debit1"
+                                    [showEmptyMessage]="true"
+                                    #debit1
+                                    [suggestions]="filteredDebit1Names"
+                                    (onSelect)="onDebit1Select($event)"
+                                    (completeMethod)="filterDebit1Name($event)"
+                                    [disabled]="
+                                        debits1.length === 0 ||
+                                        debits2.length > 0
+                                    "
+                                    [minLength]="1"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    class="p-inputtext-sm"
+                                    [completeOnFocus]="true"
+                                    [formControlName]="'creditDetailCodeFirst'"
+                                >
+                                </p-autoComplete>
+                                <div
+                                    class="p-inputgroup-addon cursor-pointer"
+                                    (click)="
+                                        onChangeCreditDebit(null, 'debit1');
+                                        onFocus(vcDebit1)
+                                    "
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                            <button
+                                pButton
+                                icon="pi pi-plus"
+                                class="w-4rem"
+                            ></button>
+                        </div>
+                    </div>
+
+                    <!-- debit2 -->
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="debit2"
+                            [translate]="'label.detail_2'"
+                        ></label>
+                        <div class="flex">
+                            <div class="p-inputgroup w-full mr-2">
+                                <p-autoComplete
+                                    id="debit2"
+                                    [showEmptyMessage]="true"
+                                    [disabled]="debits2.length === 0"
+                                    [suggestions]="filteredDebit2Names"
+                                    (onSelect)="onDebit2Select($event)"
+                                    (completeMethod)="filterDebit2Name($event)"
+                                    [minLength]="1"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    #debit2
+                                    class="p-inputtext-sm"
+                                    [completeOnFocus]="true"
+                                    [formControlName]="'creditDetailCodeSecond'"
+                                >
+                                </p-autoComplete>
+                                <div
+                                    class="p-inputgroup-addon cursor-pointer"
+                                    (click)="
+                                        onChangeCreditDebit(null, 'debit2');
+                                        onFocus(vcDebit2)
+                                    "
+                                >
+                                    <i class="pi pi-times"></i>
+                                </div>
+                            </div>
+                            <button
+                                pButton
+                                icon="pi pi-plus"
+                                class="w-4rem"
+                            ></button>
+                        </div>
+                    </div>
+
+                    <div class="field col-12 md:col-4" *ngIf="isPageUse">
+                        <label
+                            htmlFor="code"
+                            [translate]="'label.date_to_use'"
+                        ></label>
+                        <p-calendar
+                            inputId="basic"
+                            [formControlName]="'usedDate'"
+                            [options]="positions"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                            dateFormat="dd/mm/yy"
+                        >
+                        </p-calendar>
+                    </div>
+                    <div class="field col-12 md:col-4" *ngIf="!isPageUse">
+                        <label
+                            htmlFor="code"
+                            [translate]="'label.date_to_buy'"
+                        ></label>
+                        <p-calendar
+                            inputId="basic"
+                            [formControlName]="'buyDate'"
+                            [options]="positions"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                            dateFormat="dd/mm/yy"
+                        >
+                        </p-calendar>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="quantity"
+                            [translate]="'label.stock_quantity'"
+                        ></label>
+                        <p-inputNumber
+                            id="quantity"
+                            [(ngModel)]="PositionDetailForm.value.quantity"
+                            formControlName="quantity"
+                        >
+                        </p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="unitPrice"
+                            [translate]="'label.stock_price'"
+                        ></label>
+                        <p-inputNumber
+                            id="unitPrice"
+                            [(ngModel)]="PositionDetailForm.value.unitPrice"
+                            formControlName="unitPrice"
+                        >
+                        </p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="name"
+                            [translate]="'label.price_money'"
+                        ></label>
+                        <p-inputNumber
+                            id="order"
+                            [(ngModel)]="
+                                PositionDetailForm.value.historicalCost
+                            "
+                            formControlName="historicalCost"
+                        >
+                        </p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="order"
+                            [translate]="'label.month_depreciation'"
+                        ></label>
+                        <p-inputNumber
+                            id="order"
+                            [(ngModel)]="PositionDetailForm.value.totalMonth"
+                            formControlName="totalMonth"
+                        >
+                        </p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label
+                            htmlFor="order"
+                            [translate]="'label.status'"
+                        ></label>
+                        <p-dropdown
+                            [formControlName]="'use'"
+                            [options]="listDepreciation"
+                            [optionLabel]="'name'"
+                            [optionValue]="'id'"
+                        >
+                        </p-dropdown>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

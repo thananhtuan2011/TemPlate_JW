@@ -1,0 +1,113 @@
+:host ::ng-deep {
+    .min-width-120 {
+        min-width: 120px;
+    }
+
+    button {
+        z-index: 1;
+    }
+
+    .p-tag {
+        height: 38px;
+        font-size: 13px !important;
+    }
+
+    p-autocomplete {
+        width: auto !important;
+    }
+
+    .p-orderlist .p-orderlist-list {
+        min-height: 50vh;
+    }
+
+    .p-inline-message.p-inline-message-info {
+        width: 100%;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only,
+    .p-speeddial-action {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .p-speeddial-direction-left {
+        margin-left: -224px;
+        margin-top: 4px;
+    }
+
+    #surchargeInfo {
+        position: absolute;
+        right: 14px;
+        margin-top: 3px;
+    }
+
+    @media screen and (min-width: 769px) {
+        right: 152px !important;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only .p-button-icon {
+        font-size: inherit;
+    }
+
+    #customer .p-autocomplete .p-autocomplete-input {
+        min-height: 40px;
+        width: auto;
+        min-width: 200px;
+    }
+
+    #totalAmount .p-inputnumber-input {
+        font-weight: bold;
+    }
+
+    #discountProduct .p-inputnumber-input,
+    #totalCustomer .p-inputnumber-input,
+    #totalProduct .p-inputnumber-input {
+        text-align: left;
+    }
+
+    #discountPriceBill .p-inputnumber-input {
+        width: 5rem;
+    }
+
+    #quantity .p-inputnumber-input,
+    #box .p-inputnumber-input,
+    #nec .p-inputnumber-input {
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+        width: 60px;
+        color: var(--green-400);
+    }
+
+    .p-inputgroup-addon:first-child {
+        height: 40px;
+    }
+
+    .p-dialog .p-dialog-footer button {
+        margin: 0;
+    }
+
+    .p-autocomplete-clear-icon {
+        right: 4px !important;
+    }
+
+    .p-orderlist .p-orderlist-list .p-orderlist-item {
+        padding: 0.5rem;
+    }
+
+    .p-component:disabled {
+        opacity: 1;
+    }
+
+    #note {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .align-item-end{
+        align-items: flex-end;
+    }
+}

@@ -1,0 +1,41 @@
+.d-flex {
+    display: flex;
+    flex-direction: column !important;
+    justify-content: space-between;
+    height: 110px;
+}
+
+.myPrintBarcodeClass img {
+    width: 1.33in;
+    height: 0.34in;
+}
+
+.barcode-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 82mm !important;
+    display: none;
+}
+
+.barcode-row {
+    display: flex;
+    flex-direction: row;
+    height: 40mm !important;
+    width: 82mm;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    .barcode-row-item {
+        flex-grow: 1;
+        width: 40mm !important;
+        text-align: center;
+    }
+}
+
+.barcode-item-text {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1;
+    font-size: 9px !important;
+    font-weight: bold;
+}

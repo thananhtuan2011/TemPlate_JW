@@ -1,0 +1,206 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.web_menu_edit' : 'label.web_menu_add'"
+    ></h5>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="introduceType">{{
+                "label.web_menu_type" | translate
+            }}</label>
+            <p-dropdown
+                id="introduceType"
+                [options]="menuTypes"
+                [(ngModel)]="menuModel.type"
+                optionLabel="name"
+                optionValue="value"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="code">{{ "label.web_menu_code" | translate }}</label>
+            <input
+                pInputText
+                id="code"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên danh mục"
+                [(ngModel)]="menuModel.code"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name_vn">{{
+                "label.web_menu_name_vn" | translate
+            }}</label>
+            <input
+                pInputText
+                id="name_vn"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên tiếng Việt"
+                [(ngModel)]="menuModel.name"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name_ko">{{
+                "label.web_menu_name_ko" | translate
+            }}</label>
+            <input
+                pInputText
+                id="name_ko"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên tiếng Hàn"
+                [(ngModel)]="menuModel.nameKorea"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="name_en">{{
+                "label.web_menu_name_en" | translate
+            }}</label>
+            <input
+                pInputText
+                id="name_en"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên tiếng Anh"
+                [(ngModel)]="menuModel.nameEnglish"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="parent">{{
+                "label.web_menu_parent_code" | translate
+            }}</label>
+            <p-dropdown
+                id="parent"
+                [options]="parentCategories"
+                [(ngModel)]="menuModel.codeParent"
+                optionLabel="name"
+                optionValue="code"
+                placeholder="Chọn danh mục cha"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="name_en">{{
+                "label.web_menu_order" | translate
+            }}</label>
+            <input
+                pInputText
+                id="numberItem"
+                type="text"
+                class="w-full"
+                placeholder="Nhập số thứ tự"
+                [(ngModel)]="menuModel.numberItem"
+            />
+        </div>
+    </div>
+
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col flex flex-column">
+            <label htmlFor="managerName"
+                >{{ "label.visible" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-inputSwitch [(ngModel)]="menuModel['isShowWeb']"></p-inputSwitch>
+        </div>
+
+        <div class="field col">
+            <label for="name_en">{{ "label.menu_web_icon" | translate }}</label>
+            <button
+                pButton
+                icon="pi pi-upload"
+                class="p-button-sm"
+                (click)="uploadFileIcon.click()"
+            ></button>
+            <input
+                #uploadFileIcon
+                class="hidden"
+                type="file"
+                (change)="doAttachIcon($event)"
+            />
+            <img
+                    id="{{ this.iconFile }}"
+                    class="style_prev_kit"
+                    (click)="onImageClick(this.iconFile)"
+                    src="{{ serverFileImg + this.iconFile}}"
+                    alt="image"
+                />
+        </div>
+    </div>
+
+    <div class="p-fluid formgrid grid mt-4">
+        <div class="field col">
+            <label for="description">{{
+                "label.web_menu_name_description" | translate
+            }}</label>
+            <textarea
+                pInputText
+                id="description"
+                type="text"
+                class="w-full"
+                placeholder="Nhập mô tả"
+                [(ngModel)]="menuModel.note"
+                rows="4"
+            ></textarea>
+        </div>
+    </div>
+    <div class="w-full row">
+        <div class="col-12 flex align-items-center gap-8">
+            <span class="text-primary font-bold flex align-items-center">{{ "label.image" | translate }}</span>
+            <span class="text-primary text-sm font-italic flex align-items-center">(Tối đa 4 ảnh)</span>
+            <button
+                pButton
+                icon="pi pi-upload"
+                class="p-button-sm"
+                (click)="uploadFile.click()"
+            ></button>
+            <button
+                pButton
+                icon="pi pi-times"
+                class="p-button-sm"
+                [disabled]="fileLinks.length === 0"
+                (click)="onRemoveImages()"
+            ></button>
+            <input
+                #uploadFile
+                class="hidden"
+                type="file"
+                (change)="doAttachFile($event)"
+                multiple
+            />
+        </div>
+        <div class="col-12 flex gap-8" *ngIf="fileLinks">
+            <div *ngFor="let url of fileLinks">
+                <img
+                    id="{{ url.fileId }}"
+                    class="style_prev_kit"
+                    (click)="onImageClick(url.fileId)"
+                    src="{{ serverUserTaskImg + url['fileId'] }}"
+                    alt="image"
+                />
+            </div>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end mt-2">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onCancel.emit({})"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

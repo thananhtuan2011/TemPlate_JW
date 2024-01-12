@@ -1,0 +1,527 @@
+<div class="card card-table">
+    <ng-container
+        *appHasAccess="{
+            menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+            action: appConstant.PERMISSION_FUNC.ADD
+        }"
+    >
+        <h5
+            *ngIf="isDisplay"
+            class="m-0 pb-4"
+            [translate]="'left_menu.company_info'"
+        ></h5>
+        <app-company-form
+            [isDisplay]="isDisplay"
+            #companyForm
+            (onCancel)="
+                this.isDisplay = false; this.isEdit = false; getCompanies()
+            "
+            [isEdit]="isEdit"
+        ></app-company-form>
+    </ng-container>
+    <div class="pb-2 flex align-items-center justify-content-between">
+        <h5 class="m-0" [translate]="'label.history_company_change'"></h5>
+        <ng-container
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+                action: appConstant.PERMISSION_FUNC.ADD
+            }"
+        >
+            <button
+                *ngIf="!isDisplay"
+                [label]="'button.addF7' | translate"
+                pButton
+                class="p-button-sm"
+                icon="pi pi-plus"
+                (click)="isDisplay = true"
+            ></button>
+        </ng-container>
+    </div>
+
+    <p-table
+        #dt1
+        [value]="lstCompanies"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCompanies($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 80px">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th style="width: 150px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.logo'"></span>
+                    </div>
+                </th>
+                <th style="width: 400px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.company_name'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.link_of_business'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.tax_code'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.charter_capital'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.sign_date'"></span>
+                    </div>
+                </th>
+                <th style="width: 250px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.business_type'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.according_accounting_regime'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 220px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.method_calc_export_price'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.phone_number'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.email'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name_of_ceo'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.note_of_ceo'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.name_of_chief_accountant'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.note_of_chief_accountant'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name_of_store_keeper'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name_of_treasurer'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.name_of_chief_supplier'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span
+                            [translate]="'label.note_of_chief_supplier'"
+                        ></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.assign_person'"></span>
+                    </div>
+                </th>
+                <th style="width: 200px">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.website_name'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-company>
+            <tr>
+                <td *ngIf="isMobile" style="width: 150px">
+                    <div class="w-full flex justify-content-between">
+                        <img
+                            src="{{ serverURLImage + '/' + company.fileLogo }}"
+                            alt="Image logo"
+                            width="110"
+                            height="110"
+                        />
+                        <app-file-preview
+                            [fileName]="
+                            company.fileOfBusinessRegistrationCertificate
+                        "
+                        ></app-file-preview>
+                    </div>
+                </td>
+                <td style="width: 80px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ company.id }}
+                </td>
+                <td *ngIf="!isMobile" style="width: 150px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.logo'"
+                    ></span>
+                    <img
+                        src="{{ serverURLImage + '/' + company.fileLogo }}"
+                        alt="Image logo"
+                        width="100%"
+                        height="100%"
+                    />
+                </td>
+                <td style="width: 400px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.company_name'"
+                    ></span>
+                    <b class="text-primary">{{ company.name }}</b>
+                    <!-- <marquee direction="left" class="text-primary">{{ company.name }}</marquee> -->
+                </td>
+                <td *ngIf="!isMobile" style="width: 200px; justify-content: center">
+                    <app-file-preview
+                        [fileName]="
+                            company.fileOfBusinessRegistrationCertificate
+                        "
+                    ></app-file-preview>
+                    <!-- <button *ngIf="!appUtil.isImageFile(company.fileOfBusinessRegistrationCertificate)" pButton pRipple type="button" icon="pi pi-file-pdf" (click)="window.open(serverURLImage + '/' + company.fileOfBusinessRegistrationCertificate)" class="p-button-rounded p-button-text p-button-lg"></button>
+                    <p-image *ngIf="appUtil.isImageFile(company.fileOfBusinessRegistrationCertificate)" src="{{ serverURLImage + '/' + company.fileOfBusinessRegistrationCertificate }}" alt="Image" height="100px" [preview]="true"></p-image> -->
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.tax_code'"
+                    ></span
+                    >{{ company.mst }}
+                </td>
+                <td
+                    style="width: 200px"
+                    class="flex justify-content-between md:justify-content-end"
+                >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.charter_capital'"
+                    ></span
+                    >{{ company.charterCapital | number }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.sign_date'"
+                    ></span
+                    >{{ company.signDate | date: "dd/MM/yyyy" }}
+                </td>
+                <td style="width: 250px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.business_type'"
+                    ></span
+                    >{{ getbusinessTypeName(company.businessType) }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.according_accounting_regime'"
+                    ></span
+                    >{{
+                        getAccordingAccountingRegimeName(
+                            company.accordingAccountingRegime
+                        )
+                    }}
+                </td>
+                <td style="width: 220px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.method_calc_export_price'"
+                    ></span
+                    >{{
+                        getMethodCalcExportPriceName(
+                            company.methodCalcExportPrice
+                        )
+                    }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.phone_number'"
+                    ></span
+                    >{{ company.phone }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.email'"
+                    ></span
+                    >{{ company.email }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_of_ceo'"
+                    ></span
+                    >{{ company.nameOfCeo }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.note_of_ceo'"
+                    ></span
+                    >{{ company.noteOfCeo }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_of_chief_accountant'"
+                    ></span
+                    >{{ company.nameOfChiefAccountant }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.note_of_chief_accountant'"
+                    ></span
+                    >{{ company.noteOfChiefAccountant }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_of_store_keeper'"
+                    ></span
+                    >{{ company.nameOfStorekeeper }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_of_treasurer'"
+                    ></span
+                    >{{ company.nameOfTreasurer }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name_of_chief_supplier'"
+                    ></span
+                    >{{ company.nameOfChiefSupplier }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.note_of_chief_supplier'"
+                    ></span
+                    >{{ company.noteOfChiefSupplier }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.assign_person'"
+                    ></span
+                    >{{ company.assignPerson }}
+                </td>
+                <td style="width: 200px">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.website_name'"
+                    ></span
+                    ><a [href]="company.websiteName">{{
+                        company.websiteName
+                    }}</a>
+                </td>
+                <td *ngIf="isMobile">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(company.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(company.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(company.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.THONGTINCONGTY,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(company.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Company Log found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Company Log data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_company_log_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-8">
+            <button
+                type="button"
+                pButton
+                icon="pi pi-times"
+                [label]="'button.back' | translate"
+                (click)="cd.reject()"
+            ></button>
+            <button
+                class="p-button-danger"
+                type="button"
+                pButton
+                icon="pi pi-check"
+                [label]="'button.remove' | translate"
+                (click)="cd.accept()"
+            ></button>
+        </div>
+    </ng-template>
+</p-confirmDialog>

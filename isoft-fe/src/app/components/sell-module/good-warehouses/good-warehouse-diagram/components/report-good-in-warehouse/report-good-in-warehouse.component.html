@@ -1,0 +1,145 @@
+<div *ngIf="!display" class="card card-table">
+    <p-table
+        #dt1
+        [value]="goodsList"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [(selection)]="selectedGoods"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50, { showAll: 'Tất cả' }]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getGoods($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.account'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.accountCode"
+                        (onChange)="onChangeAccount($event)"
+                        [filter]="true"
+                        [options]="types.chartOfAccount"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [placeholder]="'label.empty' | translate"
+                    ></p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.detail_1'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.detail1Code"
+                        (onChange)="getGoods()"
+                        [options]="types.detail1"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [filter]="true"
+                        [placeholder]="'label.empty' | translate"
+                    >
+                    </p-dropdown>
+                </div>
+
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.search_by_name'"
+                    ></label>
+                    <span class="p-input-icon-left mb-2">
+                        <input
+                            #filter
+                            [(ngModel)]="getParams.searchText"
+                            pInputText
+                            type="text"
+                            (keypress)="onSearch($event)"
+                            class="w-full"
+                        />
+                        <i class="pi pi-search"></i>
+                    </span>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">Mã C.Tiết 1</div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">Tên C.Tiết 1</div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">Mã C.Tiết 2</div>
+                </th>
+                <th class="w-1">
+                    <div class="flex align-items-center">Tên C.Tiết 2</div>
+                </th>
+
+                <th class="w-1">
+                    <div class="flex align-items-center">Số lượng</div>
+                </th>
+                <th class="w-6">
+                    <div class="flex align-items-center">Nơi chứa</div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-good>
+            <tr class="p-selectable-row">
+                <td class="w-2">
+                    {{ good.detail1 }}
+                </td>
+                <td class="w-1">
+                    {{ good.detailName1 }}
+                </td>
+                <td class="w-1">
+                    {{ good.detail2 }}
+                </td>
+                <td class="w-1">
+                    {{ good.detailName2 }}
+                </td>
+                <td class="w-1">
+                    {{ good.quantity | number }}
+                </td>
+                <td class="w-6">
+                    <div class="flex flex-column card-container">
+                        <div
+                            *ngFor="let position of good.positions"
+                            class="flex align-items-center justify-content-start"
+                        >
+                            <i class="pi pi-map-marker text-orange-400 m-1"></i>
+                            {{ position }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Goods found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Goods data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

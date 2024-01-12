@@ -1,0 +1,21 @@
+:host ::ng-deep {
+    .ng-dirty .ng-invalid {
+        border: 1.5px solid red !important;
+    }
+
+    .autocomplete-panel-hidden {
+        .p-autocomplete-panel {
+            visibility: hidden;
+        }
+    }
+
+    .p-scroller {
+        min-width: 700px !important;
+        padding: 0 !important;
+
+        .p-autocomplete-item {
+            height: 35px !important;
+            line-height: 35px !important;
+        }
+    }
+}

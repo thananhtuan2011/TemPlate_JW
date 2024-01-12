@@ -1,0 +1,16 @@
+<button
+    *ngIf="isOtherFile"
+    pButton
+    pRipple
+    type="button"
+    icon="pi pi-file-pdf"
+    (click)="openFile()"
+    class="p-button-rounded p-button-text p-button-lg"
+></button>
+<p-image
+    *ngIf="isImageExtension"
+    src="{{ fileUrl }}"
+    alt="Image"
+    height="100px"
+    [preview]="true"
+></p-image>

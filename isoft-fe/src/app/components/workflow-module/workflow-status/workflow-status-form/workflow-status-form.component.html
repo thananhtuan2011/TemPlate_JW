@@ -1,0 +1,68 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <form [formGroup]="workflowStatusForm" class="grid">
+        <div *ngIf="!hiddenTitle" class="col-12 py-2">
+            <h5
+                class="m-0"
+                [translate]="
+                    item != null
+                        ? 'label.edit_customer_status'
+                        : 'label.add_customer_status'
+                "
+            ></h5>
+        </div>
+        <!--Name-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="name" [translate]="'label.name'"></label>
+            <input
+                pInputText
+                id="name"
+                [(ngModel)]="workflowStatusForm.value.name"
+                formControlName="name"
+            />
+            <!-- <small
+                *ngIf="checkValidValidator('name')"
+                class="p-error"
+                [innerHTML]="'info.enter_name_status' | translate"
+            ></small> -->
+        </div>
+
+        <!--Choose color code-->
+        <div class="field col-12 md:col-4 flex flex-column">
+            <label htmlFor="color" [translate]="'label.color_code'"></label>
+            <div class="flex">
+                <input
+                    pInputText
+                    id="color"
+                    [(ngModel)]="workflowStatusForm.value.color"
+                    formControlName="color"
+                    class="w-full mr-0 boder-radius"
+                />
+                <p-colorPicker
+                    [appendTo]="'body'"
+                    [(ngModel)]="workflowStatusForm.value.color"
+                    formControlName="color"
+                ></p-colorPicker>
+            </div>
+            <!-- <small
+                
+                class="p-error pr-2"
+                [innerHTML]="'info.enter_code_color' | translate"
+            ></small> -->
+        </div>
+        <div class="col-12 flex justify-content-end">
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel()"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+                class="pr-2"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSave()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

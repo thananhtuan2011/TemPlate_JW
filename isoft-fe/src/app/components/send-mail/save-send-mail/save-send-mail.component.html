@@ -1,0 +1,80 @@
+<div [formGroup]="sendMailForm" class="card card-table">
+    <h5>
+        {{
+            isEdit
+                ? ("label.update_send_mail" | translate)
+                : ("label.create_send_mail" | translate)
+        }}
+    </h5>
+    <div class="field grid mb-3">
+        <label for="title" class="col-12 md:col-2">{{
+            "label.title" | translate
+        }}</label>
+        <div class="col-12 md:col-10">
+            <input
+                pInputText
+                id="title"
+                type="text"
+                class="w-full"
+                formControlName="title"
+                placeholder="Nhập tiêu đề"
+            />
+            <small *ngIf="inValid('title')" class="p-error font-bold">
+                Hãy nhập tiêu đề
+            </small>
+        </div>
+    </div>
+
+    <div class="field grid mb-3">
+        <label for="customer" class="col-12 md:col-2">
+            {{ "label.customer" | translate }}
+        </label>
+        <div class="col-12 md:col-10">
+            <p-dropdown
+                id="customer"
+                [options]="customerList"
+                formControlName="customerId"
+                [filter]="true"
+                placeholder="Chọn khách hàng"
+                optionLabel="name"
+                optionValue="id"
+                showClear="true"
+            ></p-dropdown>
+            <small *ngIf="inValid('customerId')" class="p-error font-bold">
+                Hãy chọn khách hàng
+            </small>
+        </div>
+    </div>
+
+    <div class="w-full flex flex-column gap-8 justify-content-start mb-1">
+        <p-editor
+            [style]="{ height: '150px' }"
+            class="w-full"
+            formControlName="content"
+        >
+            <ng-template pTemplate="header">
+                <app-ql-formats></app-ql-formats>
+            </ng-template>
+        </p-editor>
+        <small *ngIf="inValid('content')" class="p-error font-bold">
+            Hãy nhập nội dung mail
+        </small>
+    </div>
+
+    <div class="w-full flex align-items-center justify-content-end mt-2">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            [label]="'button.backF6' | translate"
+            [routerLink]="['../']"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="submitForm()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

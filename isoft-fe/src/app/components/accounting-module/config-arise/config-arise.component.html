@@ -1,0 +1,658 @@
+<div class="card card-table">
+    <h5 [translate]="'label.config'"></h5>
+
+    <div class="flex align-items-center gap-1 mb-3">
+        <label
+            [translate]="'label.config_auto_remove'"
+            class="font-bold text-primary md mr-3"
+        ></label>
+        <p-dropdown
+            [options]="listDocument"
+            [(ngModel)]="filterParam.documentId"
+            optionLabel="name"
+            optionValue="id"
+            [filter]="true"
+            class="p-inputtext-sm m-o-width"
+            (onChange)="onSelectDocument()"
+        >
+        </p-dropdown>
+    </div>
+
+    <div class="ml-5 mr-5" *ngIf="form">
+        <div class="flex align-items-center gap-1">
+            <label
+                [translate]="'label.config_auto_remove_of_button'"
+                class="font-bold md mr-3"
+            ></label>
+            <p-dropdown
+                [options]="listButton"
+                [(ngModel)]="filterParam.button"
+                optionLabel="name"
+                optionValue="id"
+                class="p-inputtext-sm m-o-width"
+                (onChange)="onSelectButton()"
+            >
+            </p-dropdown>
+        </div>
+
+        <!-- row 1 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalVoucherNumber)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(
+                                    configAriseEnum.orginalVoucherNumber
+                                )
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.date_added' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalBookDate)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.orginalBookDate)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+
+            <ng-container *ngIf="showPhieuNhap()">
+                <!-- phiếu tiền mặt -->
+                <div class="field-custom col-1">
+                    <p-checkbox
+                        [label]="'label.enter_coupon' | translate"
+                        [binary]="true"
+                        [(ngModel)]="
+                            form[
+                                getProperty(
+                                    configAriseEnum.referenceVoucherNumber
+                                )
+                            ].value
+                        "
+                        (onChange)="
+                            onSelectCheckBox(
+                                form[
+                                    getProperty(
+                                        configAriseEnum.referenceVoucherNumber
+                                    )
+                                ]
+                            )
+                        "
+                    >
+                    </p-checkbox>
+                </div>
+                <div class="field-custom col-1">
+                    <p-checkbox
+                        [label]="'label.date_added' | translate"
+                        [binary]="true"
+                        [(ngModel)]="
+                            form[getProperty(configAriseEnum.referenceBookDate)]
+                                .value
+                        "
+                        (onChange)="
+                            onSelectCheckBox(
+                                form[
+                                    getProperty(
+                                        configAriseEnum.referenceBookDate
+                                    )
+                                ]
+                            )
+                        "
+                    >
+                    </p-checkbox>
+                </div>
+                <div class="field-custom col-1">
+                    <p-checkbox
+                        [label]="'Họ tên'"
+                        [binary]="true"
+                        [(ngModel)]="
+                            form[getProperty(configAriseEnum.referenceFullName)]
+                                .value
+                        "
+                        (onChange)="
+                            onSelectCheckBox(
+                                form[
+                                    getProperty(
+                                        configAriseEnum.referenceFullName
+                                    )
+                                ]
+                            )
+                        "
+                    >
+                    </p-checkbox>
+                </div>
+                <div class="field-custom col-1">
+                    <p-checkbox
+                        [label]="'label.address' | translate"
+                        [binary]="true"
+                        [(ngModel)]="
+                            form[getProperty(configAriseEnum.referenceAddress)]
+                                .value
+                        "
+                        (onChange)="
+                            onSelectCheckBox(
+                                form[
+                                    getProperty(
+                                        configAriseEnum.referenceAddress
+                                    )
+                                ]
+                            )
+                        "
+                    >
+                    </p-checkbox>
+                </div>
+            </ng-container>
+            <!-- end phiếu tiền mặt -->
+        </div>
+        <!-- end row 1 -->
+
+        <!-- row 2 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="orginalCompanyNameLabel"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalCompanyName)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(configAriseEnum.orginalCompanyName)
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.explain' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalDescription)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(configAriseEnum.orginalDescription)
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row2 -->
+
+        <!-- row 3 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.address' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalAddress)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.orginalAddress)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.attach_voucher' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.attachVoucher)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.attachVoucher)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 3 -->
+
+        <!-- row 4 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.invoice_code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceCode)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceCode)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.invoice_number' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceNumber)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceNumber)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.tax_code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceTaxCode)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceTaxCode)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.address' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceAddress)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceAddress)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 4 -->
+
+        <!-- row 5 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.invoice_serial' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceSerial)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceSerial)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.invoice_date' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceDate)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceDate)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.invoice_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceName)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.invoiceName)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.sale_product' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.invoiceProductItem)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(configAriseEnum.invoiceProductItem)
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 5 -->
+
+        <!-- row 6 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.debit_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.debitCode)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.debitCode)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.project_code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.projectCode)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.projectCode)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 6-->
+
+        <!-- row 7 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.debit_1_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.debitDetailCodeFirst)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(
+                                    configAriseEnum.debitDetailCodeFirst
+                                )
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-2">
+                <p-checkbox
+                    [label]="'label.depreciation_month' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.depreciaMonth)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.depreciaMonth)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row7 -->
+
+        <!-- row 8 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.debit_2_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.debitDetailCodeSecond)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(
+                                    configAriseEnum.debitDetailCodeSecond
+                                )
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.foreign_currency' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.orginalCurrency)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.orginalCurrency)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 8 -->
+
+        <!-- row 9 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.credit_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.creditCode)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.creditCode)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.exchange_rate' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.exchangeRate)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.exchangeRate)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 9 -->
+        <!-- row 10 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.credit_1_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.creditDetailCodeFirst)]
+                            .value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(
+                                    configAriseEnum.creditDetailCodeFirst
+                                )
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.stock_quantity' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.quantity)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.quantity)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 10 -->
+
+        <!-- row 11 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.credit_2_code_name' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[
+                            getProperty(configAriseEnum.creditDetailCodeSecond)
+                        ].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[
+                                getProperty(
+                                    configAriseEnum.creditDetailCodeSecond
+                                )
+                            ]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.unit_price' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.unitPrice)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.unitPrice)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 11 -->
+
+        <!-- row 12 -->
+        <div class="flex">
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.warehouse_code' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.warehouse)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.warehouse)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+            <div class="field-custom col-1">
+                <p-checkbox
+                    [label]="'label.amount' | translate"
+                    [binary]="true"
+                    [(ngModel)]="
+                        form[getProperty(configAriseEnum.amount)].value
+                    "
+                    (onChange)="
+                        onSelectCheckBox(
+                            form[getProperty(configAriseEnum.amount)]
+                        )
+                    "
+                >
+                </p-checkbox>
+            </div>
+        </div>
+        <!-- end row 12 -->
+
+        <div class="flex align-items-center gap-1">
+            <label
+                [translate]="'label.config_auto_focus'"
+                class="font-bold md mr-3"
+            ></label>
+            <p-dropdown
+                [options]="listConfigDocument"
+                [(ngModel)]="filterParam.focus"
+                [filter]="true"
+                class="p-inputtext-sm m-o-width"
+                (onChange)="onSelectFocus()"
+                optionLabel="name"
+                optionValue="ariseBehaviourId"
+            >
+            </p-dropdown>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,220 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.job_management'"></h5>
+    <p-table
+        #dt1
+        [value]="lstCustomersJob"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCustomers($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <div
+                    class="flex flex-column md:flex-row gap-8 w-full md:w-auto"
+                >
+                    <p-dropdown
+                        [(ngModel)]="getParams.sortField"
+                        (onChange)="onChangeSort($event, 'sortField')"
+                        [options]="sortFields"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                    <p-dropdown
+                        [(ngModel)]="getParams.isSort"
+                        (onChange)="onChangeSort($event, 'sortType')"
+                        [options]="sortTypes"
+                        [optionLabel]="'label'"
+                        [optionValue]="'code'"
+                    ></p-dropdown>
+                </div>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th class="w-4">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.job_name'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.description'"></span>
+                    </div>
+                </th>
+                <th class="w-4">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.color_code'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ customer.id }}
+                </td>
+                <td class="w-4">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.job_name'"
+                    ></span
+                    >{{ customer.name }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.description'"
+                    ></span
+                    >{{ customer.description }}
+                </td>
+                <td class="w-4">
+                    <p-badge
+                        [value]="customer.color"
+                        size="large"
+                        class="text-sm"
+                        [ngStyle]="{
+                            'background-color': customer.color,
+                            'border-radius': '10px'
+                        }"
+                    >
+                    </p-badge>
+                </td>
+                <td *ngIf="isMobile">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No customer found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading customer data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-customer-job-form
+    #customerJobForm
+    [isReset]="isReset"
+    [display]="display"
+    (onCancel)="display = false; getCustomers(null, false); isReset = false"
+    [isEdit]="isEdit"
+></app-customer-job-form>

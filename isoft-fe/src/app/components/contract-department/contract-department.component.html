@@ -1,0 +1,144 @@
+<div *ngIf="contractDepartmentList" id="project-module">
+    <h5>Mẫu hợp đồng</h5>
+    <div class="project-table">
+        <p-table
+            styleClass="p-datatable-gridlines"
+            [value]="contractDepartmentList"
+            [scrollable]="true"
+            [scrollHeight]="scrolHeight"
+            [totalRecords]="contractDepartmentList.length"
+            [rows]="contractDepartmentList.length"
+            [virtualScroll]="true"
+            [virtualScrollDelay]="1000"
+        >
+            <ng-template pTemplate="caption">
+                <ng-container
+                    *ngTemplateOutlet="captionTableTmp"
+                ></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <ng-container *ngTemplateOutlet="headerTableTmp"></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData>
+                <ng-container
+                    *ngTemplateOutlet="
+                        bodyTableTmp;
+                        context: { rowData: rowData }
+                    "
+                ></ng-container>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<ng-template #headerTableTmp>
+    <tr>
+        <th style="max-width: 150px">
+            <span>Mã hợp đồng</span>
+        </th>
+        <th>
+            <span>Tên hợp đồng</span>
+        </th>
+        <th style="max-width: 250px">
+            <span>Loại hợp đồng</span>
+        </th>
+        <th style="max-width: 350px">
+            <span>Phòng ban</span>
+        </th>
+        <th style="max-width: 150px">
+            <span>File mẫu</span>
+        </th>
+        <th style="max-width: 85px">
+            <div class="item-action invisible">
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button mr-1 p-button-warning"
+                ></button>
+            </div>
+        </th>
+    </tr>
+</ng-template>
+
+<ng-template #captionTableTmp>
+    <div class="table-header">
+        <div class="table-header-filter">
+            <div class="table-header-filter-right">
+                <p-button
+                    [label]="'Tải file mẫu HĐ KH'"
+                    (click)="openFile(templateKHName)"
+                    icon="pi pi-download"
+                    styleClass="p-button-success ml-2"
+                ></p-button>
+                <p-button
+                    [label]="'Tải file mẫu HĐ nhân sự'"
+                    (click)="openFile(templateName)"
+                    icon="pi pi-download"
+                    styleClass="p-button-success ml-2"
+                ></p-button>
+                <p-button
+                    [label]="'Thêm mới'"
+                    (click)="onCrud()"
+                    icon="pi pi-plus"
+                    class="btn-add ml-2"
+                ></p-button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #bodyTableTmp let-rowData="rowData">
+    <tr>
+        <td style="max-width: 150px">
+            <span>{{ rowData.code }}</span>
+        </td>
+        <td>
+            <span>{{ rowData.name }}</span>
+        </td>
+        <td style="max-width: 250px">
+            <span>{{ rowData.type | contractDepartmentType }}</span>
+        </td>
+        <td style="max-width: 350px">
+            <span>{{ rowData.department?.name }}</span>
+        </td>
+        <td style="max-width: 150px">
+            <span *ngIf="rowData.linkFile">
+                <a class="cursor-pointer" (click)="openFile(rowData.linkFile)">
+                    <i class="pi pi-file"></i>
+                    Xem file
+                </a>
+            </span>
+        </td>
+        <td style="max-width: 85px">
+            <div class="item-action">
+                <button
+                    pButton
+                    tooltipPosition="left"
+                    [pTooltip]="'button.remove' | translate"
+                    (click)="onRemove(rowData)"
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+                <button
+                    pButton
+                    tooltipPosition="left"
+                    [pTooltip]="'button.update' | translate"
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button mr-1 p-button-warning"
+                    (click)="onCrud(rowData)"
+                ></button>
+            </div>
+        </td>
+    </tr>
+</ng-template>

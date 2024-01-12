@@ -1,0 +1,175 @@
+<p-toast></p-toast>
+<div [formGroup]="printerForm" class="card card-table">
+    <h5 [translate]="'label.print_param'"></h5>
+    <div class="col-12">
+        <p-accordion>
+            <!--Trang in-->
+            <p-accordionTab [selected]="true">
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0 mr-2" [translate]="'Trang in'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label htmlFor="width"
+                                >Chiều dài<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input
+                                formControlName="width"
+                                pInputText
+                                id="width"
+                            />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label htmlFor="height"
+                                >Chiều rộng<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input
+                                formControlName="height"
+                                pInputText
+                                id="height"
+                            />
+                        </div>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+
+        <p-accordion formGroupName="qrCode">
+            <!--Qr code-->
+            <p-accordionTab [selected]="true">
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0 mr-2" [translate]="'QR Code'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Chiều dài<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input formControlName="width" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Chiều rộng<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input formControlName="height" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Số lượng<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="size" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn trái<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginLeft" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn phải<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginRight" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn trên<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginTop" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn dưới<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginBottom" pInputText />
+                        </div>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+
+        <p-accordion formGroupName="barcode">
+            <!--Barcode-->
+            <p-accordionTab [selected]="true">
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5 class="m-0 mr-2" [translate]="'Barcode'"></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Chiều dài<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input formControlName="width" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Chiều rộng<span class="text-pink"
+                                    >*</span
+                                ></label
+                            >
+                            <input formControlName="height" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Số lượng<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="size" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn trái<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginLeft" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn phải<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginRight" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn trên<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginTop" pInputText />
+                        </div>
+                        <div class="field col-12 md:col-6 flex flex-column">
+                            <label
+                                >Căn dưới<span class="text-pink">*</span></label
+                            >
+                            <input formControlName="marginBottom" pInputText />
+                        </div>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+    </div>
+    <div class="col-12">
+        <div class="field flex justify-content-end p-0">
+            <p-button
+                icon="pi pi-check"
+                (click)="submitForm()"
+                [label]="'button.save' | translate"
+            ></p-button>
+        </div>
+    </div>
+</div>

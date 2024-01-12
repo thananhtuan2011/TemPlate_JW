@@ -1,0 +1,98 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5 [translate]="'label.setRevenueScore'"></h5>
+            <form [formGroup]="timekeepingScoreForm" autocomplete="off">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="code">Mã KPI</label>
+                        <input
+                            id="code"
+                            type="text"
+                            pInputText
+                            formControlName="code"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('code')"
+                            class="p-error"
+                            [innerHTML]="'info.revenue' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="name">Tên KPI</label>
+                        <input
+                            id="name"
+                            type="text"
+                            pInputText
+                            formControlName="name"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('name')"
+                            class="p-error"
+                            [innerHTML]="'info.revenue' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="fromValue">Đi trễ</label>
+                        <p-inputNumber
+                            id="fromValue"
+                            type="text"
+                            formControlName="fromScore"
+                        ></p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="toValue">Về sớm</label>
+                        <p-inputNumber
+                            id="toValue"
+                            type="text"
+                            formControlName="toScore"
+                        ></p-inputNumber>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="point">Điểm</label>
+                        <p-inputNumber
+                            id="point"
+                            type="text"
+                            formControlName="score"
+                        ></p-inputNumber>
+                        <small
+                            *ngIf="checkValidValidator('score')"
+                            class="p-error"
+                            [innerHTML]="'info.point' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-4 flex flex-column">
+                        <label htmlFor="note">Ghi chú</label>
+                        <input
+                            id="note"
+                            type="text"
+                            pInputText
+                            formControlName="note"
+                        />
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

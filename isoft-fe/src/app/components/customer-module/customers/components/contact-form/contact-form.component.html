@@ -1,0 +1,58 @@
+<p-dialog
+    [(visible)]="display"
+    header="Thêm mới liên hệ"
+    [modal]="true"
+    [breakpoints]="{ '960px': '75vw', '640px': '100vw' }"
+    [style]="{ width: '50vw' }"
+>
+    <form class="w-12" [formGroup]="contactForm" autocomplete="off">
+        <div class="grid w-full mx-auto">
+            <!--accountantName-->
+            <div [tabIndex]="1" class="field col-12 md:col-4 flex flex-column">
+                <label
+                    htmlFor="accountantName"
+                    [translate]="'label.accountant_contact_name'"
+                ></label>
+                <input pInputText id="accountantName" formControlName="name" />
+            </div>
+            <!--accountantPosition-->
+            <div [tabIndex]="2" class="field col-12 md:col-4 flex flex-column">
+                <label
+                    htmlFor="accountantPosition"
+                    [translate]="'label.accountant_position_and_note'"
+                ></label>
+                <input
+
+                    pInputText
+                    id="accountantPosition"
+                    formControlName="position"
+                />
+            </div>
+            <!--accountantPhone-->
+            <div [tabIndex]="3" class="field col-12 md:col-4 flex flex-column">
+                <label
+                    htmlFor="accountantPhone"
+                    [translate]="'label.phone_number'"
+                ></label>
+                <input
+                    pInputText
+                    id="accountantPhone"
+                    formControlName="contact"
+                />
+            </div>
+        </div>
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button
+            styleClass="p-button-outlined"
+            icon="pi pi-times"
+            label="{{ 'button.cancel' | translate }}"
+            (click)="display = false"
+        ></p-button>
+        <p-button
+            icon="pi pi-check"
+            label="{{ 'button.save' | translate }}"
+            (click)="onAdd()"
+        ></p-button>
+    </ng-template>
+</p-dialog>

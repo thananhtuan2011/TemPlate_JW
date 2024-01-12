@@ -1,0 +1,542 @@
+<div class="p-2">
+	<div class="flex justify-content-between">
+		<p-speedDial [model]="items" radius="80" direction="left" [transitionDelay]="80" showIcon="pi pi-print" hideIcon="pi pi-times">
+		</p-speedDial>
+	</div>
+
+	<div class="w-full my-1 flex flex-column md:flex-row md:justify-content-between">
+		<div class="w-full flex gap-8 flex-column md:flex-row md:justify-content-between mt-1 md:mt-0">
+			<input
+				type="text"
+				pInputText
+				[(ngModel)]="billTab.data.warehouseDesc"
+				[placeholder]="'Diễn giải khi xuất kho'"
+				[ngModelOptions]="{ standalone: true }"
+				class="w-full"
+			/>
+		</div>
+	</div>
+	<div class="sidebar-custom mb-2">
+		<div class="card mt-2" *ngFor="let product of billTab.data.products?.slice().reverse()">
+			<div class="flex flex-column">
+				<div class="flex md:flex-row gap-8 justify-content-start align-items-center">
+					<div class="flex justify-content-between w-full">
+						<div class="flex align-items-center">
+							<img
+								*ngIf="product.image1"
+								width="50"
+								height="50"
+								[src]="baseUrlImage(product?.image1)"
+								[title]="'label.image_1' | translate"
+							/>
+							<img
+								*ngIf="!product.image1"
+								[src]="'assets/layout/images/logo-xl-jwk.png'"
+								width="50"
+								height="50"
+								[alt]="product.goodsName"
+							/>
+							<div class="flex flex-column pl-1">
+								<span class="text-sm font-bold text-primary m-0">{{ getProductCode(product) }} - {{ product.name }}</span>
+							</div>
+						</div>
+					</div>
+					<div class="flex justify-content-between gap-8">
+						<button
+							class="index-1 p-button-danger"
+							pButton
+							pRipple
+							icon="pi pi-times"
+							[pTooltip]="'label.delete' | translate"
+							(click)="onRemoveProduct(product)"
+						></button>
+					</div>
+				</div>
+				<div class="flex gap-8 flex-column mt-1">
+					<div class="flex justify-content-center md:justify-content-start gap-8 bill-goods-table-input-field">
+						<input
+							type="text"
+							tooltipPosition="left"
+							[pTooltip]="'Mã dự án'"
+							pInputText
+							[(ngModel)]="product.cashierRequest.projectCode"
+							[placeholder]="'Mã dự án'"
+							[ngModelOptions]="{ standalone: true }"
+							class="w-full"
+							*ngIf="product.classification === 6"
+						/>
+						<input
+							type="text"
+							pInputText
+							tooltipPosition="left"
+							[pTooltip]="'Tháng khấu hao'"
+							[(ngModel)]="product.cashierRequest.depreciaMonth"
+							[placeholder]="'Tháng khấu hao'"
+							[ngModelOptions]="{ standalone: true }"
+							class="w-full"
+							*ngIf="[4, 5, 7].includes(product.classification)"
+						/>
+						<p-inputNumber
+							#orginalCurrencyRef
+							tooltipPosition="bottom"
+							[pTooltip]="'Ngoại tệ'"
+							[(ngModel)]="product.cashierRequest.orginalCurrency"
+							[placeholder]="'Ngoại tệ'"
+							[ngModelOptions]="{ standalone: true }"
+							(onBlur)="onChangeOrginalCurrency($event, product)"
+							class="w-full"
+							[min]="0"
+							*ngIf="product.isForeignCurrency"
+						>
+						</p-inputNumber>
+
+						<p-inputNumber
+							#exchangeRateRef
+							tooltipPosition="bottom"
+							[pTooltip]="'Tỷ giá'"
+							[(ngModel)]="product.cashierRequest.exchangeRate"
+							[placeholder]="'Tỷ giá'"
+							[ngModelOptions]="{ standalone: true }"
+							(onBlur)="onChangeExchangeRate($event, product)"
+							class="w-full"
+							[min]="0"
+							*ngIf="product.isForeignCurrency"
+						>
+						</p-inputNumber>
+					</div>
+					<div class="flex gap-8 bill-goods-table-input-field">
+						<p-inputNumber
+							tooltipPosition="left"
+							[pTooltip]="'Số hộp'"
+							id="box"
+							[(ngModel)]="product.cashierRequest.billBox"
+							(onBlur)="onChangeBillBox($event, product)"
+							[ngModelOptions]="{ standalone: true }"
+							[showButtons]="true"
+							[min]="0"
+							class="bill-goods-table-input-field-box"
+							*ngIf="isShowQuantityBoxNec"
+						>
+						</p-inputNumber>
+						<p-inputNumber
+							#billNecRef
+							id="nec"
+							tooltipPosition="left"
+							[pTooltip]="'Số Net'"
+							mode="decimal"
+							[minFractionDigits]="0"
+							[maxFractionDigits]="5"
+							[(ngModel)]="product.net"
+							(onBlur)="onChangeBillNec($event, product)"
+							[ngModelOptions]="{ standalone: true }"
+							class="w-25rem bill-goods-table-input-field-nec"
+							[min]="0"
+							*ngIf="isShowQuantityBoxNec"
+						>
+						</p-inputNumber>
+						<p-inputNumber
+							id="quantity"
+							tooltipPosition="left"
+							[pTooltip]="'Số Lượng'"
+							[(ngModel)]="product.cashierRequest.quantity"
+							[ngModelOptions]="{ standalone: true }"
+							[minFractionDigits]="0"
+							[maxFractionDigits]="5"
+                            [showButtons]="true"
+							class="w-30rem bill-goods-table-input-field-quantity"
+							(onBlur)="onChangeBillQuantity($event, product)"
+							[min]="1"
+							*ngIf="[3, 4].includes(product.accGroup)"
+						>
+						</p-inputNumber>
+						<p-inputNumber
+							#productPriceRef
+							tooltipPosition="bottom"
+							[pTooltip]="'Đơn giá'"
+							[(ngModel)]="product.cashierRequest.unitPrice"
+							[placeholder]="'Đơn giá'"
+							[ngModelOptions]="{ standalone: true }"
+							(onBlur)="onChangeUnitPrice($event, product)"
+							class="w-full"
+							[min]="0"
+							*ngIf="[3, 4].includes(product.accGroup)"
+						>
+						</p-inputNumber>
+						<p-inputNumber
+							#amountRef
+							tooltipPosition="bottom"
+							[pTooltip]="'Thành tiền'"
+							[(ngModel)]="product.cashierRequest.amount"
+							[placeholder]="'Thành tiền'"
+							[ngModelOptions]="{ standalone: true }"
+							(onBlur)="onChangeAmount($event, product)"
+							class="w-full"
+							[min]="0"
+						>
+						</p-inputNumber>
+					</div>
+				</div>
+				<!--dialog edit discount price-->
+				<p-dialog
+					[header]="'label.edit_discount_price' | translate"
+					[(visible)]="displayDiscountPrice"
+					[modal]="true"
+					[style]="{ width: '50vw' }"
+					[draggable]="false"
+					[resizable]="false"
+				>
+					<div class="w-full flex flex-column text-center">
+						<h4 class="m-0">
+							{{ 'label.goods_name' | translate }}:
+							{{ getAccountName(selectedProduct) }}
+						</h4>
+						<h6 class="text-color-secondary m-0 mt-1">
+							{{ 'label.price_of_1_goods' | translate }}:
+							{{ appUtil.formatCurrencyVND(selectedProduct.salePrice + selectedProduct.taxVat) }}
+						</h6>
+					</div>
+					<!--currency or percent choice-->
+					<div class="flex gap-8">
+						<div class="field field-radiobutton">
+							<p-radioButton
+								id="discountType1"
+								name="discountType"
+								value="money"
+								[(ngModel)]="selectedProduct.discountType"
+								[ngModelOptions]="{ standalone: true }"
+							>
+							</p-radioButton>
+							<label class="mt-2" for="discountType1" [translate]="'label.currency'"></label>
+						</div>
+						<div class="field field-radiobutton">
+							<p-radioButton
+								id="discountType2"
+								name="discountType"
+								value="percent"
+								[(ngModel)]="selectedProduct.discountType"
+								[ngModelOptions]="{ standalone: true }"
+							>
+							</p-radioButton>
+							<label class="mt-2" for="discountType2" [translate]="'label.percent'"></label>
+						</div>
+					</div>
+					<!--input currency of percent-->
+					<div class="p-inputgroup w-full mt-2">
+						<span class="p-inputgroup-addon">
+							<i [ngClass]="selectedProduct.discountType === 'percent' ? 'pi pi-percentage' : 'pi pi-dollar'"></i>
+						</span>
+						<p-inputNumber
+							id="discountProduct"
+							[(ngModel)]="selectedProduct.discountPrice"
+							[ngModelOptions]="{ standalone: true }"
+						>
+						</p-inputNumber>
+					</div>
+					<!--input discount description-->
+					<div class="p-inputgroup w-full mt-4">
+						<span class="p-inputgroup-addon"><i class="pi pi-comment"></i></span>
+						<input
+							type="text"
+							class="p-inputtext-sm w-full"
+							pInputText
+							[ngModelOptions]="{ standalone: true }"
+							[(ngModel)]="selectedProduct.note"
+							[placeholder]="'Nhập ghi chú'"
+						/>
+					</div>
+					<div class="flex flex-column text-center mt-4">
+						<h4 class="m-0">
+							{{ 'label.amount_1_goods_after_desc' | translate }}
+						</h4>
+						<h4>
+							{{ appUtil.formatCurrencyVND(getDiscountMoney(selectedProduct, selectedProduct.discountPrice)) }}
+						</h4>
+					</div>
+					<ng-template pTemplate="footer">
+						<div class="flex justify-content-end gap-8">
+							<p-button
+								styleClass="p-button-outlined"
+								icon="pi pi-times"
+								(click)="displayDiscountPrice = false"
+								[label]="'button.cancel' | translate"
+							></p-button>
+							<p-button
+								icon="pi pi-check"
+								(click)="displayDiscountPrice = false; selectedProduct = {}"
+								[label]="'button.save' | translate"
+							></p-button>
+						</div>
+					</ng-template>
+				</p-dialog>
+			</div>
+			<i *ngIf="product.note" id="note" class="mt-2">{{ product.note }}</i>
+		</div>
+	</div>
+	<div class="flex justify-content-end w-full">
+		<p-message severity="info" *ngIf="getMessage()" [text]="getMessage()" class="w-full" [escape]="false"></p-message>
+	</div>
+	<div class="w-full mt-2 flex gap-8 flex-column md:justify-content-end">
+		<div class="flex flex-column md:flex-row gap-8 justify-content-between">
+			<div class="flex align-items-center gap-8 justify-content-between md:justify-content-start">
+				<label class="text-primary">Tổng tiền ban đầu: </label>
+				<div class="flex gap-8">
+					<p-tag class="text-xl" severity="danger" [value]="totalQuantity | number" [pTooltip]="'Tổng số lượng'"> </p-tag>
+					<p-tag
+						class="text-xl"
+						severity="info"
+						[value]="appUtil.formatCurrencyVND(originalAmount)"
+						[pTooltip]="'Tổng tiền'"
+					></p-tag>
+				</div>
+			</div>
+			<p-dropdown
+				[options]="typePays"
+				[(ngModel)]="billTab.data.typePay"
+				optionLabel="label"
+				optionValue="value"
+				[filter]="true"
+				appendTo="body"
+				(onChange)="onChangebillType($event)"
+				[placeholder]="'label.empty' | translate"
+			>
+			</p-dropdown>
+		</div>
+		<div class="flex justify-content-between bill-goods-table-amount">
+			<div class="flex gap-8 bill-goods-table-vat">
+				<div class="flex align-items-center vat-dropdown">
+					<label class="text-primary label-vat">VAT: </label>
+					<div class="p-inputgroup">
+						<p-dropdown
+							#pDropdown
+							[options]="taxRates"
+							[placeholder]="'label.tax_vat' | translate"
+							[filter]="true"
+							optionLabel="name"
+							optionValue="code"
+							[(ngModel)]="billTaxCode"
+							(onChange)="onTaxRateChange($event)"
+							[showClear]="true"
+							(onClear)="cancleVat($event)"
+							appendTo="body"
+						>
+							<ng-template let-data pTemplate="selectedItem">
+								<span *ngIf="!isShowFull">{{ data?.code }}</span>
+								<span *ngIf="isShowFull">{{ data?.code }} | {{ data?.description }} | {{ data?.percent }}%</span>
+							</ng-template>
+							<ng-template let-data pTemplate="item">
+								<span>{{ data?.code }} | {{ data?.description }} | {{ data?.percent }}%</span>
+							</ng-template>
+						</p-dropdown>
+					</div>
+					<!--dialog edit VAT-->
+					<p-dialog
+						[header]="'label.tax_vat' | translate"
+						[(visible)]="displayVat"
+						[modal]="true"
+						[style]="{ width: '50vw' }"
+						[draggable]="false"
+						[resizable]="false"
+						class="vat-dialog-import-stock"
+					>
+						<div class="flex flex-column text-center gap-8">
+							<div class="flex gap-8 bill-goods-invoice-tax-code">
+								<div class="flex flex-row gap-8">
+									<app-list-of-tax-rates
+										[disabled]="true"
+										#taxRatesComponent
+										[isShowFull]="true"
+										[(ngModel)]="billTaxCode"
+										[taxRates]="taxRates"
+										(onChange)="onTaxRateChange($event)"
+										class="invoice-field-tax-code"
+									></app-list-of-tax-rates>
+									<p-dropdown
+										*ngIf="isMobile"
+										#invoiceAdditionalDeclarationCodeTmp
+										id="internalType"
+										[options]="types.billType"
+										[optionLabel]="'label'"
+										[optionValue]="'value'"
+										[(ngModel)]="billTab.data.invoiceAdditionalDeclarationCode"
+									>
+									</p-dropdown>
+								</div>
+								<input
+									type="text"
+									pInputText
+									[(ngModel)]="billTab.data.invoiceNumber"
+									[placeholder]="'label.invoice_number' | translate"
+									[ngModelOptions]="{ standalone: true }"
+									class="w-full invoice-field"
+								/>
+								<input
+									type="text"
+									class="w-full invoice-field"
+									pInputText
+									[(ngModel)]="billTab.data.invoiceSerial"
+									[placeholder]="'label.invoice_serial' | translate"
+								/>
+								<p-inputMask
+									mask="99/99/9999"
+									class="w-full invoice-field"
+									[(ngModel)]="billTab.data.invoiceDate"
+									[placeholder]="'label.invoice_date' | translate"
+								>
+								</p-inputMask>
+							</div>
+							<div class="flex gap-8 bill-goods-invoice-tax-code">
+								<p-dropdown
+									*ngIf="!isMobile"
+									#invoiceAdditionalDeclarationCodeTmp
+									id="internalType"
+									[options]="types.billType"
+									[optionLabel]="'label'"
+									[optionValue]="'value'"
+									[(ngModel)]="billTab.data.invoiceAdditionalDeclarationCode"
+								>
+								</p-dropdown>
+								<!--invoiceTaxCode-->
+								<p-autoComplete
+									#invoiceTaxCodeTmp
+									[(ngModel)]="billTab.data.invoiceTaxCode"
+									[emptyMessage]="emptyMessageAutoComplete"
+									[suggestions]="invoiceTaxCodeFilter"
+									[showEmptyMessage]="true"
+									[delay]="500"
+									class="w-full invoice-field"
+									[placeholder]="'label.tax_code' | translate"
+									[completeOnFocus]="true"
+									[showClear]="false"
+									(completeMethod)="filterInvoiceTaxCode($event)"
+									(onFocus)="invoiceTaxCodeTmp.handleDropdownClick()"
+									(input)="billTab.data.invoiceTaxCode = $event?.target?.value"
+									(onKeyUp)="
+										onKeyUpAutoCompleteLazyLoadding({
+											event: $event,
+											key: configAriseEnum.invoiceTaxCode
+										})
+									"
+									(onClear)="onClearInvoiceTaxCode()"
+									(onSelect)="onSelectInvoiceTaxCode($event)"
+									field="taxCode"
+								>
+									<ng-template let-item pTemplate="item">
+										<div *ngIf="item" class="w-auto flex flex-nowrap align-content-center">
+											<div style="width: 90px" class="border-right-1">
+												<p>{{ item.taxCode }}</p>
+											</div>
+											<div class="px-3">
+												<p>{{ item.name }}</p>
+											</div>
+										</div>
+									</ng-template>
+								</p-autoComplete>
+								<!--invoiceName-->
+								<div class="invoice-field flex font-bold pl-0">
+									<span class="w-full p-input-icon-right">
+										<i (click)="billTab.data.invoiceName = ''" class="pi pi-times cursor-pointer"></i>
+										<input
+											type="text"
+											class="w-full"
+											pInputText
+											[(ngModel)]="billTab.data.invoiceName"
+											[placeholder]="'label.invoice_name' | translate"
+										/>
+									</span>
+								</div>
+								<!--invoiceAddress-->
+								<div class="invoice-field flex align-items-center">
+									<span class="w-full p-input-icon-right">
+										<i (click)="billTab.data.invoiceAddress = ''" class="pi pi-times cursor-pointer"></i>
+										<input
+											type="text"
+											class="w-full"
+											pInputText
+											[(ngModel)]="billTab.data.invoiceAddress"
+											[placeholder]="'label.address' | translate"
+										/>
+									</span>
+								</div>
+								<!--invoiceProductItem-->
+								<div class="invoice-field flex align-items-center">
+									<span class="w-full p-input-icon-right">
+										<i (click)="billTab.data.invoiceProductItem = ''" class="pi pi-times cursor-pointer"></i>
+										<input
+											type="text"
+											class="w-full"
+											pInputText
+											[(ngModel)]="billTab.data.invoiceProductItem"
+											[placeholder]="'label.sale_product' | translate"
+										/>
+									</span>
+								</div>
+							</div>
+						</div>
+						<ng-template pTemplate="footer">
+							<div class="flex justify-content-end gap-8">
+								<p-button icon="pi pi-times" (click)="cancleVat()" [label]="'button.cancel' | translate"></p-button>
+								<button
+									(click)="displayVat = false"
+									class="p-button-success"
+									pButton
+									pRipple
+									[label]="'Kết thúc'"
+									icon="pi pi-plus"
+								></button>
+							</div>
+						</ng-template>
+					</p-dialog>
+				</div>
+
+				<div class="flex align-items-center gap-8 vat-amount">
+					<label class="text-primary w-6rem">Tiền VAT: </label>
+					<p-inputNumber
+						#vatAmountInputRef
+						tooltipPosition="left"
+						[pTooltip]="'Tiền VAT'"
+						[(ngModel)]="vatAmountInput"
+						[placeholder]="'Tiền VAT'"
+						[ngModelOptions]="{ standalone: true }"
+						class="w-10rem"
+						[min]="0"
+					>
+					</p-inputNumber>
+				</div>
+			</div>
+			<div class="flex align-items-center gap-8 total-amount">
+				<label class="text-primary">Tổng tiền: </label>
+				<p-tag class="text-xl" severity="success" [value]="appUtil.formatCurrencyVND(totalAmount)" [pTooltip]="'Tổng tiền'"></p-tag>
+			</div>
+		</div>
+	</div>
+	<span class="flex flex-column md:flex-row w-full gap-8 mt-2">
+		<!--button split merge bills-->
+		<button
+			(click)="onPayment(true)"
+			class="w-full p-button-warning text-sm"
+			pButton
+			pRipple
+            [pTooltip]="'Lưu & Sắp xếp kho'"
+			[label]="'F2. Lưu & S.Xếp kho'"
+			icon="pi pi-plus"
+		></button>
+		<button
+			class="w-full p-button-info text-sm"
+			pButton
+			pRipple
+			[label]="'F4. Sắp xếp kho'"
+			icon="pi pi-plus"
+			routerLink ="/uikit/good-warehouses"
+		></button>
+		<button
+			[disabled]="isPaid"
+			(click)="onPayment()"
+			class="w-full p-button-success text-sm"
+			pButton
+			pRipple
+			[label]="'F8. Lưu'"
+			icon="pi pi-dollar"
+		></button>
+	</span>
+</div>
+<app-pxk id="PXN" *ngIf="isDisplayXuatKho === true" [isHeaderVisible]="false" [company]="company" [dataPrint]="pdfBillingData"></app-pxk>

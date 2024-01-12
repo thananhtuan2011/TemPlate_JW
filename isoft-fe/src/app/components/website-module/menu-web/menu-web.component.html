@@ -1,0 +1,239 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.web_menu_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [scrollable]="!isMobile"
+        scrollDirection="both"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <div class="flex">
+                    <span class="p-input-icon-left mb-2">
+                        <i class="pi pi-search"></i>
+                        <input
+                            #filter
+                            [(ngModel)]="param.searchText"
+                            pInputText
+                            type="text"
+                            [placeholder]="'label.search' | translate"
+                            class="w-full"
+                            (change)="getMenuWebs()"
+                        />
+                    </span>
+                    <p-dropdown
+                        [options]="menuTypes"
+                        [optionLabel]="'label'"
+                        [optionValue]="'value'"
+                        [(ngModel)]="param.type"
+                        class="ml-2"
+                        (onChange)="getMenuWebs()"
+                    >
+                    </p-dropdown>
+                </div>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MENUWEBSITE,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="onAddMenuWeb()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_menu_code'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.web_menu_name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.web_menu_type'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.icon'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.web_menu_parent_code'"></span>
+                    </div>
+                </th>
+                <th
+                    class="w-2"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-category>
+            <tr>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_menu_code'"
+                    ></span>
+                    {{ category.code }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_menu_name'"
+                    ></span>
+                    {{ category.name }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_menu_type'"
+                    ></span>
+                    {{ getMenuTypeName(category?.type) }}
+                </td>
+                <td class="w-2 text-primary">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.icon'"
+                    ></span>
+                    <i
+                        [class]="'pi ' + category.icon"
+                        style="font-size: 20px"
+                    ></i>
+                    <img *ngIf="category.icon!= null || category.icon!= ''"
+                    id="{{ category.icon }}"
+                    class="style_prev_kit"
+                    (click)="onImageClick(category.icon)"
+                    src="{{ serverFileImg + category.icon}}"
+                    alt="image"
+                    style="width: 40px;"
+                />
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.web_menu_parent_code'"
+                    ></span>
+                    {{ category.codeParent }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-space md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MENUWEBSITE,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getMenuWebDetail(category)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.MENUWEBSITE,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDeleteMenuWeb(category)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<ng-container
+    *appHasAccess="{
+        menu: appConstant.MENU_TYPE.MENUWEBSITE,
+        action:
+            appConstant.PERMISSION_FUNC.ADD || appConstant.PERMISSION_FUNC.EDIT
+    }"
+>
+    <app-menu-web-edit
+        [display]="display"
+        [formData]="formData"
+        (onCancel)="onCancelForm($event)"
+    ></app-menu-web-edit>
+</ng-container>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_web_menu_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

@@ -1,0 +1,188 @@
+<div class="wrapper">
+    <!--    <div *ngIf="isHeaderVisible" class="bill-header">-->
+    <!--        <div class="company-info">-->
+    <!--            <p style="text-transform: uppercase">{{company?.name}}</p>-->
+    <!--            <p>{{company?.address}}</p>-->
+    <!--        </div>-->
+    <!--        <img src="https://asianasa.com:8443/Uploads\Images\logo-02.png">-->
+    <!--    </div>-->
+
+    <div class="bill-content">
+        <div id="bill-title">Phiếu giao hàng</div>
+        <table class="customer-info">
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 120px">Tên khách hàng:</span>
+                    <span style="text-transform: uppercase; margin-left: 5px">{{
+                        dataPrint?.bill?.customerName
+                    }}</span>
+                </td>
+                <td
+                    style="
+                        width: 150px;
+                        vertical-align: top;
+                        padding-left: 10px;
+                    "
+                >
+                    Ngày:
+                    {{ dataPrint?.bill?.createdDate | date: "dd/MM/yyyy " }}
+                </td>
+            </tr>
+
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 60px">Địa chỉ:</span>
+                    <span style="margin-left: 5px">{{
+                        dataPrint?.bill?.customerAddress
+                    }}</span>
+                </td>
+                <td
+                    style="width: 150px; vertical-align: top; padding-left: 5px"
+                >
+                    Số: {{ dataPrint?.bill?.billNumber }}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Mã số thuế: {{ dataPrint?.bill?.customerTaxCode }}</td>
+            </tr>
+        </table>
+
+        <table class="detail-table">
+            <tr>
+                <th>Diễn giải</th>
+                <th style="width: 80px">Đơn vị</th>
+                <th style="width: 80px">Số lượng</th>
+                <th style="width: 90px">Đơn giá</th>
+                <th style="width: 120px">Thành tiền</th>
+                <th style="width: 100px">Ghi chú</th>
+            </tr>
+            <tr *ngFor="let item of products; let i = index" class="prod-info">
+                <td style="padding: 0px 2px">{{ item?.goodsName }}</td>
+                <td style="padding: 10px 5px">{{ item?.unitName }}</td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.quantity | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.salePrice | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.amount | number: "1.0-0" }}
+                </td>
+                <td>{{ item?.note }}</td>
+            </tr>
+            <tr class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cộng
+                    tiền hàng:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.originalAmount | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr class="total-info">
+                <td style="padding: 0px 2px">
+                    <span
+                        >Thuế suất thuế GTGT:</span
+                    >
+                </td>
+
+                <td colspan="4">
+                    <strong
+                        >{{ dataPrint.taxPercentage || 0 }} %</strong
+                    >
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tiền thuế GTGT:
+                </td>
+
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint?.bill?.vat | number }}
+                </td>
+            </tr>
+            <tr *ngIf="dataPrint.discountPriceBill > 0" class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Giảm
+                    giá:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.discountPriceBill | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr *ngIf="dataPrint.surchargeBill > 0" class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phụ
+                    thu:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.surchargeBill | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tổng
+                    tiền thanh toán:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.totalAmount | number: "1.0-0" }}
+                </td>
+            </tr>
+        </table>
+
+        <p>
+            <i
+                ><strong>Số tiền viết bằng chữ:</strong> {{ totalAmountInWord }}
+            </i>
+        </p>
+    </div>
+    <div class="bill-footer">
+        <div class="item">
+            <p><strong>Nhân viên kinh doanh</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Thủ kho</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Người giao hàng</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Người nhận hàng</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+    </div>
+</div>

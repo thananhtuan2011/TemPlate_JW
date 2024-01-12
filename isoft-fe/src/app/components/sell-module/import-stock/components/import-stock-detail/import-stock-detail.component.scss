@@ -1,0 +1,103 @@
+:host ::ng-deep {
+    .min-width-120 {
+        min-width: 120px;
+    }
+
+    button {
+        z-index: 1;
+    }
+
+    .p-tag {
+        font-size: smaller !important;
+    }
+
+    p-autocomplete {
+        width: auto !important;
+    }
+
+    .p-orderlist .p-orderlist-list {
+        min-height: 50vh;
+    }
+
+    .p-inline-message.p-inline-message-info {
+        width: 100%;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only,
+    .p-speeddial-action {
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .p-speeddial-direction-right {
+        margin-left: -135px;
+        margin-top: 5px;
+    }
+
+    #surchargeInfo {
+        position: absolute;
+        right: 152px;
+        margin-top: 3px;
+    }
+
+    .p-speeddial-button.p-button.p-button-icon-only .p-button-icon {
+        font-size: inherit;
+    }
+
+    #customer .p-autocomplete .p-autocomplete-input {
+        min-height: 40px;
+        width: auto;
+        min-width: 200px;
+    }
+
+    #totalAmount .p-inputnumber-input {
+        font-weight: bold;
+    }
+
+    #discountProduct .p-inputnumber-input,
+    #totalCustomer .p-inputnumber-input,
+    #totalProduct .p-inputnumber-input {
+        text-align: left;
+    }
+
+    #discountPriceBill .p-inputnumber-input {
+        width: 5rem;
+    }
+
+    .good-detail-input .p-inputnumber-input {
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+        width: 60px;
+        color: var(--green-400);
+    }
+
+    .p-inputgroup-addon:first-child {
+        height: 40px;
+    }
+
+    .p-dialog .p-dialog-footer button {
+        margin: 0;
+    }
+
+    .p-autocomplete-clear-icon {
+        right: 4px !important;
+    }
+
+    .p-orderlist .p-orderlist-list .p-orderlist-item {
+        padding: 0.5rem;
+    }
+
+    .p-component:disabled {
+        opacity: 1;
+    }
+
+    #note {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

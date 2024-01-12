@@ -1,0 +1,421 @@
+<div id="account-module">
+    <div class="account-table" *ngIf="accounts">
+        <p-table
+            #dt
+            styleClass="p-datatable-gridlines"
+            [columns]="cols"
+            [value]="accounts"
+            [scrollable]="true"
+            [scrollHeight]="scrolHeight"
+            [totalRecords]="accounts.length"
+            [rows]="accounts.length"
+            [filterDelay]="200"
+        >
+            <ng-template pTemplate="caption">
+                <ng-container
+                    *ngTemplateOutlet="captionTableTmp"
+                ></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+                <ng-container
+                    *ngTemplateOutlet="
+                        headerTableTmp;
+                        context: { columns: columns }
+                    "
+                ></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <ng-container
+                    *ngTemplateOutlet="
+                        bodyTableTmp;
+                        context: { rowData: rowData, columns: columns }
+                    "
+                ></ng-container>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<ng-template #captionTableTmp>
+    <div class="table-header">
+        <div *ngIf="displayTitleText">
+            <h5>Danh sách tài khoản</h5>
+        </div>
+
+        <div class="table-header-filter">
+            <div>
+                <div class="p-inputgroup" style="height: 25px">
+                    <span class="p-inputgroup-addon">
+                        <i class="pi pi-search" style="line-height: 1.25"></i>
+                    </span>
+                    <input
+                        pInputText
+                        type="text"
+                        [(ngModel)]="dtSearch"
+                        (input)="
+                            dt.filterGlobal($event.target.value, 'startsWith')
+                        "
+                        placeholder="Tìm kiếm tài khoản"
+                    />
+                    <span
+                        class="p-inputgroup-addon"
+                        style="cursor: pointer"
+                        (click)="
+                            dtSearch = null; dt.filterGlobal(null, 'startsWith')
+                        "
+                    >
+                        <i class="pi pi-times"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="table-header-filter-right">
+                <p-button
+                    *ngIf="displayGoHomeButton"
+                    [label]="'F6.Quay lại'"
+                    icon="pi pi-arrow-left"
+                    styleClass="bg-white text-primary ml-2"
+                    (click)="onBackHomePage()"
+                ></p-button>
+                <p-button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.TAIKHOAN,
+                        action: appConstant.PERMISSION_FUNC.ADD
+                    }"
+                    [label]="'F7.Thêm mới'"
+                    (click)="onAddAccount()"
+                    icon="pi pi-plus"
+                    class="ml-2"
+                ></p-button>
+                <p-dropdown
+                    *ngIf="displayHoachToanNoiBoButton"
+                    appendTo="body"
+                    optionLabel="name"
+                    [options]="accountTypeList"
+                    (onChange)="onChangeAccountType($event)"
+                    [(ngModel)]="currentAccountType"
+                    class="ml-2"
+                >
+                    <ng-template let-data pTemplate="selectedItem">
+                        <span>{{ data?.name | translate }}</span>
+                    </ng-template>
+                    <ng-template let-data pTemplate="item">
+                        <span>{{ data?.name | translate }}</span>
+                    </ng-template>
+                </p-dropdown>
+
+                <ng-container
+                    *ngIf="displayCongCuButton && menuActionItems?.length > 0"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.TAIKHOAN,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        #btn
+                        class="ml-2"
+                        type="button"
+                        pButton
+                        icon="pi pi-bars"
+                        [label]="'label.tool' | translate"
+                        (click)="menu.toggle($event)"
+                    ></button>
+                    <p-tieredMenu
+                        appendTo="body"
+                        #menu
+                        [model]="menuActionItems"
+                        [popup]="true"
+                    ></p-tieredMenu>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #headerTableTmp let-columns="columns">
+    <tr>
+        <th
+            *ngIf="displayHasChildButton"
+            style="min-width: 50px; max-width: 50px"
+        ></th>
+        <ng-container *ngFor="let col of columns">
+            <th [ngClass]="col.styleClass">
+                <span [translate]="col.header"></span>
+            </th>
+        </ng-container>
+        <th>
+            <div class="item-action invisible">
+                <button
+                    *ngIf="displayDeleteButton"
+                    pButton
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button p-button-danger mr-1"
+                ></button>
+
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button mr-1 p-button-warning"
+                ></button>
+
+                <button
+                    *ngIf="displaySelectButton"
+                    pButton
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button ml-1 p-button-success"
+                ></button>
+
+                <button
+                    *ngIf="displayAddItemButton"
+                    pButton
+                    tooltipPosition="left"
+                    type="button"
+                    icon="pi pi-plus"
+                    class="p-button"
+                ></button>
+            </div>
+        </th>
+    </tr>
+</ng-template>
+
+<ng-template #bodyTableTmp let-rowData="rowData" let-columns="columns">
+    <tr [ngClass]="{ 'font-bold': rowData.code?.length === 3 }">
+        <td
+            *ngIf="displayHasChildButton"
+            style="min-width: 50px; max-width: 50px"
+            class="text-center"
+        >
+            <div class="item-action">
+                <button
+                    *ngIf="rowData.hasDetails"
+                    pButton
+                    type="button"
+                    icon="pi pi-chevron-right"
+                    class="p-button p-button-info p-button-plain"
+                    (click)="onGoToAccountDetail1(rowData, false)"
+                ></button>
+            </div>
+        </td>
+        <ng-container *ngFor="let col of columns">
+            <td [ngClass]="col.styleClass">
+                <ng-container [ngSwitch]="col.type">
+                    <ng-container *ngSwitchCase="columnType.ForeignCurrency">
+                        {{
+                            rowData[col.field] ? ("label.yes" | translate) : ""
+                        }}
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="columnType.DoubleInString">
+                        {{ rowData[col.field] | doubleInString }}
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault>
+                        {{
+                            rowData[col.field] == null ||
+                            rowData[col.field] == undefined
+                                ? ""
+                                : rowData[col.field]
+                        }}
+                    </ng-container>
+                </ng-container>
+            </td>
+        </ng-container>
+        <td>
+            <div class="item-action">
+                <ng-container
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.TAIKHOAN,
+                        action: appConstant.PERMISSION_FUNC.DELETE
+                    }"
+                >
+                    <button
+                        *ngIf="displayDeleteButton"
+                        pButton
+                        tooltipPosition="left"
+                        [pTooltip]="'button.remove' | translate"
+                        [disabled]="!rowData.displayDelete"
+                        (click)="onRemoveAccount(rowData)"
+                        type="button"
+                        icon="pi pi-times"
+                        class="p-button p-button-danger mr-1"
+                    ></button>
+                </ng-container>
+
+                <ng-container
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.TAIKHOAN,
+                        action: appConstant.PERMISSION_FUNC.EDIT
+                    }"
+                >
+                    <button
+                        pButton
+                        tooltipPosition="left"
+                        [pTooltip]="'button.update' | translate"
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button mr-1 p-button-warning"
+                        (click)="onEditAccount(rowData)"
+                    ></button>
+                    <button
+                        *ngIf="displaySelectButton"
+                        pButton
+                        tooltipPosition="left"
+                        [pTooltip]="'Chọn'"
+                        type="button"
+                        icon="pi pi-circle"
+                        class="p-button ml-1 p-button-success"
+                        (click)="onSelectItem.emit(rowData)"
+                    ></button>
+                </ng-container>
+
+                <ng-container
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.TAIKHOAN,
+                        action: appConstant.PERMISSION_FUNC.ADD
+                    }"
+                >
+                    <button
+                        *ngIf="displayAddItemButton"
+                        pButton
+                        tooltipPosition="left"
+                        [pTooltip]="'button.add_detail' | translate"
+                        [disabled]="!rowData.displayInsert"
+                        type="button"
+                        icon="pi pi-plus"
+                        class="p-button"
+                        (click)="onGoToAccountDetail1(rowData, true)"
+                    ></button>
+                </ng-container>
+            </div>
+        </td>
+    </tr>
+</ng-template>
+
+<add-edit-account
+    #addEditAccountTmp
+    [accountType]="currentAccountType.value"
+    (updateSuccessfull)="onAddEditAccountSuccessfull($event)"
+>
+</add-edit-account>
+
+<add-edit-account-group #addEditAccountGroupTmp></add-edit-account-group>
+
+<p-dialog
+    [(visible)]="displayImportExportDetailModal"
+    [modal]="true"
+    [style]="{ width: '95vw' }"
+    [draggable]="false"
+    [resizable]="true"
+    header="Nhập xuất chi tiết"
+>
+    <div class="field grid">
+        <label for="account" class="w-10rem">Tài khoản </label>
+        <div class="col">
+            <p-dropdown
+                id="account"
+                class="w-full"
+                appendTo="body"
+                [options]="accounts"
+                [(ngModel)]="codeExcel"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                (onChange)="getCodeExcel($event)"
+                [filter]="true"
+                [filterBy]="'name,code'"
+                [showClear]="true"
+                placeholder="Chọn tải khoản"
+            >
+                <ng-template let-account pTemplate="item">
+                    {{ account.code }} | {{ account.name }}
+                </ng-template>
+                <ng-template let-account pTemplate="selectedItem">
+                    {{ account.code }} | {{ account.name }}
+                </ng-template>
+            </p-dropdown>
+        </div>
+    </div>
+    <div class="field grid">
+        <label for="accountDetail1" class="w-10rem">Chi tiết 1</label>
+        <div class="col">
+            <p-dropdown
+                id="accountDetail1"
+                class="w-full"
+                appendTo="body"
+                [options]="accountDetail1s"
+                [(ngModel)]="codeExcelDetail"
+                placeholder="Chọn tài khoản chi tiết"
+                [optionLabel]="'name'"
+                [optionValue]="'code'"
+                [filter]="true"
+                [filterBy]="'name,code'"
+                [showClear]="true"
+            >
+                <ng-template let-account pTemplate="item">
+                    {{ account.code }} | {{ account.name }}
+                </ng-template>
+                <ng-template let-account pTemplate="selectedItem">
+                    {{ account.code }} | {{ account.name }}
+                </ng-template>
+            </p-dropdown>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            icon="pi pi-times"
+            pRipple
+            type="button"
+            label="Hủy"
+            class="p-button-outlined p-button-secondary mr-2"
+            (click)="displayImportExportDetailModal = false"
+        ></button>
+        <p-button
+            icon="pi pi-upload"
+            class="mr-2"
+            (click)="uploadFileTaiKhoanCT1.click()"
+            label="Nhập Excel"
+        ></p-button>
+        <p-button
+            icon="pi pi-download"
+            (click)="exportExcel()"
+            label="Xuất Excel"
+        ></p-button>
+        <p-button
+            icon="pi pi-download"
+            (click)="exportExcel(true)"
+            label="Xuất Excel toàn bộ chi tiết"
+        ></p-button>
+    </ng-template>
+</p-dialog>
+
+<form [formGroup]="formInput">
+    <input
+        #uploadFile
+        class="hidden"
+        type="file"
+        (change)="importExcel($event)"
+        multiple
+        formControlName="uploadFile"
+    />
+    <input
+        #uploadFileTaiKhoanArising
+        class="hidden"
+        type="file"
+        (change)="importFromExcelTaiKhoanArising($event)"
+        multiple
+        formControlName="uploadFileTaiKhoanArising"
+    />
+    <input
+        #uploadFileTaiKhoanCT1
+        class="hidden"
+        type="file"
+        (change)="importTaiKhoanCT1($event)"
+        multiple
+        formControlName="uploadFileTaiKhoanCT1"
+    />
+</form>

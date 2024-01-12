@@ -1,0 +1,369 @@
+<div *ngIf="!display" class="card card-table">
+    <div
+        class="py-2 flex flex-column sm:flex-row align-items-center sm:justify-content-between"
+    >
+        <h5 [translate]="'label.category_management'"></h5>
+        <div class="flex">
+            <button
+                pButton
+                [label]="'button.import' | translate"
+                pButton
+                class="p-button-success mb-2 mr-2"
+                icon="pi pi-upload"
+                (click)="fileInput.click()"
+            ></button>
+            <input
+                id="fileInput"
+                #fileInput
+                type="file"
+                (change)="import($event)"
+                style="display: none"
+            />
+            <button
+                pButton
+                [label]="'button.export' | translate"
+                class="p-button-warning mb-2 mr-2"
+                icon="pi pi-download"
+                (click)="exportExcel()"
+            ></button>
+            <!-- add button -->
+            <button
+                pButton
+                [label]="'button.addF7' | translate"
+                icon="pi pi-user-plus"
+                (click)="onAddCategory()"
+            ></button>
+        </div>
+    </div>
+    <p-table
+        #dt1
+        [value]="categories"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCategories($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search_by_name' | translate"
+                        class="w-full"
+                    />
+                </span>
+            </div>
+            <p-panel
+                class="flex flex-column"
+                [header]="'label.search_advanced' | translate"
+                [toggleable]="true"
+                [collapsed]="true"
+            >
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-6 lg:col-3">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.category_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.type"
+                            (onChange)="getCategories()"
+                            [options]="types.category"
+                            showClear="true"
+                            [optionLabel]="'label'"
+                            [optionValue]="'value'"
+                            [autoDisplayFirst]="false"
+                            [placeholder]="'label.empty' | translate"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-3">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.sort_field'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.sortField"
+                            (onChange)="onChangeSort($event, 'sortField')"
+                            [options]="sortFields"
+                            [optionLabel]="'label'"
+                            [optionValue]="'code'"
+                        ></p-dropdown>
+                    </div>
+
+                    <div class="field col-12 md:col-6 lg:col-3">
+                        <label
+                            class="font-bold"
+                            [translate]="'label.sort_type'"
+                        ></label>
+                        <p-dropdown
+                            [(ngModel)]="getParams.isSort"
+                            (onChange)="onChangeSort($event, 'sortType')"
+                            [options]="sortTypes"
+                            [optionLabel]="'label'"
+                            [optionValue]="'code'"
+                        ></p-dropdown>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.category_code'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.category_name'"></span>
+                    </div>
+                </th>
+                <th class="w--15">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.category_type'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.description'"></span>
+                    </div>
+                </th>
+                <th class="w-100">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.show_web'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile"></th>
+                <th
+                    *ngIf="!isMobile"
+                    style="width: 200px"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-deskFloor>
+            <tr>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ deskFloor.id }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.category_code'"
+                    ></span
+                    >{{ deskFloor.code }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.category_name'"
+                    ></span
+                    >{{ deskFloor.name }}
+                </td>
+                <td class="w--15">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.category_type'"
+                    ></span>
+                    <div [ngSwitch]="deskFloor.type">
+                        <p-badge
+                            *ngSwitchCase="1"
+                            severity="success"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        >
+                        </p-badge>
+                        <p-badge
+                            *ngSwitchCase="2"
+                            severity="info"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        >
+                        </p-badge>
+                        <p-badge
+                            *ngSwitchCase="3"
+                            severity="warning"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        >
+                        </p-badge>
+                        <p-badge
+                            *ngSwitchCase="4"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        ></p-badge>
+                        <p-badge
+                            *ngSwitchCase="5"
+                            severity="danger"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        >
+                        </p-badge>
+                        <p-badge
+                            *ngSwitchCase="6"
+                            severity="primary"
+                            [value]="getCategoryTypeName(deskFloor.type)"
+                        >
+                        </p-badge>
+                    </div>
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.description'"
+                    ></span
+                    >{{ deskFloor.note }}
+                </td>
+                <td class="w-100 flex-show-web">
+                    <p-checkbox
+                        [(ngModel)]="deskFloor.isShowWeb"
+                        [binary]="true"
+                        inputId="binary"
+                        (onChange)="onChangeShowWeb(deskFloor)"
+                    ></p-checkbox>
+                </td>
+                <td *ngIf="isMobile" style="height: 70px">
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(deskFloor.id)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onConfirmDelete(deskFloor)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="flex justify-content-start md:justify-content-center"
+                    style="height: 70px; width: 200px"
+                >
+                    <button
+                        *ngIf="!deskFloor.isEnableDelete"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(deskFloor.id)"
+                    ></button>
+                    <button
+                        *ngIf="!deskFloor.isEnableDelete"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onConfirmDelete(deskFloor)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No Menu of goods found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Menu of goods data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-menu-of-goods-form
+    #categoryForm
+    [formData]="formData"
+    [display]="display"
+    [types]="types"
+    (onCancel)="display = false; getCategories(null, false); isReset = false"
+    [isEdit]="isEdit"
+>
+</app-menu-of-goods-form>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_category_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<p-confirmDialog
+    #categoryExistInGoodsTmp
+    key="categoryExistInGoodsTmp"
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '30vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_category_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="categoryExistInGoodsTmp.reject()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<app-add-price-list #addPriceListComponent></app-add-price-list>
+<app-compare-prices #addCompareComponent></app-compare-prices>

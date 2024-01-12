@@ -1,0 +1,186 @@
+:host ::ng-deep {
+    @media screen and (max-width: 768px) {
+        #user .p-dropdown .p-dropdown-panel {
+            left: -160px !important;
+        }
+
+        .p-sidebar-right {
+            width: 95%;
+        }
+    }
+
+    @media screen and (min-width: 769px) {
+        .p-sidebar-right {
+            width: 45rem;
+        }
+    }
+
+    #searchType .p-dropdown {
+        width: 160px;
+    }
+
+    #user .p-dropdown {
+        width: 180px;
+    }
+
+    .p-dropdown .p-dropdown-panel {
+        min-width: 300px;
+    }
+
+    .p-button.p-button-icon-only {
+        width: 32px !important;
+    }
+
+    p-dataviewlayoutoptions {
+        min-width: 65px;
+    }
+
+    .p-dataview .p-dataview-header {
+        padding: 1rem 0.6rem;
+    }
+
+    .p-dataview .p-dataview-footer {
+        margin-top: 0.5rem;
+    }
+
+    .p-dialog .p-dialog-content {
+        padding: 2rem 1.5rem 0.5rem 1.5rem;
+    }
+
+    .card-table {
+        min-height: 80vh !important;
+    }
+
+    .p-paginator {
+        padding: 0 !important;
+        background-color: inherit;
+    }
+
+    .p-orderlist .p-orderlist-header,
+    .p-orderlist .p-orderlist-filter-container {
+        display: none;
+    }
+
+    .p-tabview .p-tabview-panels {
+        padding: 0;
+    }
+
+    .product-name {
+        font-weight: 700;
+        color: var(--primary-color);
+        padding: 8px 8px 0px 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-category-icon {
+        vertical-align: middle;
+        margin-right: 0.5rem;
+    }
+
+    .product-category {
+        font-weight: 600;
+        vertical-align: middle;
+    }
+
+    .product-list-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        width: 100%;
+
+        img {
+            width: 150px !important;
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.16),
+                0 3px 6px rgba(0, 0, 0, 0.23);
+            margin-right: 2rem;
+        }
+
+        .product-list-detail {
+            flex: 1 1 0;
+        }
+
+        .p-rating {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .product-price {
+            font-size: 1rem;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+        .p-button {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .product-grid-item {
+        margin: 0.5em;
+        border: 1px solid #dee2e6;
+
+        .product-grid-item-top,
+        .product-grid-item-bottom {
+            display: flex;
+        }
+
+        img {
+            width: 6rem;
+            height: 6rem;
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.16),
+                0 3px 6px rgba(0, 0, 0, 0.23);
+            margin: 0.5rem 0;
+        }
+
+        .product-price {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.card {
+    padding: 0;
+    padding-bottom: 0;
+    box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px !important;
+}
+
+@media screen and (max-width: 576px) {
+    :host ::ng-deep .product-list-item {
+        flex-direction: column;
+        align-items: center;
+
+        img {
+            width: 75%;
+            margin: 2rem 0;
+        }
+
+        .product-list-detail {
+            text-align: center;
+        }
+
+        .product-price {
+            align-self: center;
+        }
+
+        .product-list-action {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-list-action {
+            margin-top: 2rem;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+<div class="card card-table">
+    <app-report-filter
+        [typedate]="'yyyymmdd'"
+        [title]="'Sổ chi tiết'"
+        [filter]="getParams"
+        (onPreview)="onAction('html')"
+        (onPrint)="onAction('pdf')"
+        (onPrintExcel)="onAction('excel')"
+        [types]="types"
+        [showTypes]="showTypes"
+        (onChangeFilter)="getParams = $event"
+        (onChangeTypes)="types = $event"
+    ></app-report-filter>
+
+    <div class="frame-container">
+        <div class="frame-content">
+            <div class="frame-report">
+                <div id="iframe-html-report-balance-account"></div>
+            </div>
+        </div>
+    </div>
+</div>

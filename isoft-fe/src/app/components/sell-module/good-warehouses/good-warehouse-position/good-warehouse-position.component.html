@@ -1,0 +1,109 @@
+<div style="min-height: 20rem">
+    <p-table [value]="goodPositions" dataKey="id" [tableStyle]="{ width: '100%' }">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Kho</th>
+                <th>Kệ</th>
+                <th style="width: 20%">Tầng</th>
+                <th style="width: 20%">Vị trí</th>
+                <th style="width: 20%">Số lượng</th>
+                <th style="width: 10%">
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        icon="pi pi-plus"
+                        (click)="onAddNewRow()"
+                        class="p-button-rounded p-button-text p-button-success mr-2"
+                    ></button>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-position let-ri="rowIndex">
+            <tr>
+                <td>
+                    <p-dropdown
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        [autoDisplayFirst]="false"
+                        class="w-full"
+                        id="warehousesId"
+                        [options]="warehouses"
+                        [optionLabel]="'name'"
+                        [optionValue]="'code'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="position.warehouse"
+                    >
+                    </p-dropdown>
+                </td>
+                <td>
+                    <p-dropdown
+                        class="w-full"
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        [autoDisplayFirst]="false"
+                        id="wareHouseShelvesId"
+                        [options]="filterShelvesByWarehouse(position.warehouse)"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="position.wareHouseShelvesId"
+                    >
+                    </p-dropdown>
+                </td>
+                <td>
+                    <p-dropdown
+                        class="w-full"
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        [autoDisplayFirst]="false"
+                        id="wareHouseFloorId"
+                        [options]="filterDeskFloorsByShelve(position.wareHouseShelvesId)"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="position.wareHouseFloorId"
+                    >
+                    </p-dropdown>
+                </td>
+                <td>
+                    <p-dropdown
+                        class="w-full"
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        [autoDisplayFirst]="false"
+                        id="wareHousePositionId"
+                        [options]="filterPositionByFloor(position.wareHouseFloorId)"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [appendTo]="'body'"
+                        [(ngModel)]="position.wareHousePositionId"
+                    >
+                    </p-dropdown>
+                </td>
+                <td>
+                    <p-inputNumber
+                        class="w-full"
+                        type="text"
+                        [(ngModel)]="position.quantity"
+                        required
+                    ></p-inputNumber>
+                </td>
+                <td>
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        icon="pi pi-times"
+                        (click)="onRemoveRowClick(ri)"
+                        class="p-button-rounded p-button-text p-button-danger"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

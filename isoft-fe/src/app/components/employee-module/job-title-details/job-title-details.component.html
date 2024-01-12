@@ -1,0 +1,249 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.PositionDetail_management'"></h5>
+    <p-table
+        #dt1
+        [value]="lstPositionDetails"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getPositionDetails($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <span class="p-input-icon-left mb-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        #filter
+                        [(ngModel)]="getParams.searchText"
+                        pInputText
+                        type="text"
+                        (keypress)="onSearch($event)"
+                        [placeholder]="'label.search' | translate"
+                        class="w-full"
+                    />
+                </span>
+                <!-- <div class="flex flex-column md:flex-row gap-8 w-full md:w-auto">
+                    <p-dropdown [(ngModel)]="getParams.sortField" (onChange)="onChangeSort($event, 'sortField')" [options]="sortFields" [optionLabel]="'label'" [optionValue]="'code'"></p-dropdown>
+                    <p-dropdown [(ngModel)]="getParams.isSort" (onChange)="onChangeSort($event, 'sortType')" [options]="sortTypes" [optionLabel]="'label'" [optionValue]="'code'"></p-dropdown>
+                </div> -->
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2 md:mt-0"
+                >
+                    <button
+                        pButton
+                        [label]="'button.export' | translate"
+                        class="p-button-warning mb-2 mr-2"
+                        icon="pi pi-download"
+                        (click)="getReligions(null, true)"
+                    ></button>
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="'button.addF7' | translate"
+                        class="mb-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.numerical_order'"></span>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.position'"></span>
+                    </div>
+                </th>
+                <th class="w-5">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.name'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <span [translate]="'label.level_manager'"></span>
+                    </div>
+                </th>
+                <th *ngIf="isMobile" class="w-3"></th>
+                <th
+                    *ngIf="!isMobile"
+                    class="w-3"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.order'"
+                    ></span
+                    >{{ user.order }}
+                </td>
+                <td class="w-3">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.position'"
+                    ></span
+                    >{{ user.positionName }}
+                </td>
+                <td class="w-5">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.name'"
+                    ></span
+                    >{{ user.name }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.level_manager'"
+                    ></span
+                    >{{ user.isManager ? "Có" : "" }}
+                </td>
+                <td *ngIf="isMobile" class="w-3">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-3 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(user.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(user.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No PositionDetail found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading PositionDetail data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<ng-container
+    *appHasAccess="{
+        menu: appConstant.MENU_TYPE.CHITIETCHUCDANH,
+        action:
+            appConstant.PERMISSION_FUNC.ADD || appConstant.PERMISSION_FUNC.EDIT
+    }"
+>
+    <app-job-title-details-form
+        #PositionDetailForm
+        [formData]="formData"
+        [isReset]="isReset"
+        [display]="display"
+        (onCancel)="
+            display = false; getPositionDetails(null, false); isReset = false
+        "
+        [isEdit]="isEdit"
+    >
+    </app-job-title-details-form>
+</ng-container>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_PositionDetail_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

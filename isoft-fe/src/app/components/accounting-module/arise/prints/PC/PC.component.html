@@ -1,0 +1,148 @@
+<div>
+    <ng-container *ngFor="let item of [1, 2]">
+        <div class="a5-horizontal">
+            <div class="head">
+                <div class="head_left">
+                    <span>{{ company?.name }}</span>
+                    <span>{{ company?.address }}</span>
+                    <span>Mã số thuế: {{ company?.mst }}</span>
+                </div>
+                <div class="head_right">
+                    <span>Mẫu số: 02 - TT</span>
+                </div>
+            </div>
+            <div class="tite">
+                <br />
+                <h2 class="header-bold">PHIẾU CHI</h2>
+                <span>{{ dateStr }}</span>
+                <span
+                    style="font-style: italic; font-size: 10px; margin-top: 3px"
+                    >{{
+                        item === 1
+                            ? "Liên 1: lưu"
+                            : "Liên 2 : Giao cho khách hàng"
+                    }}</span
+                >
+                <br />
+                <div class="tite_right">
+                    <span>Số: PC {{ order }}</span>
+                    <table>
+                        <tr style="border-bottom: 1px solid #000">
+                            <th>TK Nợ</th>
+                            <th>Số tiền</th>
+                        </tr>
+                        <tr *ngFor="let item of debitCodes">
+                            <td>{{ item?.debitCode }}</td>
+                            <td>
+                                {{ appUtil.formatCurrencyVND(item?.amount) }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="content">
+                <div class="wrapper">
+                    <div class="padding_bt">
+                        <span class="lable"> Người nhận: </span>
+                        <span>
+                            {{ dataPrint?.orginalCompanyName }}
+                        </span>
+                    </div>
+                    <div class="padding_bt">
+                        <span class="lable"> Địa chỉ: </span>
+                        <span>
+                            {{ dataPrint?.orginalAddress }}
+                        </span>
+                    </div>
+                    <div class="padding_bt text-overflow">
+                        <span class="lable"> Lý do: </span>
+                        <span *ngIf="orginalDescription.length > 90">
+                            {{ orginalDescription.substr(0, 90) }}...
+                        </span>
+                        <span *ngIf="90 >= orginalDescription.length">
+                            {{ orginalDescription }}
+                        </span>
+                        <span *ngFor="let item of debitCodes">
+                            {{ item?.orginalDescription }};
+                        </span>
+                    </div>
+                    <div class="padding_bt">
+                        <span class="lable"> Số tiền: </span>
+                        <span>
+                            {{ appUtil.formatCurrencyVND(total) }}
+                        </span>
+                    </div>
+                    <div class="padding_bt">
+                        <span class="lable"> Bằng chữ: </span>
+                        <span>
+                            {{ appUtil.formatCurrencyVNDString(total) }}
+                        </span>
+                    </div>
+                    <div class="padding_bt text-overflow">
+                        <i style="display: inline-block">Kèm theo:</i>
+                        <span
+                            *ngIf="
+                                dataPrint?.attachVoucher &&
+                                dataPrint?.attachVoucher.length > 0
+                            "
+                            style="display: inline-block; margin-left: 5px"
+                            >{{
+                                dataPrint?.attachVoucher
+                            }};............................chứng từ gốc.</span
+                        >
+                        <span
+                            *ngIf="
+                                !dataPrint?.attachVoucher ||
+                                dataPrint?.attachVoucher.length <= 0
+                            "
+                            style="display: inline-block; margin-left: 5px"
+                            >..................................................chứng
+                            từ gốc.</span
+                        >
+                    </div>
+                    <div>
+                        <span> Đã nhận đủ: </span>
+                        <span>
+                            {{ appUtil.formatCurrencyVNDString(total) }}
+                        </span>
+                    </div>
+                </div>
+                <p class="p_month">
+                    <i> {{ dateStr }}</i>
+                </p>
+                <div class="sign">
+                    <div>
+                        <p class="lable">{{ company?.noteOfCeo }}</p>
+                        <span>(Ký, họ tên, đóng dấu)</span>
+                        <p class="p_empty"></p>
+                        <h4>{{ company?.nameOfCeo }}</h4>
+                    </div>
+                    <div>
+                        <p class="lable">
+                            {{ company?.noteOfChiefAccountant }}
+                        </p>
+                        <span>(Ký, họ tên)</span>
+                        <p class="p_empty"></p>
+                        <h4>{{ company?.nameOfChiefAccountant }}</h4>
+                    </div>
+                    <div>
+                        <p class="lable">Người lập phiếu</p>
+                        <span>(Ký, họ tên)</span>
+                        <p class="p_empty"></p>
+                    </div>
+                    <div>
+                        <p class="lable">Người nhận tiền</p>
+                        <span>(Ký, họ tên)</span>
+                        <p class="p_empty"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="item == 1">
+            <br />
+            <br />
+            <br />
+            <br />
+        </ng-container>
+    </ng-container>
+</div>

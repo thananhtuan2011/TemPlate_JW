@@ -1,0 +1,400 @@
+<app-arise-list-filter-v2
+    *ngIf="dataTable?.document"
+    [dataTable]="dataTable"
+    [documentList]="documentList"
+    [onBackHomePage]="onBackHomePage"
+    (onFilter)="onFilter()"
+>
+</app-arise-list-filter-v2>
+
+<p-contextMenu
+    #cmTmp
+    [model]="items"
+    (onHide)="selectAriseContextMenu = null"
+></p-contextMenu>
+
+<p-table
+    #dtTmp
+    [contextMenu]="cmTmp"
+    [(contextMenuSelection)]="selectAriseContextMenu"
+    [value]="dataTable.datas"
+>
+    <ng-template pTemplate="header">
+        <ng-container *ngTemplateOutlet="headerTableTmp"></ng-container>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData>
+        <tr
+            [pContextMenuRow]="rowData"
+            (mouseenter)="onRowHover(rowData)"
+            (mouseleave)="onLostHover(arise)"
+            [class.row-hover-hover]="rowData.isHover"
+            [pTooltip]="onTooltip(rowData)"
+            [ngClass]="{
+                'row-item-select-detail':
+                    selectAriseContextMenuView?.id === rowData.id
+            }"
+            showDelay="500"
+            class="row-hover"
+            tooltipPosition="top"
+        >
+            <ng-container
+                *ngTemplateOutlet="bodyTableTmp; context: { rowData: rowData }"
+            ></ng-container>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-paginator
+    class="absolute px-2 right-0"
+    [rows]="dataTable.pageSize"
+    [totalRecords]="dataTable.totalItems"
+    (onPageChange)="onPageChange($event)"
+>
+</p-paginator>
+
+<ng-template #headerTableTmp>
+    <tr>
+        <th style="min-width: 2rem; width: 2%">
+            <p-checkbox
+                (onChange)="onSelectAll()"
+                [binary]="true"
+                [(ngModel)]="dataTable.isCheckAll"
+                value="true"
+            ></p-checkbox>
+        </th>
+        <th
+            style="min-width: 50px; width: 3.2%"
+            [translate]="'label.date'"
+        ></th>
+        <th
+            style="min-width: 50px; width: 3.2%"
+            [translate]="'label.ctgs'"
+        ></th>
+        <th
+            style="min-width: 100px; width: 6.5%"
+            [translate]="'label.code'"
+        ></th>
+        <th
+            style="min-width: 60px; width: 3.8%"
+            [translate]="'label.date'"
+        ></th>
+        <th
+            style="min-width: 290px; width: 18.5%"
+            [translate]="'label.explain'"
+        ></th>
+        <th
+            style="min-width: 60px; width: 3.8%"
+            [translate]="'label.debit_code_name'"
+        ></th>
+        <th
+            style="min-width: 80px; width: 5.2%"
+            [translate]="'label.detail_1'"
+        ></th>
+        <th
+            style="min-width: 60px; width: 3.8%"
+            [translate]="'label.credit_code_name'"
+        ></th>
+        <th
+            style="min-width: 80px; width: 5.2%"
+            [translate]="'label.detail_1'"
+        ></th>
+        <th
+            style="min-width: 50px; width: 3.2%"
+            class="justify-content-end"
+            [translate]="'label.SL'"
+        ></th>
+        <th
+            style="min-width: 90px; width: 5.8%"
+            class="justify-content-end"
+            [translate]="'label.stock_price'"
+        ></th>
+        <th
+            style="min-width: 90px; width: 5.8%"
+            class="justify-content-end"
+            [translate]="'label.amount_of_money'"
+        ></th>
+        <th
+            style="min-width: 80px; width: 5.2%"
+            class="justify-content-end"
+            [translate]="'label.foreign_currency'"
+        ></th>
+        <th
+            style="min-width: 70px; width: 4.5%"
+            class="justify-content-end"
+            [translate]="'label.exchange_rate'"
+        ></th>
+        <th
+            style="min-width: 70px; width: 4.5%"
+            class="justify-content-center"
+            [translate]="'label.invoice'"
+        ></th>
+        <th
+            style="min-width: 70px; width: 4.5%"
+            [translate]="'label.contract_number'"
+        ></th>
+        <th
+            style="min-width: 80px; width: 5.2%"
+            [translate]="'label.contract_date'"
+        ></th>
+        <th
+            alignFrozen="right"
+            pFrozenColumn
+            [frozen]="true"
+            style="min-width: 80px; width: 5.2%"
+            [translate]="'label.action'"
+        ></th>
+    </tr>
+</ng-template>
+
+<ng-template #bodyTableTmp let-rowData="rowData">
+    <td style="min-width: 2rem; width: 2%">
+        <p-checkbox
+            [binary]="true"
+            [(ngModel)]="rowData.isCheckbox"
+            (onChange)="onSelectItem()"
+            value="true"
+        ></p-checkbox>
+    </td>
+    <td style="min-width: 50px; width: 3.2%" class="text-center">
+        <span
+            class="p-column-title"
+            [translate]="'label.orginal_book_date'"
+        ></span>
+        {{ rowData.orginalBookDate | date: "dd-MM" }}
+    </td>
+    <td style="min-width: 50px; width: 3.2%">
+        <span
+            class="p-column-title"
+            [translate]="'label.voucher_number'"
+        ></span>
+        {{ rowData.voucherNumber }}
+    </td>
+    <td style="min-width: 100px; width: 6.5%">
+        <span
+            class="p-column-title"
+            [translate]="'label.orginal_voucher_number'"
+        ></span>
+        {{ rowData.orginalVoucherNumber }}
+    </td>
+    <td style="min-width: 60px; width: 3.8%">
+        <span
+            class="p-column-title"
+            [translate]="'label.orginal_book_date'"
+        ></span>
+        {{ rowData.orginalBookDate | date: "dd/MM/yyyy" }}
+    </td>
+    <td style="min-width: 290px; width: 18.5%">
+        <span
+            class="p-column-title"
+            [translate]="'label.orginal_description'"
+        ></span>
+        <div
+            *ngIf="
+                rowData.orginalDescription &&
+                rowData.orginalDescription.length > 60
+            "
+            class="marquee"
+        >
+            <div>{{ rowData.orginalDescription }}</div>
+        </div>
+        <div
+            *ngIf="
+                !(
+                    rowData.orginalDescription &&
+                    rowData.orginalDescription.length > 60
+                )
+            "
+        >
+            {{ rowData.orginalDescription }}
+        </div>
+    </td>
+    <td style="min-width: 60px; width: 3.8%">
+        <span class="p-column-title" [translate]="'label.debit_code'"></span>
+        {{ rowData.debitCode }}
+    </td>
+    <td style="min-width: 80px; width: 5.2%">
+        <span
+            class="p-column-title"
+            [translate]="'label.debit_detail_code_first'"
+        ></span>
+        {{ rowData.debitDetailCodeFirst }}
+    </td>
+    <td style="min-width: 60px; width: 3.8%">
+        <span class="p-column-title" [translate]="'label.credit_code'"></span
+        >{{ rowData.creditCode }}
+    </td>
+    <td style="min-width: 80px; width: 5.2%">
+        <span
+            class="p-column-title"
+            [translate]="'label.credit_detail_code_first'"
+        ></span>
+        {{ rowData.creditDetailCodeFirst }}
+    </td>
+    <td style="min-width: 50px; width: 3.2%" class="justify-content-end">
+        <span class="p-column-title" [translate]="'label.quantity'"></span>
+        {{ rowData.quantity | number }}
+    </td>
+    <td style="min-width: 90px; width: 5.8%" class="justify-content-end">
+        <span class="p-column-title" [translate]="'label.unit_price'"></span>
+        {{ rowData.unitPrice | number }}
+    </td>
+    <td style="min-width: 90px; width: 5.8%" class="justify-content-end">
+        <span class="p-column-title" [translate]="'label.amount'"></span>
+        {{ rowData.amount | number }}
+    </td>
+    <td style="min-width: 80px; width: 5.2%" class="justify-content-end">
+        <span
+            class="p-column-title"
+            [translate]="'label.orginal_currency'"
+        ></span>
+        {{ rowData.orginalCurrency | number }}
+    </td>
+    <td style="min-width: 70px; width: 4.5%" class="justify-content-end">
+        <span class="p-column-title" [translate]="'label.exchange_rate'"></span
+        >{{ rowData.exchangeRate | number }}
+    </td>
+    <td style="min-width: 70px; width: 4.5%" class="justify-content-center">
+        <span class="p-column-title" [translate]="'label.invoice_code'"></span
+        >{{ rowData.invoiceCode }}
+    </td>
+    <td style="min-width: 70px; width: 4.5%">
+        <span class="p-column-title" [translate]="'label.invoice_number'"></span
+        >{{ rowData.invoiceNumber }}
+    </td>
+    <td style="min-width: 80px; width: 5.2%">
+        <span class="p-column-title" [translate]="'label.invoice_date'"></span
+        >{{ rowData.invoiceDate | date: "dd/MM/yyyy" }}
+    </td>
+    <td
+        alignFrozen="right"
+        pFrozenColumn
+        [frozen]="true"
+        class="flex justify-content-end gap-8"
+        style="min-width: 80px; width: 5.2%"
+    >
+        <button
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINHV4,
+                action: appConstant.PERMISSION_FUNC.EDIT
+            }"
+            pButton
+            class="p-button-warning p-button-sm"
+            icon="pi pi-print"
+            (click)="onPrint(rowData); $event.stopPropagation()"
+        ></button>
+        <button
+            *appHasAccess="{
+                menu: appConstant.MENU_TYPE.PHATSINHV4,
+                action: appConstant.PERMISSION_FUNC.DELETE
+            }"
+            pButton
+            (click)="onDelete(rowData.id); $event.stopPropagation()"
+            class="p-button-danger p-button-sm"
+            icon="pi pi-trash"
+        ></button>
+    </td>
+</ng-template>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_arise_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<ng-container *ngIf="dataTable?.datas">
+    <PT
+        id="PT"
+        hidden
+        *ngIf="dataPrint?.type === 'PT'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+        [creditCodes]="creditCodesPrint"
+        [total]="dataPrint.totalAmount"
+    ></PT>
+
+    <PX
+        id="XK"
+        hidden
+        *ngIf="dataPrint?.type === 'XK'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+    ></PX>
+
+    <PX
+        id="BH"
+        hidden
+        *ngIf="dataPrint?.type === 'BH'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+    ></PX>
+
+    <PC
+        id="PC"
+        hidden
+        *ngIf="dataPrint?.type === 'PC'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+        [debitCodes]="debitCodesPrint"
+        [total]="dataPrint.totalAmount"
+    ></PC>
+
+    <PN
+        id="NK"
+        hidden
+        *ngIf="dataPrint?.type === 'NK'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+        [debitCodes]="debitCodesPrint"
+        [creditCodes]="creditCodesPrint"
+        [ledgers]="dataTable.datas"
+    ></PN>
+
+    <PCK
+        id="CK"
+        hidden
+        *ngIf="dataPrint?.type === 'CK'"
+        [company]="company"
+        [dataPrint]="dataPrint"
+        [creditCodes]="creditCodesPrint"
+        [ledgers]="dataTable.datas"
+    ></PCK>
+
+    <app-pnpc
+        id="PNPC"
+        *ngIf="isPrintF7 && (typePrintF7 === 'NK' || typePrintF7 === 'CK')"
+        [company]="company"
+        [ledgers]="dataTable.datas"
+    ></app-pnpc>
+
+    <app-pxn
+        id="PXN"
+        *ngIf="isPrintF7 && typePrintF7 === 'XK'"
+        [company]="company"
+        [ledgers]="dataTable.datas"
+    ></app-pxn>
+</ng-container>

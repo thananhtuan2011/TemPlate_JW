@@ -1,0 +1,1128 @@
+<p-toast></p-toast>
+<form
+    *ngIf="display && customerForm"
+    class="w-12"
+    [formGroup]="customerForm"
+    autocomplete="off"
+>
+    <div class="p-0 md:p-4 card grid">
+        <div class="col-12 md:col-3 flex justify-content-center">
+            <div class="md:fixed flex flex-column">
+                <div class="flex justify-content-center">
+                    <img
+                        *ngIf="customerForm.value.avatar"
+                        class="cursor-pointer"
+                        style="border-radius: 50%"
+                        src="{{
+                            serverURLImage + '/' + customerForm.value.avatar
+                        }}"
+                        alt="Avatar"
+                        width="150"
+                        height="150"
+                        (click)="uploadFile.click()"
+                    />
+                    <img
+                        *ngIf="!customerForm.value.avatar"
+                        class="cursor-pointer"
+                        style="border-radius: 50%"
+                        src="assets/layout/images/user.png"
+                        alt="Avatar"
+                        width="150"
+                        height="150"
+                        (click)="uploadFile.click()"
+                    />
+                    <input
+                        #uploadFile
+                        class="hidden"
+                        type="file"
+                        (change)="doAttachFile($event)"
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-9">
+            <p-accordion>
+                <!--personal info-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="router.url.includes('suppliers') ? 'label.supplier_info': 'label.customer_info'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'name',
+                                        'phone',
+                                        'facebook',
+                                        'gender',
+                                        'birthday',
+                                        'provinceId',
+                                        'districtId',
+                                        'wardId',
+                                        'email',
+                                        'address'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_personal_info' | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--code-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="code"
+                                    >{{ "label.customer_code" | translate
+                                    }}<span class="text-pink-400"
+                                        >*</span
+                                    ></label
+                                >
+                                <input
+                                    pInputText
+                                    id="code"
+                                    [(ngModel)]="customerForm.value.code"
+                                    formControlName="code"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('code')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('code')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('code')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.customer_code' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--fullName-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="name"
+                                    >{{ "label.customer_name" | translate
+                                    }}<span class="text-pink-400"
+                                        >*</span
+                                    ></label
+                                >
+                                <input
+                                    pInputText
+                                    id="name"
+                                    [(ngModel)]="customerForm.value.name"
+                                    formControlName="name"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('name')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('name')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('name')"
+                                    class="p-error"
+                                    [innerHTML]="
+                                        'info.customer_name' | translate
+                                    "
+                                ></small>
+                            </div>
+
+                            <!--email-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="email"
+                                    >{{ "label.email" | translate
+                                    }}<span class="text-pink-400"
+                                        >*</span
+                                    ></label
+                                >
+                                <input
+                                    pInputText
+                                    id="email"
+                                    [(ngModel)]="customerForm.value.email"
+                                    formControlName="email"
+                                    [class.ng-invalid]="
+                                        checkValidValidator('email')
+                                    "
+                                    [class.ng-dirty]="
+                                        checkValidValidator('email')
+                                    "
+                                />
+                                <small
+                                    *ngIf="checkValidValidator('email')"
+                                    class="p-error"
+                                    [innerHTML]="'info.email' | translate"
+                                ></small>
+                            </div>
+
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="userId">{{
+                                    "label.employee" | translate
+                                }}</label>
+                                <p-dropdown
+                                    [options]="employees"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [optionLabel]="'fullName'"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    [(ngModel)]="customerForm.value.userCreated"
+                                    [optionValue]="'id'"
+                                    [showClear]="true"
+                                    [placeholder]="'label.employee' | translate"
+                                    [disabled]="true"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--customer type-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    [translate]="'label.customer_type'"
+                                ></label>
+                                <p-dropdown
+                                    [options]="customerTypes"
+                                    [optionValue]="'id'"
+                                    [optionLabel]="'name'"
+                                    [appendTo]="'body'"
+                                    [showClear]="true"
+                                    [formControlName]="
+                                        'customerClassficationId'
+                                    "
+                                    [filter]="true"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .customerClassficationId
+                                    "
+                                    class="w-full"
+                                    [placeholder]="'label.empty' | translate"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--priceList-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label htmlFor="priceList">{{
+                                    "label.price_list" | translate
+                                }}</label>
+                                <p-dropdown
+                                    id="priceList"
+                                    [options]="types.priceList"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'code'"
+                                    showClear="true"
+                                    class="w-full"
+                                    [formControlName]="'priceList'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                ></p-dropdown>
+                            </div>
+
+                            <!--phone-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="phone"
+                                    [translate]="'label.phone'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="phone"
+                                    [(ngModel)]="customerForm.value.phone"
+                                    formControlName="phone"
+                                />
+                            </div>
+
+                            <!--facebook-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="facebook"
+                                    [translate]="'label.facebook'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="facebook"
+                                    [(ngModel)]="customerForm.value.facebook"
+                                    formControlName="facebook"
+                                />
+                            </div>
+
+                            <!--gender-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    for="gender"
+                                    [translate]="'label.gender'"
+                                ></label>
+                                <div class="flex">
+                                    <div
+                                        class="field-radiobutton md:pr-6 mt-2 pt-1"
+                                    >
+                                        <p-radioButton
+                                            id="gender1"
+                                            name="gender"
+                                            value="0"
+                                            [(ngModel)]="
+                                                customerForm.value.gender
+                                            "
+                                            [formControlName]="'gender'"
+                                        >
+                                        </p-radioButton>
+                                        <label
+                                            for="gender1"
+                                            [translate]="'label.male'"
+                                        ></label>
+                                    </div>
+                                    <div class="field-radiobutton mt-2 pt-1">
+                                        <p-radioButton
+                                            id="gender2"
+                                            name="gender"
+                                            value="1"
+                                            [(ngModel)]="
+                                                customerForm.value.gender
+                                            "
+                                            [formControlName]="'gender'"
+                                        >
+                                        </p-radioButton>
+                                        <label
+                                            for="gender2"
+                                            [translate]="'label.female'"
+                                        ></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--birthday-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="birthday"
+                                    [translate]="'label.birthday'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="customerForm.value.birthday"
+                                    formControlName="birthday"
+                                    slotChar="dd/mm/yyyy"
+                                ></p-inputMask>
+                            </div>
+
+                            <!--province-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="provinceId"
+                                    [translate]="'label.province'"
+                                ></label>
+                                <p-dropdown
+                                    id="provinceId"
+                                    [options]="provinces"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="customerForm.value.provinceId"
+                                    [formControlName]="'provinceId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    (onChange)="getDistrict($event)"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--district-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="districtId"
+                                    [translate]="'label.district'"
+                                ></label>
+                                <p-dropdown
+                                    id="districtId"
+                                    [options]="districts"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="customerForm.value.districtId"
+                                    [formControlName]="'districtId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    (onChange)="getWard($event)"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--ward-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="wardId"
+                                    [translate]="'label.ward'"
+                                ></label>
+                                <p-dropdown
+                                    id="wardId"
+                                    [options]="wards"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="customerForm.value.wardId"
+                                    [formControlName]="'wardId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--address-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="address"
+                                    [translate]="'label.address'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="address"
+                                    [(ngModel)]="customerForm.value.address"
+                                    formControlName="address"
+                                />
+                            </div>
+                        </div>
+
+                        <p-divider></p-divider>
+
+                        <!--identify info-->
+                        <div class="grid w-full mx-auto">
+                            <div class="col-12 flex flex-wrap">
+                                <h5
+                                    class="m-0 mr-2"
+                                    [translate]="'label.identify'"
+                                ></h5>
+                            </div>
+
+                            <!--identify-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardNo"
+                                    [translate]="'label.identify'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="identityCardNo"
+                                    [(ngModel)]="
+                                        customerForm.value.identityCardNo
+                                    "
+                                    formControlName="identityCardNo"
+                                />
+                            </div>
+
+                            <!--identifyCreatedDate-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardIssueDate"
+                                    [translate]="'label.identify_created_date'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="
+                                        customerForm.value.identityCardIssueDate
+                                    "
+                                    formControlName="identityCardIssueDate"
+                                    slotChar="dd/mm/yyyy"
+                                ></p-inputMask>
+                            </div>
+
+                            <!--identifyCreatedPlace-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardIssuePlace"
+                                    [translate]="'label.identify_created_place'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="identityCardIssuePlace"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .identityCardIssuePlace
+                                    "
+                                    formControlName="identityCardIssuePlace"
+                                />
+                            </div>
+
+                            <!--identifyExpiredDate-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardValidUntil"
+                                    [translate]="'label.identify_expired_date'"
+                                ></label>
+                                <p-inputMask
+                                    mask="99/99/9999"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .identityCardValidUntil
+                                    "
+                                    formControlName="identityCardValidUntil"
+                                    slotChar="dd/mm/yyyy"
+                                ></p-inputMask>
+                            </div>
+
+                            <!--nativeProvinceId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardProvinceId"
+                                    [translate]="'label.native_province'"
+                                ></label>
+                                <p-dropdown
+                                    id="identityCardProvinceId"
+                                    [options]="nativeProvinces"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .identityCardProvinceId
+                                    "
+                                    [formControlName]="'identityCardProvinceId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    (onChange)="getNativeDistrict($event)"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--nativeDistrictId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardDistrictId"
+                                    [translate]="'label.native_district'"
+                                ></label>
+                                <p-dropdown
+                                    id="identityCardDistrictId"
+                                    [options]="nativeDistricts"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .identityCardDistrictId
+                                    "
+                                    [formControlName]="'identityCardDistrictId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                    (onChange)="getNativeWard($event)"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--nativeWardId-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardWardId"
+                                    [translate]="'label.native_ward'"
+                                ></label>
+                                <p-dropdown
+                                    id="identityCardWardId"
+                                    [options]="nativeWards"
+                                    [optionLabel]="'name'"
+                                    [optionValue]="'id'"
+                                    showClear="true"
+                                    [(ngModel)]="
+                                        customerForm.value.identityCardWardId
+                                    "
+                                    [formControlName]="'identityCardWardId'"
+                                    [appendTo]="'body'"
+                                    [placeholder]="'label.empty' | translate"
+                                    [filter]="true"
+                                    filterBy="name"
+                                >
+                                </p-dropdown>
+                            </div>
+
+                            <!--placeOfPermanent-->
+                            <div class="field col-12 md:col-6 flex flex-column">
+                                <label
+                                    htmlFor="identityCardPlaceOfPermanent"
+                                    [translate]="'label.place_of_permanent'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="identityCardPlaceOfPermanent"
+                                    [(ngModel)]="
+                                        customerForm.value
+                                            .identityCardPlaceOfPermanent
+                                    "
+                                    formControlName="identityCardPlaceOfPermanent"
+                                />
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--billing information-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.billing_information'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'companyNameTax',
+                                        'addressTax',
+                                        'taxCode',
+                                        'accountNumberTax',
+                                        'bankTax',
+                                        'phoneTax'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_billing_information'
+                                            | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <!--company_name-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="companyNameTax"
+                                    [translate]="'label.company_name'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="companyNameTax"
+                                    [(ngModel)]="
+                                        customerForm.value.companyNameTax
+                                    "
+                                    formControlName="companyNameTax"
+                                />
+                            </div>
+                            <!--tax_code-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="taxCode"
+                                    [translate]="'label.tax_code'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="taxCode"
+                                    [(ngModel)]="customerForm.value.taxCode"
+                                    formControlName="taxCode"
+                                />
+                            </div>
+                            <!--address-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="addressTax"
+                                    [translate]="'label.address'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="addressTax"
+                                    [(ngModel)]="customerForm.value.addressTax"
+                                    formControlName="addressTax"
+                                />
+                            </div>
+                            <!--phone_number-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="phoneTax"
+                                    [translate]="'label.phone_number'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="phoneTax"
+                                    [(ngModel)]="customerForm.value.phoneTax"
+                                    formControlName="phoneTax"
+                                />
+                            </div>
+                            <!--account_number-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="accountNumberTax"
+                                    [translate]="'label.bank_account'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="accountNumberTax"
+                                    [(ngModel)]="
+                                        customerForm.value.accountNumberTax
+                                    "
+                                    formControlName="accountNumberTax"
+                                />
+                            </div>
+                            <!--banking-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="bankTax"
+                                    [translate]="'label.bank_name'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="bankTax"
+                                    [(ngModel)]="customerForm.value.bankTax"
+                                    formControlName="bankTax"
+                                />
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--Account Connection-->
+                <p-accordionTab *ngIf="showAccountingConnection">
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.account_connection'"
+                            ></h5>
+                            <div
+                                class="flex align-items-center"
+                                *ngIf="
+                                    isInvalidForm &&
+                                    checkValidMultiValidator([
+                                        'debitCode',
+                                        'debitDetailCodeFirst',
+                                        'debitDetailCodeSecond'
+                                    ])
+                                "
+                            >
+                                <span
+                                    class="p-error"
+                                    style="margin-top: 2px"
+                                    [translate]="
+                                        'info.enter_connection_info' | translate
+                                    "
+                                ></span>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="grid w-full mx-auto">
+                            <ng-container
+                                *ngTemplateOutlet="taiKhoanNoTmp"
+                            ></ng-container>
+                            <ng-container
+                                *ngTemplateOutlet="chiTietNo1Tmp"
+                            ></ng-container>
+                            <ng-container
+                                *ngTemplateOutlet="chiTietNo2Tmp"
+                            ></ng-container>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+
+                <!--accountant information-->
+                <p-accordionTab>
+                    <ng-template pTemplate="header">
+                        <div class="flex flex-wrap">
+                            <h5
+                                class="m-0 mr-2"
+                                [translate]="'label.account_infor'"
+                            ></h5>
+                        </div>
+                    </ng-template>
+                    <ng-template
+                        pTemplate="content"
+                        formArrayName="accountants"
+                    >
+                        <div
+                            *ngFor="
+                                let abc of accountants.controls;
+                                let i = index
+                            "
+                            [formGroupName]="i"
+                            class="grid w-full mx-auto"
+                        >
+                            <div class="field col-12 flex-column m-0 p-0">
+                                <p-divider align="right">
+                                    <p-button
+                                        label="Xóa"
+                                        icon="pi pi-times"
+                                        styleClass="p-button-outlined p-button-sm"
+                                        (click)="removeAccountant(i)"
+                                    ></p-button>
+                                </p-divider>
+                            </div>
+                            <!--accountantName-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="accountantName"
+                                    [translate]="
+                                        'label.accountant_contact_name'
+                                    "
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="accountantName"
+                                    formControlName="name"
+                                />
+                            </div>
+                            <!--accountantPosition-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="accountantPosition"
+                                    [translate]="
+                                        'label.accountant_position_and_note'
+                                    "
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="accountantPosition"
+                                    formControlName="position"
+                                />
+                            </div>
+                            <!--accountantPhone-->
+                            <div class="field col-12 md:col-4 flex flex-column">
+                                <label
+                                    htmlFor="accountantPhone"
+                                    [translate]="'label.phone_number'"
+                                ></label>
+                                <input
+                                    pInputText
+                                    id="accountantPhone"
+                                    formControlName="phone"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="grid w-full mx-auto flex justify-content-center"
+                        >
+                            <p-button
+                                (onClick)="addAccountant()"
+                                icon="pi pi-plus"
+                                label="Thêm liên hệ"
+                                styleClass="p-button-outlined p-button-success"
+                            >
+                            </p-button>
+                        </div>
+                    </ng-template>
+                </p-accordionTab>
+            </p-accordion>
+            <span class="font-bold mt-1" style="color: red;">
+                {{ 'label.note_customer_required' | translate }}
+            </span>
+        </div>
+        <div class="col-12 flex justify-content-end">
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+                class="pr-2"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                [disabled]="!validation"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </div>
+</form>
+
+<add-edit-account
+    #addEditAccount
+    [accountType]="currentAccountType"
+    (updateSuccessfull)="onAddEditAccountSuccess()"
+></add-edit-account>
+<add-edit-account-details
+    #addEditAccountDetail
+    [accountType]="currentAccountType"
+    (updateSuccessfull)="onAddEditFirstChildAccountSuccess()"
+></add-edit-account-details>
+
+<ng-template #taiKhoanNoTmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit"
+            >{{ "label.account" | translate }}
+            <span class="text-pink-400">*</span></label
+        >
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitCodeTmp
+                    [ngModel]="fc['debitCode'].value"
+                    [suggestions]="debitCodeFilter"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitCode
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [lazy]="true"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="20"
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitCode($event)"
+                    (onFocus)="debitCodeTmp.handleDropdownClick()"
+                    (input)="fc['debitCode'].setValue($event?.target?.value)"
+                    (onClear)="onClearDebitCode()"
+                    (onSelect)="onSelectDebitCode($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>Tính chất {{ debit.accGroup }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{ debit.closingDebit | number: "1.0-0" }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitCodeTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="addEditAccount.show()"
+            ></button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietNo1Tmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit1" [translate]="'label.detail_1'"></label>
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitDetailCodeFirstTmp
+                    [ngModel]="fc['debitDetailCodeFirst'].value"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitDetailCodeFirst
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="debitDetailCodeFirstFilter"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [delay]="500"
+                    [disabled]="!isDebitCodeHas || !isDebitCodeHasDetails"
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitDetailCodeFirst($event)"
+                    (onFocus)="debitDetailCodeFirstTmp.handleDropdownClick()"
+                    (input)="
+                        fc['debitDetailCodeFirst'].setValue(
+                            $event?.target?.value
+                        )
+                    "
+                    (onKeyUp)="
+                        onKeyUpAutoCompleteLazyLoadding({
+                            event: $event,
+                            key: configAriseEnum.debitDetailCodeFirst
+                        })
+                    "
+                    (onClear)="onClearDebitDetailCodeFirst()"
+                    (onSelect)="onSelectDebitDetailCodeFirst($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            *ngIf="debit"
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div class="w-3rem border-right-1 px-1">
+                                <p>{{ debit.warehouseCode }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>{{ debit.closingStockQuantity || 0 }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{
+                                        debit.closingDebit || 0
+                                            | number: "1.0-0"
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitDetailCodeFirstTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="onAddEditAccountDetail(true)"
+            ></button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #chiTietNo2Tmp>
+    <div class="field col-12 md:col-4 flex flex-column">
+        <label htmlFor="debit2" [translate]="'label.detail_2'"></label>
+        <div class="flex">
+            <div class="p-inputgroup w-full mr-2">
+                <p-autoComplete
+                    #debitDetailCodeSecondTmp
+                    [ngModel]="fc['debitDetailCodeSecond'].value"
+                    [ngClass]="{
+                        'autocomplete-panel-hidden':
+                            isHiddenAutoCompleteDebitDetailCodeSecond
+                    }"
+                    [emptyMessage]="emptyMessageAutoComplete"
+                    [suggestions]="debitDetailCodeSecondFilter"
+                    [showEmptyMessage]="true"
+                    [autoHighlight]="true"
+                    [delay]="500"
+                    [disabled]="
+                        !isDebitDetailCodeFirstHasDetails ||
+                        !isDebitDetailCodeFirstHas
+                    "
+                    [completeOnFocus]="true"
+                    [showClear]="false"
+                    [autoWidth]="false"
+                    (completeMethod)="filterDebitDetailCodeSecond($event)"
+                    (onKeyUp)="
+                        onKeyUpAutoCompleteLazyLoadding({
+                            event: $event,
+                            key: configAriseEnum.debitDetailCodeSecond
+                        })
+                    "
+                    (onFocus)="debitDetailCodeSecondTmp.handleDropdownClick()"
+                    (input)="
+                        fc['debitDetailCodeSecond'].setValue(
+                            $event?.target?.value
+                        )
+                    "
+                    (onClear)="onClearDebitDetailCodeSecond()"
+                    (onSelect)="onSelectDebitDetailCodeSecond($event)"
+                    field="code"
+                    class="p-inputtext-sm capitalize"
+                >
+                    <ng-template let-debit pTemplate="item">
+                        <div
+                            *ngIf="debit"
+                            class="w-auto flex flex-nowrap align-content-center"
+                        >
+                            <div class="w-5rem border-right-1">
+                                <p>{{ debit.code }}</p>
+                            </div>
+                            <div class="w-3rem border-right-1 px-1">
+                                <p>{{ debit.warehouseCode }}</p>
+                            </div>
+                            <div
+                                class="w-26rem overflow-hidden border-right-1 px-1"
+                            >
+                                <marquee *ngIf="debit.name?.length > 54"
+                                    >{{ debit.name }}
+                                </marquee>
+                                <p
+                                    class="mb-0"
+                                    *ngIf="debit.name?.length <= 54"
+                                >
+                                    {{ debit.name }}
+                                </p>
+                            </div>
+                            <div class="w-6rem border-right-1 px-1">
+                                <p>{{ debit.closingStockQuantity || 0 }}</p>
+                            </div>
+                            <div class="w-6rem px-1">
+                                <p>
+                                    {{
+                                        debit.closingDebit || 0
+                                            | number: "1.0-0"
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <div
+                    (click)="debitDetailCodeSecondTmp.clear()"
+                    class="p-inputgroup-addon cursor-pointer"
+                >
+                    <i class="pi pi-times"></i>
+                </div>
+            </div>
+            <button
+                pButton
+                icon="pi pi-plus"
+                class="w-4rem"
+                (click)="onAddEditAccountDetail(false)"
+            ></button>
+        </div>
+    </div>
+</ng-template>

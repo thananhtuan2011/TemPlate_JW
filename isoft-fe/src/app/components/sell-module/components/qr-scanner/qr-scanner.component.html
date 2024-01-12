@@ -1,0 +1,22 @@
+<p-dialog
+    header="Quét mã QR"
+    [(visible)]="isVisible"
+    [style]="{ width: '300px' }"
+    [maximizable]="true"
+    [baseZIndex]="10000"
+    (onHide)="onHide.emit()"
+>
+    <zxing-scanner
+        (scanSuccess)="onScanSuccess.emit($event)"
+        [delayBetweenScanSuccess]="2000"
+        [enable]="isVisible"
+    >
+    </zxing-scanner>
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-times"
+            label="Đóng"
+            (onClick)="onHide.emit()"
+        ></p-button>
+    </ng-template>
+</p-dialog>

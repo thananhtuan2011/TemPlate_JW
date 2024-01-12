@@ -1,0 +1,107 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.daily_report'"></h5>
+    <p-table
+        #dt1
+        [value]="lstDailyReport"
+        [columns]="cols"
+        dataKey="id"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-4">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="startDate"
+                        dateFormat="dd-mm-yy"
+                        class="mr-3"
+                        [placeholder]="'Ngày bắt đầu'"
+                        (onSelect)="getDailyReport()"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-4">
+                    <p-calendar
+                        [showIcon]="true"
+                        inputId="icon"
+                        [(ngModel)]="endDate"
+                        dateFormat="dd-mm-yy"
+                        [placeholder]="'Ngày kết thúc'"
+                        (onSelect)="getDailyReport()"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-4 flex justify-content-end">
+                    <button
+                        class="p-button-warning w-auto"
+                        pButton
+                        type="button"
+                        [label]="'label.export_excel' | translate"
+                        (click)="onChangePrintExcel()"
+                    ></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [style]="col.width">
+                    <span [translate]="col.header"></span>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-salarySocial
+            let-columns="columns"
+        >
+            <tr>
+                <ng-container *ngFor="let col of cols">
+                    <td *ngIf="col.value == 'createdDate'" [style]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p>
+                            {{ rowData[col.value] | date: "d/MM/yyyy" }}
+                        </p>
+                    </td>
+                    <td *ngIf="col.value != 'createdDate'" [style]="col.width">
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p style="margin-left: auto">
+                            {{
+                                (rowData[col.value] ? rowData[col.value] : 0)
+                                    | number
+                            }}
+                        </p>
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    No General Profiit after tax found.
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading Profiit after tax Level data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

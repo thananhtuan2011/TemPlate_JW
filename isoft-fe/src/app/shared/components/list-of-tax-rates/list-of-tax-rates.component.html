@@ -1,0 +1,22 @@
+<p-dropdown
+	#pDropdown
+	[options]="taxRates"
+	[placeholder]="'label.tax_vat' | translate"
+	[filter]="true"
+	optionLabel="name"
+	optionValue="code"
+	[disabled]="disabled"
+	[(ngModel)]="value"
+	(onChange)="onValueChange($event)"
+	[showClear]="true"
+	(onClear)="onClear($event)"
+	appendTo="body"
+>
+	<ng-template let-data pTemplate="selectedItem">
+		<span *ngIf="!isShowFull">{{ data?.code }}</span>
+		<span *ngIf="isShowFull">{{ data?.code }} | {{ data?.description }} | {{ data?.percent }}%</span>
+	</ng-template>
+	<ng-template let-data pTemplate="item">
+		<span>{{ data?.code }} | {{ data?.description }} | {{ data?.percent }}%</span>
+	</ng-template>
+</p-dropdown>

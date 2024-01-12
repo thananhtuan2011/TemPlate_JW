@@ -1,0 +1,12 @@
+:host ::ng-deep {
+    .info-row-tbl td {
+        font-size: 10px;
+        padding-top: 0 !important;
+        padding-bottom: 4px !important;
+    }
+
+    .edit-row-tbl td {
+        border-bottom: none !important;
+        padding: 4px 4px !important;
+    }
+}

@@ -1,0 +1,287 @@
+<p-dialog
+    [(visible)]="displayNotification"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <div class="flex align-items-center">
+            {{ "label.order_list" | translate }}
+            <button
+                class="p-button-info ml-2"
+                pButton
+                [label]="'label.hide_all_bill' | translate"
+                (click)="deleteNotifications()"
+            ></button>
+        </div>
+    </ng-template>
+    <div class="mb-4 card p-2" *ngFor="let msg of messages">
+        <div class="flex flex-column">
+            <div>
+                <!--send to cashier-->
+                <div
+                    *ngIf="msg.tranType.indexOf('SendToCashier') >= 0"
+                    class="flex align-items-center"
+                >
+                    <div *ngIf="msg.status !== 'Cancel'">
+                        <span
+                            >Đơn số:
+                            <strong style="color: var(--primary-color)"
+                                >{{ msg.billNumber }} -
+                                {{ msg.deskName }}</strong
+                            >
+                            Số tiền
+                            <strong>{{
+                                msg.totalAmount || 0 | number: "1.0-0"
+                            }}</strong>
+                            của KH:
+                            <strong style="color: var(--primary-color)">{{
+                                msg.customerName?.trim()
+                            }}</strong>
+                            <strong style="color: var(--green-400)">
+                                từ nhân viên {{ msg.userCode.trim() }}</strong
+                            ><br />
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="1 > msg.tranType.indexOf('Paid')"
+                            >
+                                Thanh toán: Chưa</strong
+                            >
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                            >
+                                Thanh toán: Hoàn thành</strong
+                            ><br />
+                            <strong
+                                style="color: var(--green-400)"
+                                *ngIf="1 > msg.tranType.indexOf('SendToChef')"
+                            >
+                                Kho: Không gửi</strong
+                            ></span
+                        ><br />
+                        <i style="color: lightgrey; font-size: 12px">{{
+                            msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                        }}</i>
+                    </div>
+
+                    <div *ngIf="msg.status === 'Cancel'">
+                        <span
+                            >Đơn số:
+                            <strong style="color: var(--primary-color)"
+                                >{{ msg.billNumber }} -
+                                {{ msg.deskName }}</strong
+                            >
+                            Số tiền
+                            <strong>{{
+                                msg.totalAmount || 0 | number: "1.0-0"
+                            }}</strong>
+                            của KH:
+                            <strong style="color: var(--primary-color)">{{
+                                msg.customerName?.trim()
+                            }}</strong>
+                            đã bị <strong style="color: #ff4d4f"> hủy bỏ</strong
+                            ><br
+                        /></span>
+                        <i style="color: lightgrey; font-size: 12px">{{
+                            msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                        }}</i>
+                    </div>
+                </div>
+                <!--send to chef-->
+                <div *ngIf="msg.tranType.indexOf('SendToChef') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.billNumber }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{ msg.totalAmount | number: "1.0-0" }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:<strong style="color: var(--green-400)">
+                            Đã gửi</strong
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        >
+                    </span>
+                </div>
+                <!--cooking-->
+                <div *ngIf="msg.tranType.indexOf('Cooking') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.billNumber }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <span style="color: var(--orange-400)"
+                            >đang tiến hành</span
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        >
+                    </span>
+                </div>
+                <!--cooked-->
+                <div nz-col *ngIf="msg.tranType.indexOf('Cooked') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.billNumber }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:<strong style="color: var(--green-400)">
+                            Hoàn thành</strong
+                        >
+                        Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        ></span
+                    >
+                </div>
+                <!--userReceived-->
+                <div *ngIf="msg.tranType.indexOf('UserReceived') >= 0">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.billNumber }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <strong style="color: var(--green-400)"
+                            >đã nhận đơn </strong
+                        >Thanh toán:<strong
+                            style="color: var(--green-400)"
+                            *ngIf="0 > msg.tranType.indexOf('Paid')"
+                        >
+                            Chưa</strong
+                        >
+                        <strong
+                            style="color: var(--green-400)"
+                            *ngIf="msg.tranType.indexOf('Paid') >= 0"
+                        >
+                            Hoàn thành</strong
+                        ></span
+                    >
+                </div>
+                <!--paid-->
+                <div *ngIf="msg.tranType === 'Paid'">
+                    <span
+                        >Đơn số:
+                        <strong style="color: var(--primary-color)"
+                            >{{ msg.billNumber }} - {{ msg.deskName }}</strong
+                        >
+                        Số tiền
+                        <strong>{{
+                            msg.totalAmount || 0 | number: "1.0-0"
+                        }}</strong>
+                        của NV:
+                        <strong style="color: var(--primary-color)">{{
+                            msg.userCode.trim()
+                        }}</strong>
+                        Kho:
+                        <strong style="color: var(--green-400)"
+                            >Không gởi </strong
+                        >Thanh toán:
+                        <strong style="color: var(--green-400)">
+                            Hoàn thành</strong
+                        ></span
+                    ><br />
+                    <i style="color: lightgrey; font-size: 12px">{{
+                        msg.createdDate | date: "dd/MM/yyyy hh:mm:ss"
+                    }}</i>
+                </div>
+            </div>
+            <div class="flex gap-8 mt-2">
+                <button
+                    class="p-button-info"
+                    pButton
+                    *ngIf="msg.permisionShowButtons.includes('ADD')"
+                    (click)="addBillFromEmployee(msg)"
+                >
+                    Thêm DS
+                </button>
+
+                <button
+                    *ngIf="msg.permisionShowButtons.includes('CANCEL')"
+                    class="p-button-danger"
+                    pButton
+                    (click)="cancelBill(msg)"
+                >
+                    Hủy
+                </button>
+                <!-- *ngIf="msg.status === 'Cancel'" -->
+                <button
+                    *ngIf="msg.permisionShowButtons.includes('HIDE')"
+                    class="p-button-danger"
+                    pButton
+                    (click)="deleteNotification(msg)"
+                >
+                    Ẩn
+                </button>
+                <!-- || msg.tranType.indexOf('UserReceived') >= 0 -->
+                <button
+                    class="p-button-info"
+                    pButton
+                    *ngIf="msg.permisionShowButtons.includes('ACCEPT')"
+                    style="background-color: var(--green-400); border: none"
+                    (click)="receivedBill(msg)"
+                >
+                    Nhận đơn
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- {{messages | json}} -->
+</p-dialog>

@@ -1,0 +1,148 @@
+<div class="a5-horizontal">
+    <div class="head">
+        <div class="head_left">
+            <span>{{ company?.name }}</span>
+            <span>{{ company?.address }}</span>
+            <span>Mã số thuế: {{ company?.mst }}</span>
+        </div>
+        <div class="head_right">
+            <span>Mẫu số: 02 - VT</span>
+        </div>
+    </div>
+    <div class="tite">
+        <br />
+        <h2>PHIẾU NHẬP KHO</h2>
+        <span style="font-style: italic">{{ dateStr }}</span>
+        <span style="font-size: 11px">(Liên 1)</span>
+        <div class="tite_right">
+            <span class="tite_right_title" style="margin-bottom: 8px"
+                >Số: PN {{ order }}</span
+            >
+            <div style="margin-left: 22px; text-align: left">
+                <div class="inright">Nợ: {{ debitCodeStr }}</div>
+                <div class="inright">Có: {{ creditCodeStr }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="wrapper">
+            <div class="padding_bt_d2">
+                <span class="lable"> - Họ tên người giao hàng: </span>
+                <span>
+                    {{ dataPrint?.orginalCompanyName }}
+                </span>
+            </div>
+            <div class="padding_bt_d2">
+                <span class="lable"> - Địa chỉ: </span>
+                <span>
+                    {{ dataPrint?.orginalAddress }}
+                </span>
+            </div>
+            <div class="padding_bt_d2 text-overflow">
+                <span class="lable"> - Lý do nhập kho: </span>
+                <span *ngIf="orginalDescription.length > 100">
+                    {{ orginalDescription.substr(0, 100) }}...
+                </span>
+                <span *ngIf="100 >= orginalDescription.length">
+                    {{ orginalDescription }}
+                </span>
+            </div>
+            <div class="padding_bt">
+                <span class="lable"> - Nhập tại kho: </span>
+                <span>
+                    {{ dataPrint?.warehouseId }}
+                </span>
+            </div>
+        </div>
+        <table>
+            <thead class="yellow-header">
+                <tr class="big-tbhead">
+                    <th style="text-align: center">Stt</th>
+                    <th style="text-align: center">Tên mặt hàng</th>
+                    <th style="text-align: center">Mã hàng</th>
+                    <th style="text-align: center">Đvt</th>
+                    <th style="text-align: center">Số lượng</th>
+                    <th style="text-align: center">Đơn giá</th>
+                    <th style="text-align: center">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of dataTables; let i = index">
+                    <tr class="light-border-bottom">
+                        <td style="text-align: center">{{ i + 1 }}</td>
+                        <td style="text-align: left">
+                            {{ item?.orginalDescription }}
+                        </td>
+                        <td style="text-align: left">{{ item?.code }}</td>
+                        <td style="text-align: left">{{ item?.dvt }}</td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatQuantity(item?.quantity) }}
+                        </td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatQuantity(item?.unitPrice) }}
+                        </td>
+                        <td style="text-align: right">
+                            {{ appUtil.formatCurrencyVND(item?.amount) }}
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+            <tfoot style="border-top: 2px solid">
+                <tr>
+                    <td></td>
+                    <td class="text_center lable" style="text-align: center">
+                        Cộng
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text_right lable" style="text-align: right">
+                        {{ appUtil.formatCurrencyVND(total) }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="padding_bt_d2 sm-size" style="margin-top: 10px">
+            <span>
+                Tổng số tiền (viết bằng chữ):
+                {{ appUtil.formatCurrencyVNDString(total) }}
+            </span>
+        </div>
+        <div class="padding_bt_d2 sm-size">
+            <span>
+                Ghi chú: Tiền thuế VAT đầu vào =
+                {{ appUtil.formatCurrencyVND(calTax()) }}. Tổng cộng Tiền hàng
+                và Thuế VAT đầu vào =
+                {{ appUtil.formatCurrencyVND(calTax() + total) }}
+            </span>
+        </div>
+        <div class="padding_bt_d2 sm-size">
+            <span> Số chứng từ kèm theo: {{ dataPrint?.attachVoucher }} </span>
+        </div>
+        <p class="p_month">
+            <i> {{ dateStr }}</i>
+        </p>
+        <div class="sign">
+            <div>
+                <p class="lable">Người lập phiếu</p>
+                <p class="p_empty"></p>
+            </div>
+            <div>
+                <p class="lable">Người giao hàng</p>
+                <p class="p_empty"></p>
+                <h4>{{ dataPrint?.orginalCompanyName }}</h4>
+            </div>
+            <div>
+                <p class="lable">Thủ kho</p>
+                <p class="p_empty"></p>
+                <h4>{{ company?.noteOfChiefSupplier }}</h4>
+            </div>
+            <div>
+                <p class="lable">Thủ trưởng đơn vị</p>
+                <p class="p_empty"></p>
+                <h4>{{ company.nameOfCeo }}</h4>
+            </div>
+        </div>
+    </div>
+</div>

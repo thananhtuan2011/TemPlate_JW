@@ -1,0 +1,35 @@
+<div class="field">
+    <label class="font-bold" *ngIf="label">{{ label }}</label>
+    <p-dropdown
+        [options]="options"
+        [formControl]="formControl"
+        [optionLabel]="optionLabel"
+        [optionValue]="optionValue"
+        [placeholder]="placeholder"
+        [appendTo]="appendTo"
+        [disabled]="disabled"
+    >
+        <ng-template let-data pTemplate="selectedItem">
+            <span>{{
+                data
+                    ? countIdentity
+                        ? data[optionValue] +
+                          ". " +
+                          (data[optionLabel] | translate)
+                        : (data[optionLabel] | translate)
+                    : ""
+            }}</span>
+        </ng-template>
+        <ng-template let-data pTemplate="item">
+            <span>{{
+                data
+                    ? countIdentity
+                        ? data[optionValue] +
+                          ". " +
+                          (data[optionLabel] | translate)
+                        : (data[optionLabel] | translate)
+                    : ""
+            }}</span>
+        </ng-template>
+    </p-dropdown>
+</div>

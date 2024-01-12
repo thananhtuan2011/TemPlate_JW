@@ -1,0 +1,232 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="
+            isEdit
+                ? 'label.timekeeping_position_update'
+                : 'label.timekeeping_position_add'
+        "
+    ></h5>
+    <form [formGroup]="TargetForm">
+        <div class="grid w-full">
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="code"
+                    >{{ "label.code" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <input
+                    pInputText
+                    id="code"
+                    [(ngModel)]="TargetForm.value.code"
+                    formControlName="code"
+                    [ngClass]="checkValidValidator('code')"
+                />
+                <small
+                    *ngIf="checkValidValidator('code')"
+                    class="p-error"
+                    [innerHTML]="'info.code' | translate"
+                ></small>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="name_target"
+                    >{{ "label.name_target" | translate
+                    }}<span class="text-pink-400">*</span></label
+                >
+                <input
+                    pInputText
+                    id="name_target"
+                    [(ngModel)]="TargetForm.value.name"
+                    formControlName="name"
+                    [ngClass]="checkValidValidator('name')"
+                />
+                <small
+                    *ngIf="checkValidValidator('name')"
+                    class="p-error"
+                    [innerHTML]="'info.name' | translate"
+                ></small>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="tax_code">{{
+                    "label.tax_code" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="tax_code"
+                    [(ngModel)]="TargetForm.value.identityCode"
+                    formControlName="identityCode"
+                />
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="address">{{
+                    "label.address" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="address"
+                    [(ngModel)]="TargetForm.value.address"
+                    formControlName="address"
+                />
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="unit_price">{{
+                    "label.unit_price" | translate
+                }}</label>
+                <p-inputNumber
+                    id="unit_price"
+                    [(ngModel)]="TargetForm.value.unitPrice"
+                    formControlName="unitPrice"
+                >
+                </p-inputNumber>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="sum_price">{{
+                    "label.sum_price" | translate
+                }}</label>
+                <p-inputNumber
+                    id="sum_price"
+                    [(ngModel)]="TargetForm.value.total"
+                    formControlName="total"
+                >
+                </p-inputNumber>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="effective">{{
+                    "label.effective" | translate
+                }}</label>
+                <p-inputNumber
+                    id="effective"
+                    [(ngModel)]="TargetForm.value.armyNumber"
+                    formControlName="armyNumber"
+                >
+                </p-inputNumber>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="present">{{
+                    "label.present" | translate
+                }}</label>
+                <p-inputNumber
+                    id="present"
+                    [(ngModel)]="TargetForm.value.present"
+                    formControlName="present"
+                >
+                </p-inputNumber>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="time_start">{{
+                    "label.time_start" | translate
+                }}</label>
+                <p-inputMask
+                    mask="99/99/9999"
+                    [(ngModel)]="TargetForm.value.startDate"
+                    formControlName="startDate"
+                    slotChar="dd/mm/yyyy"
+                ></p-inputMask>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="time_end">{{
+                    "label.time_end" | translate
+                }}</label>
+                <p-inputMask
+                    mask="99/99/9999"
+                    [(ngModel)]="TargetForm.value.endDate"
+                    formControlName="endDate"
+                    slotChar="dd/mm/yyyy"
+                ></p-inputMask>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="number_contact">{{
+                    "label.number_contact" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="number_contact"
+                    [(ngModel)]="TargetForm.value.nameContact"
+                    formControlName="nameContact"
+                />
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="phone">{{ "label.phone" | translate }}</label>
+                <input
+                    pInputText
+                    id="phone"
+                    [(ngModel)]="TargetForm.value.phone"
+                    formControlName="phone"
+                />
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="date_export_receipt">{{
+                    "label.date_export_receipt" | translate
+                }}</label>
+                <p-inputMask
+                    mask="99/99/9999"
+                    [(ngModel)]="TargetForm.value.dateInvoice"
+                    formControlName="dateInvoice"
+                    slotChar="dd/mm/yyyy"
+                ></p-inputMask>
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="note">{{ "label.note" | translate }}</label>
+                <input
+                    pInputText
+                    id="note"
+                    [(ngModel)]="TargetForm.value.note"
+                    formControlName="note"
+                />
+            </div>
+            <div class="field col-12 md:col-6 flex flex-column">
+                <label htmlFor="status_active">{{
+                    "label.status_active" | translate
+                }}</label>
+                <div class="flex">
+                    <div class="field-radiobutton md:pr-6 mt-2 pt-1">
+                        <p-radioButton
+                            id="status"
+                            name="status"
+                            [value]="true"
+                            [(ngModel)]="TargetForm.value.status"
+                            [formControlName]="'status'"
+                        >
+                        </p-radioButton>
+                        <label
+                            for="cooperate"
+                            [translate]="'label.cooperate'"
+                        ></label>
+                    </div>
+                    <div class="field-radiobutton mt-2 pt-1">
+                        <p-radioButton
+                            id="status"
+                            name="status"
+                            [value]="false"
+                            [(ngModel)]="TargetForm.value.status"
+                            [formControlName]="'status'"
+                        ></p-radioButton>
+                        <label
+                            for="stop_cooperate"
+                            [translate]="'label.stop_cooperate'"
+                        ></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="p-fluid p-formgrid grid mt-2">
+                <div
+                    class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                >
+                    <p-button
+                        icon="pi pi-times"
+                        (click)="onBack()"
+                        [label]="'button.backF6' | translate"
+                        styleClass="p-button-outlined"
+                    ></p-button>
+                    <p-button
+                        icon="pi pi-check"
+                        (click)="onSubmit()"
+                        [label]="'button.saveF8' | translate"
+                    >
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

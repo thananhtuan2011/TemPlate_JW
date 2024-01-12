@@ -1,0 +1,986 @@
+<div *ngIf="!display && !displayHistories" class="card card-table">
+    <h5
+        *ngIf="router.url === '/uikit/customers'"
+        [translate]="'label.customer_management'"
+    ></h5>
+    <h5
+        *ngIf="router.url === '/uikit/suppliers'"
+        [translate]="'label.supplier_management'"
+    ></h5>
+    <h5
+        *ngIf="router.url === '/uikit/web-customers'"
+        [translate]="'label.web_customer_management'"
+    ></h5>
+    <div class="flex row">
+        <div class="col-5 flex flex-column align-items-center pr-0">
+            <span class="text-center">{{
+                "label.funnel_chart_customer_filter" | translate
+                }}</span>
+            <is-funnel-chart
+                [height]="'180px'"
+                [data]="statisChartCustomerData"
+            ></is-funnel-chart>
+        </div>
+        <div class="col-7 flex flex-column pl-0">
+            <span class="text-center">{{
+                "label.customer_statistics_birthday_in_month_chart" | translate
+                }}</span>
+            <p-chart
+                type="bar"
+                [data]="statisticsBirthdayInMonthData"
+                height="180px"
+                (onDataSelect)="onSelectBirthdayMonth($event)"
+            ></p-chart>
+        </div>
+    </div>
+    <p-table
+        #dt1
+        [columns]="cols"
+        [value]="lstCustomers"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [(selection)]="selectedCustomers"
+        [rowsPerPageOptions]="[5, 10, 25, 50, { showAll: 'Tất cả' }]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCustomers($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="flex justify-content-start md:justify-content-between flex-column md:flex-row"
+            >
+                <div
+                    class="flex justify-content-start md:justify-content-start flex-column md:flex-row"
+                >
+                    <div class="flex flex-column gap-8">
+                        <div class="flex gap-8">
+                            <ng-container *ngFor="let job of customerJobs">
+                                <p-tag
+                                    class="cursor-pointer"
+                                    [icon]="job.isSelect ? 'pi pi-check' : ''"
+                                    [style]="{
+                                        'background-color': job.color,
+                                        'border-radius': '10px'
+                                    }"
+                                    [value]="job.nameAndCount"
+                                    (click)="getJobCustomers(job)"
+                                ></p-tag>
+                            </ng-container>
+                        </div>
+                        <div class="flex gap-8">
+                            <ng-container *ngFor="let status of customerStatus">
+                                <p-tag
+                                    class="cursor-pointer {{
+                                        status.isDisable ? 'opacity-50' : ''
+                                    }}"
+                                    [icon]="
+                                        status.isSelect ? 'pi pi-check' : ''
+                                    "
+                                    [style]="{
+                                        'background-color': status.color,
+                                        'border-radius': '10px'
+                                    }"
+                                    [value]="status.nameAndCount"
+                                    (click)="getStatusCustomers(status)"
+                                ></p-tag>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="flex justify-content-between md:justify-content-end mt-2"
+                >
+                    <app-customer-notification class="mr-2"></app-customer-notification>
+                    <button
+                        pButton
+                        [label]="!isMobile ? ('button.import' | translate) : ''"
+                        class="p-button-success mr-2"
+                        icon="pi pi-upload"
+                        (click)="fileInput.click()"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        [label]="
+                            !isMobile
+                                ? ('button.change_employee' | translate)
+                                : ''
+                        "
+                        pButton
+                        class="p-button-info mr-2"
+                        icon="pi pi-arrows-h"
+                        (click)="changeEmployeeVisible = true"
+                    ></button>
+                    <input
+                        id="fileInput"
+                        #fileInput
+                        type="file"
+                        (change)="import($event)"
+                        style="display: none"
+                    />
+                    <button
+                        pButton
+                        [label]="!isMobile ? ('button.export' | translate) : ''"
+                        class="p-button-warning mr-2"
+                        icon="pi pi-download"
+                        (click)="getCustomers(null, true)"
+                    ></button>
+                    <!-- add button -->
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        [label]="!isMobile ? ('button.addF7' | translate) : ''"
+                        class="mr-2"
+                        icon="pi pi-user-plus"
+                        (click)="isEdit = false; showDialog()"
+                    ></button>
+                    <!-- add button -->
+                    <p-button
+                        class="p-button-danger relative"
+                        icon="pi pi-th-large"
+                        (click)="op.toggle($event)"
+                    ></p-button>
+                </div>
+            </div>
+            <p-panel
+                [toggleable]="true"
+                [collapsed]="true"
+                styleClass="mb-3 mt-2"
+            >
+                <ng-template pTemplate="header">
+                    <span
+                        class="text-sm md:text-lg m-0 text-white"
+                        [translate]="'label.search_advanced'"
+                    ></span>
+                </ng-template>
+                <div class="grid p-fluid formgrid">
+                    <div class="grid col-12 my-2">
+                        <!-- add customer -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                [translate]="'label.date_add_customer_from'"
+                            ></label>
+                            <p-calendar
+                                [showIcon]="true"
+                                inputId="icon"
+                                [(ngModel)]="dateAddCustomerFrom"
+                                dateFormat="dd-mm-yy"
+                            ></p-calendar>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                [translate]="'label.date_add_customer_from'"
+                            ></label>
+                            <p-calendar
+                                [showIcon]="true"
+                                inputId="icon"
+                                [(ngModel)]="dateAddCustomerTo"
+                                dateFormat="dd-mm-yy"
+                            ></p-calendar>
+                        </div>
+                        <!-- age -->
+                        <div class="field col-6 md:col-3 px-3">
+                            <label>{{ "label.age_from" | translate }}</label>
+                            <p-inputNumber
+                                [(ngModel)]="startAge"
+                                [ngModelOptions]="{ standalone: true }"
+                                mode="decimal"
+                                [min]="0"
+                                [max]="100"
+                                [showButtons]="true"
+                            >
+                            </p-inputNumber>
+                        </div>
+                        <div class="field col-6 md:col-3 px-3">
+                            <label>{{ "label.age_to" | translate }}</label>
+                            <p-inputNumber
+                                [(ngModel)]="endAge"
+                                [ngModelOptions]="{ standalone: true }"
+                                mode="decimal"
+                                [min]="startAge"
+                                [max]="100"
+                                [showButtons]="true"
+                            >
+                            </p-inputNumber>
+                        </div>
+                        <div class="field col-6 md:col-3 px-3">
+                            <label [translate]="'label.cmnd_or_code'"></label>
+                            <input pInputText [(ngModel)]="cmnd"/>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <label [translate]="'label.gender'"></label>
+                            <p-dropdown
+                                [options]="genders"
+                                [optionLabel]="'key'"
+                                [filter]="true"
+                                filterBy="key"
+                                [optionValue]="'value'"
+                                [(ngModel)]="gender"
+                                [ngModelOptions]="{ standalone: true }"
+                                [showClear]="true"
+                                [placeholder]="'label.gender' | translate"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <!-- customer_target -->
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                [translate]="'label.customer_target'"
+                            ></label>
+                            <p-dropdown
+                                [options]="customer_target"
+                                [optionLabel]="'key'"
+                                filterBy="key"
+                                [optionValue]="'value'"
+                                [(ngModel)]="typeCustomer"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'label.customer_target' | translate
+                                "
+                            >
+                            </p-dropdown>
+                        </div>
+
+                        <div class="field col-12 md:col-3 px-3">
+                            <label [translate]="'label.employee'"></label>
+                            <p-dropdown
+                                [options]="users"
+                                [ngModelOptions]="{ standalone: true }"
+                                [optionLabel]="'fullName'"
+                                [filter]="true"
+                                filterBy="fullName"
+                                [(ngModel)]="usersChoose"
+                                [optionValue]="'id'"
+                                [showClear]="true"
+                                [placeholder]="'label.employee' | translate"
+                                (onChange)="change()"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <!-- debt -->
+                        <!-- <div class="field col-6 md:col-3 px-3" >
+                                <label [translate]="'label.debit_from'"></label>
+                                <p-inputNumber [(ngModel)]="debitFrom" [ngModelOptions]="{standalone: true}"  mode="decimal" [min]="0"  [showButtons]="true"> </p-inputNumber>
+                            </div>
+                            <div class="field col-6 md:col-3 px-3" >
+                                <label [translate]="'label.debit_to'"></label>
+                                <p-inputNumber [(ngModel)]="debitTo" [ngModelOptions]="{standalone: true}"  mode="decimal" [min]="debitFrom" [showButtons]="true"> </p-inputNumber>
+                            </div>
+                            <div class="field col-6 md:col-3 px-3" >
+                                <label [translate]="'label.bought_from'"></label>
+                                <p-inputNumber [(ngModel)]="boughtFrom" [ngModelOptions]="{standalone: true}"  mode="decimal" [min]="0" [showButtons]="true"> </p-inputNumber>
+                            </div>
+                            <div class="field col-6 md:col-3 px-3" >
+                                <label [translate]="'label.bought_to'"></label>
+                                <p-inputNumber [(ngModel)]="boughtTo" [ngModelOptions]="{standalone: true}"  mode="decimal" [min]="boughtFrom" [showButtons]="true"> </p-inputNumber>
+                            </div> -->
+                        <!-- customer_job -->
+                        <div class="field col-6 md:col-3 px-3">
+                            <label [translate]="'label.customer_job'"></label>
+                            <p-dropdown
+                                [options]="customerJobs"
+                                [optionLabel]="'name'"
+                                filterBy="name"
+                                [optionValue]="'id'"
+                                [(ngModel)]="customer_job"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'label.customer_target' | translate
+                                "
+                                [showClear]="true"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <label [translate]="'label.status'"></label>
+                            <p-dropdown
+                                [options]="customerStatus"
+                                [optionLabel]="'name'"
+                                filterBy="name"
+                                [optionValue]="'id'"
+                                [(ngModel)]="status"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'label.customer_target' | translate
+                                "
+                                [showClear]="true"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <label
+                                [translate]="'label.customer_target'"
+                            ></label>
+                            <p-dropdown
+                                [options]="customerTypes"
+                                [optionLabel]="'name'"
+                                filterBy="name"
+                                [optionValue]="'id'"
+                                [(ngModel)]="account"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="
+                                    'label.customer_target' | translate
+                                "
+                                [showClear]="true"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <div class="field col-12 md:col-3 px-3">
+                            <label [translate]="'label.area'"></label>
+                            <p-dropdown
+                                [options]="areas"
+                                [optionLabel]="'label'"
+                                filterBy="name"
+                                [optionValue]="'value'"
+                                [(ngModel)]="area"
+                                [ngModelOptions]="{ standalone: true }"
+                                [placeholder]="'label.area' | translate"
+                                [showClear]="true"
+                            >
+                            </p-dropdown>
+                        </div>
+                        <div class="field col-12 md:col-12 px-3">
+                            <div class="flex mt-2 md:mt-4 justify-content-end">
+                                <p-button
+                                    [label]="'button.search' | translate"
+                                    class="mr-2"
+                                    (click)="searchCustomer()"
+                                ></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-panel>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th class="w-5rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <ng-container *ngFor="let col of columns">
+                    <th *ngIf="col.display" [ngClass]="col.width">
+                        <span [translate]="col.header"></span>
+                    </th>
+                </ng-container>
+                <th *ngIf="isMobile"></th>
+                <th
+                    class="w-2"
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                ></th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-customer
+        >
+            <tr>
+                <td class="p-0" *ngIf="isMobile">
+                    <div class="flex flex-column">
+                        <div class="row-mobile flex align-items-center justify-content-around">
+                            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                            <span class="px-2">-</span>
+                            <p-avatar
+                                [image]="customer.avatar"
+                                size="large"
+                                shape="circle"
+                                [title]="customer.name"
+                            >
+                            </p-avatar>
+                            <span class="px-2">-</span>
+                            <span
+                                class="cursor-pointer text-primary font-bold"
+                                (click)="getContractList(customer)"
+                            >{{ customer.code }}</span>
+                            <span class="px-2">-</span>
+                            {{ customer.phone }}
+                        </div>
+                        <span class="row-mobile font-bold text-primary">{{ customer.name }}</span>
+                        <span class="row-mobile">{{ customer.address }}</span>
+                        <div class="row-mobile flex justify-content-between">
+                            <span
+                                class="p-column-title"
+                                [translate]="'label.contact'"
+                            ></span>
+                            <p-badge
+                                [style]="{
+                            'background-color': customer.details.lastJobColor
+                        }"
+                                *ngIf="
+                            customer.details && customer.details.lastJobId > 0
+                        "
+                                [value]="customer.details.lastJobName"
+                            ></p-badge>
+                        </div>
+                        <div class="row-mobile flex justify-content-between">
+                            <span
+                                class="p-column-title"
+                                [translate]="'label.status'"
+                            ></span>
+                            <p-badge
+                                [style]="{
+                                'background-color':
+                                    customer.details.lastJobStatusColor
+                            }"
+                                *ngIf="
+                                customer.details &&
+                                customer.details.lastJobStatusId > 0
+                            "
+                                [value]="customer.details.lastJobStatusName"
+                            ></p-badge>
+                        </div>
+                        <div class="row-mobile flex justify-content-between align-items-center">
+                            <div class="w-11rem gap-8 flex align-items-center">
+                                <span
+                                    class="p-column-title"
+                                    [translate]="'label.quote'"
+                                ></span>
+                                :
+                                <span class="text-blue-600 cursor-pointer">
+                                    {{
+                                    customer.customerQuoteCount
+                                        ? (customer.customerQuoteCount | number)
+                                        : 0
+                                    }}
+                                </span>
+                                <button
+                                    pButton
+                                    icon="pi pi-eye"
+                                    (click)="onViewHistory(customer)"
+                                    pTooltip="Xem chi tiết Bill"
+                                ></button>
+                            </div>
+                            <div class="w-8rem">
+                                 <span
+                                     class="p-column-title"
+                                     [translate]="'label.customer_job'"
+                                 ></span>
+                                {{ customer.totalTask }}
+                            </div>
+                        </div>
+                        <div class="row-mobile flex justify-content-between align-items-center">
+                            <div class="w-8rem">
+                               <span
+                                   class="p-column-title"
+                                   [translate]="'label.bought'"
+                               ></span>
+                                :{{
+                                customer.totalAmountPay
+                                    ? (customer.totalAmountPay | number)
+                                    : 0
+                                }}
+                            </div>
+                            <div class="w-8rem">
+                                <span
+                                    class="p-column-title"
+                                    [translate]="'label.debt'"
+                                ></span>
+                                :
+                                <span class="font-bold" style="color: #ff6384">
+                                    {{
+                                    customer.totalAmountCN
+                                        ? (customer.totalAmountCN | number)
+                                        : 0
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <ng-container *ngIf="!isMobile">
+                    <td class="w-5rem">
+                        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                    </td>
+                    <td class="w-7rem">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.avatar'"
+                    ></span>
+                        <p-avatar
+                            [image]="customer.avatar"
+                            size="large"
+                            shape="circle"
+                            [title]="customer.name"
+                        >
+                        </p-avatar>
+                    </td>
+                    <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.code'"
+                    ></span>
+                        <span
+                            class="cursor-pointer text-primary font-bold"
+                            (click)="getContractList(customer)"
+                        >{{ customer.code }}</span
+                        >
+                    </td>
+                    <td class="w-3">
+                    <span
+                        class="w-16rem p-column-title"
+                        [translate]="'label.customer_name'"
+                    ></span
+                    >{{ customer.name }}
+                    </td>
+                    <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.contact'"
+                    ></span>
+                        <p-badge
+                            [style]="{
+                            'background-color': customer.details.lastJobColor
+                        }"
+                            *ngIf="
+                            customer.details && customer.details.lastJobId > 0
+                        "
+                            [value]="customer.details.lastJobName"
+                        ></p-badge>
+                    </td>
+                    <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.status'"
+                    ></span>
+                        <p-badge
+                            [style]="{
+                            'background-color':
+                                customer.details.lastJobStatusColor
+                        }"
+                            *ngIf="
+                            customer.details &&
+                            customer.details.lastJobStatusId > 0
+                        "
+                            [value]="customer.details.lastJobStatusName"
+                        ></p-badge>
+                    </td>
+                    <td
+                        class="w-1 flex justify-content-between md:justify-content-end"
+                        style="color: #36a2eb"
+                    >
+                    <span
+                        class="p-column-title font-bold"
+                        [translate]="'label.bought'"
+                    ></span>
+                        {{
+                        customer.totalAmountPay
+                            ? (customer.totalAmountPay | number)
+                            : 0
+                        }}
+                    </td>
+                    <td
+                        class="w-1 flex justify-content-between md:justify-content-end"
+                        style="color: #ff6384"
+                    >
+                    <span
+                        class="p-column-title font-bold"
+                        [translate]="'label.debt'"
+                    ></span>
+                        {{
+                        customer.totalAmountCN
+                            ? (customer.totalAmountCN | number)
+                            : 0
+                        }}
+                    </td>
+                    <td
+                        class="w-1 flex justify-content-between md:justify-content-end"
+                    >
+                    <span
+                        class="p-column-title font-bold"
+                        [translate]="'label.quote'"
+                    ></span>
+                        <a
+                            class="font-bold text-blue-600 cursor-pointer"
+                            (click)="onViewHistory(customer)"
+                        >{{
+                            customer.customerQuoteCount
+                                ? (customer.customerQuoteCount | number)
+                                : 0
+                            }}</a
+                        >
+                    </td>
+                    <td class="w-1 flex justify-content-between md:justify-content-end">
+                        <span
+                            class="p-column-title"
+                            [translate]="'label.customer_job'"
+                        ></span>
+                        <span class="font-bold text-green-600 cursor-pointer" [routerLink]="'/uikit/workflow'">{{ customer.totalTask }}</span>
+                    </td>
+                    <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.phone_number'"
+                    ></span
+                    >{{ customer.phone }}
+                    </td>
+                    <td class="w-4">
+                    <span
+                        class="p-column-title w-12rem"
+                        [translate]="'label.address'"
+                    ></span
+                    >{{ customer.address }}
+                    </td>
+                </ng-container>
+                <ng-container *ngFor="let col of columns">
+                    <td
+                        *ngIf="col.optionHide && col.display"
+                        [ngClass]="col.width"
+                    >
+                        <span
+                            class="p-column-title"
+                            [translate]="col.header"
+                        ></span>
+                        <p
+                            *ngIf="
+                                col.value == 'identityCardIssueDate' ||
+                                    col.value == 'identityCardValidUntil';
+                                else elseBlock
+                            "
+                        >
+                            {{ rowData[col.value] | date: "dd/MM/yyyy" }}
+                        </p>
+                        <ng-template #elseBlock>{{
+                            rowData[col.value]
+                            }}</ng-template>
+                    </td>
+                </ng-container>
+                <td *ngIf="isMobile">
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUANLYCONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        [pTooltip]="'label.add_job_infor' | translate"
+                        pButton
+                        icon="pi pi-fw pi-th-large"
+                        (click)="onAddJob(customer.id)"
+                    ></button>
+                    <button
+                        type="button"
+                        pButton
+                        class="p-button-success"
+                        icon="pi pi-print"
+                        (click)="
+                            dataSelectPrintContract.data = customer;
+                            tieredMenuTmp?.toggle($event)
+                        "
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        pTooltip="Thêm lịch sử liên hệ"
+                        tooltipPosition="left"
+                        icon="pi pi-plus"
+                        (click)="getContractForm(customer)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        pTooltip="Sửa"
+                        tooltipPosition="left"
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        pTooltip="Xóa"
+                        tooltipPosition="left"
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+                <td
+                    *ngIf="!isMobile"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.QUANLYCONGVIEC,
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        [pTooltip]="'label.add_job_infor' | translate"
+                        pButton
+                        icon="pi pi-fw pi-th-large"
+                        (click)="onAddJob(customer.id)"
+                    ></button>
+                    <button
+                        type="button"
+                        pButton
+                        class="p-button-success"
+                        icon="pi pi-print"
+                        (click)="
+                            dataSelectPrintContract.data = customer;
+                            tieredMenuTmp?.toggle($event)
+                        "
+                    ></button>
+
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.ADD
+                        }"
+                        pButton
+                        pTooltip="Thêm lịch sử liên hệ"
+                        tooltipPosition="left"
+                        icon="pi pi-plus"
+                        (click)="getContractForm(customer)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        pTooltip="Sửa"
+                        tooltipPosition="left"
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getDetail(customer.id)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: getCurrentMenu(),
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        pTooltip="Xóa"
+                        tooltipPosition="left"
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDelete(customer.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No customer found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading customer data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<app-change-employee
+    *ngIf="changeEmployeeVisible"
+    [(visible)]="changeEmployeeVisible"
+    [customers]="selectedCustomers"
+    (onHidden)="changeEmployeeVisible = false"
+    (onChangeSuccess)="selectedCustomers = []; getCustomers()"
+></app-change-employee>
+
+<app-customers-form
+    *ngIf="display"
+    #customersForm
+    [formData]="formData"
+    [formCustomerTaxData]="formCustomerTaxData"
+    [isReset]="isReset"
+    [type]="getParams.type"
+    [branches]="branches"
+    [majors]="majors"
+    [positionDetails]="positionDetails"
+    [warehouses]="warehouses"
+    [targets]="targets"
+    [symbols]="symbols"
+    [contractTypes]="contractTypes"
+    [display]="display"
+    (onCancel)="
+        display = false;
+        getJobsAndStatus();
+        getCustomers(null, false);
+        isReset = false
+    "
+    [isEdit]="isEdit"
+    [provinces]="provinces"
+    [nativeProvinces]="nativeProvinces"
+    [roles]="roles"
+    [customerTypes]="customerTypes"
+    [showAccountingConnection]="showAccountingConnection"
+></app-customers-form>
+
+<p-dialog
+    [(visible)]="displayContract"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'label.add_contract_history'"
+        ></h4>
+    </ng-template>
+    <app-contact-history-form
+        #contractForm
+        [display]="displayContract"
+        (onCancel)="
+            displayContract = false;
+            getJobsAndStatus();
+            getCustomers(null, false);
+            isReset = false
+        "
+    >
+    </app-contact-history-form>
+</p-dialog>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_customer_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<app-customer-histories
+    *ngIf="displayHistories"
+    [customer]="selectedCustomer"
+    (onCancel)="displayHistories = false"
+>
+</app-customer-histories>
+
+<p-overlayPanel
+    #op
+    [showCloseIcon]="true"
+    [style]="{ width: '450px' }"
+    focusOnShow="true"
+>
+    <ng-template pTemplate>
+        <p-accordion>
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0"
+                            [translate]="'label.personal_info'"
+                        ></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'personal_info' &&
+                                    col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+            <!-- account -->
+            <p-accordionTab>
+                <ng-template pTemplate="header">
+                    <div class="flex flex-wrap">
+                        <h5
+                            class="m-0"
+                            [translate]="'label.account_connection'"
+                        ></h5>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <div class="grid w-full mx-auto">
+                        <ng-container *ngFor="let col of cols">
+                            <div
+                                *ngIf="
+                                    col.classify == 'account' && col.optionHide
+                                "
+                                class="field p-fluid col-12 md:col-6"
+                            >
+                                <p-checkbox
+                                    [(ngModel)]="col.display"
+                                    class="mr-2"
+                                    [binary]="true"
+                                    inputId="binary"
+                                    [display]="col.classify != 'account'"
+                                ></p-checkbox>
+                                <span [translate]="col.header"></span>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+    </ng-template>
+</p-overlayPanel>
+<p-tieredMenu
+    id="tieredMenuTmp"
+    class="menu"
+    name="menu"
+    #tieredMenuTmp
+    [model]="dataSelectPrintContract.menus"
+    [popup]="true"
+></p-tieredMenu>

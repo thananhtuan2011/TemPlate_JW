@@ -1,0 +1,549 @@
+<div *ngIf="display" class="card card-table">
+    <h5>
+        {{
+        isEdit
+            ? ("label.workflow_edit" | translate)
+            : ("label.workflow_add" | translate)
+        }}
+    </h5>
+    <div class="field grid mb-2">
+        <label for="title" class="col-12 md:col-2">{{
+            "label.workflow_title" | translate
+            }}</label>
+        <div class="col-12 md:col-10">
+            <input
+                pInputText
+                id="title"
+                [readonly]="readonly"
+                type="text"
+                class="w-full"
+                [(ngModel)]="workflowModel.name"
+                [placeholder]="'label.input_title_job' | translate"
+            />
+        </div>
+    </div>
+    <div class="field grid mb-2">
+        <label for="title" class="col-12 md:col-2">{{
+            "label.workflow_project" | translate
+            }}</label>
+        <div class="col-12 md:col-10">
+            <p-checkbox
+                [disabled]="readonly"
+                id="project"
+                [(ngModel)]="workflowModel['isProject']"
+                [binary]="true"
+                [label]="'label.is_project' | translate"
+                inputId="binary"
+            ></p-checkbox>
+        </div>
+    </div>
+    <div class="field grid mb-2">
+        <label for="title" class="col-12 md:col-2 mt-2">{{
+            "label.partner" | translate
+            }}</label>
+        <div class="col-12 md:col-10">
+            <p-autoComplete
+                id="customer"
+                [suggestions]="filteredCustomers"
+                [(ngModel)]="workflowModel.customerName"
+                [placeholder]="'label.find_partner' | translate"
+                [ngModelOptions]="{ standalone: true }"
+                [completeOnFocus]="true"
+                (completeMethod)="filterCustomerName($event)"
+                [forceSelection]="true"
+                [autoHighlight]="true"
+                [showClear]="false"
+                (onSelect)="onCustomerNameSelect($event)"
+                (onClear)="onCustomerNameSelect(null)"
+            >
+            </p-autoComplete>
+        </div>
+    </div>
+    <div class="field grid">
+        <label for="content" class="col-12 md:col-2">{{
+            "label.workflow_content" | translate
+            }}</label>
+        <div class="col-12 md:col-10">
+            <p-editor
+                id="content"
+                [readonly]="readonly"
+                [(ngModel)]="workflowModel.description"
+                [placeholder]="'label.input_content_job' | translate"
+                [style]="{ height: '150px' }"
+                class="w-full"
+            >
+                <ng-template pTemplate="header">
+                    <app-ql-formats-basic></app-ql-formats-basic>
+                </ng-template>
+            </p-editor>
+        </div>
+    </div>
+    <div class="field grid align-items-start mb-2">
+        <label class="col-12 md:col-2 pl-2">{{
+            "label.workflow_check_list" | translate
+        }}</label>
+        <div class="col-12 md:col-10">
+            <div
+                class="flex flex-column justify-content-start max-h-16rem overflow-y-auto mb-2"
+            >
+            <div
+                *ngFor="let item of workflowModel['checkList']"
+                class="w-full flex flex-row align-items-center justify-content-between"
+            >
+                <div class="w-full flex flex-row justify-content-start">
+                    <p-checkbox
+                        [disabled]="readonly"
+                        [(ngModel)]="item.status"
+                        [binary]="true"
+                        inputId="binary"
+                    ></p-checkbox>
+                    <p
+                        class="pl-3"
+                        [ngStyle]="{
+                            'text-decoration': item.status
+                                ? 'line-through solid var(--primary-color) 2px'
+                                : 'none'
+                        }"
+                    >
+                        {{ item.name }}
+                    </p>
+                </div>
+                <button
+                    pButton
+                    pRipple
+                    [disabled]="readonly"
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button-rounded p-button-danger p-button-text text-pink-500"
+                    (click)="removeChecklist(item)"
+                ></button>
+            </div>
+        </div>
+        <div class="flex justify-content-between">
+            <div class="p-inputgroup">
+                <input
+                    type="text"
+                    pInputText
+                    [readonly]="readonly"
+                    [placeholder]="
+                        'label.input_content_to_check' | translate
+                    "
+                    [(ngModel)]="itemCheckList"
+                />
+                <button
+                    type="button"
+                    pButton
+                    [disabled]="readonly"
+                    pRipple
+                    icon="pi pi-plus"
+                    (click)="onAddCheckList()"
+                ></button>
+            </div>
+        </div>
+    </div>
+    <div class="w-full flex field grid align-items-start">
+        <div class="field col-12 md:col-2 mt-2 flex flex-column">
+            <label>{{ "label.image" | translate }}</label>
+            <span class="text-primary text-sm font-italic">(Tối đa 4 ảnh)</span>
+        </div>
+        <div class="col-12 md:col-8 flex-row gap-8 align-items-start grid mt-2">
+            <div *ngIf="!readonly" class="flex gap-8">
+                <button
+                    pButton
+                    icon="pi pi-upload"
+                    (click)="uploadFile.click()"
+                    [label]="'button.import' | translate"
+                ></button>
+                <button
+                    pButton
+                    icon="pi pi-times"
+                    [disabled]="this.workflowModel.fileLink.length === 0"
+                    (click)="onRemoveImages()"
+                    [label]="'button.remove' | translate"
+                ></button>
+                <input
+                    #uploadFile
+                    class="hidden"
+                    type="file"
+                    (change)="doAttachFile($event)"
+                    multiple
+                />
+            </div>
+            <div class="flex gap-8" *ngIf="workflowModel.fileLink">
+                <div *ngFor="let url of workflowModel.fileLink">
+                    <img
+                        *ngIf="isImageExtension(url['fileId'])"
+                        id="{{ url.fileId }}"
+                        class="style_prev_kit"
+                        (click)="onImageClick(url.fileId)"
+                        src="{{ serverImg + url['fileId'] }}"
+                        alt="image"
+                    />
+                    <app-file-preview
+                        *ngIf="!isImageExtension(url['fileId'])"
+                        [fileName]="url['fileId']"
+                        [serverURLImage]="serverImg"
+                    ></app-file-preview>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="field grid mb-2">
+    <label for="responsible" class="col-12 md:col-2">
+        {{ "label.workflow_responsible" | translate }}
+    </label>
+    <div class="col-12 md:col-10">
+        <div class="field grid">
+            <div class="col-12 md:col-6 p-0">
+                <p-dropdown
+                    id="responsible"
+                    [options]="users"
+                    [(ngModel)]="workflowModel['responsiblePerson']"
+                    [placeholder]="
+                            'label.select_responsibility_user' | translate
+                        "
+                    optionValue="id"
+                    [disabled]="readonly"
+                    optionLabel="fullName"
+                    showClear="true"
+                    class="multiselect-custom flex-1"
+                    [filter]="true"
+                    (onFilter)="onFilterUser($event)"
+                >
+                    <ng-template let-value pTemplate="selectedItems">
+                        <div class="w-full h-full">
+                            <p-avatarGroup styleClass="mb-0">
+                                <p-avatar
+                                    *ngFor="
+                                            let selectedUser of workflowModel[
+                                                'responsiblePerson'
+                                            ]
+                                        "
+                                    [image]="selectedUser['avatar']"
+                                    class="mx-2"
+                                    shape="circle"
+                                    [title]="selectedUser.fullName"
+                                ></p-avatar>
+                            </p-avatarGroup>
+                            <div
+                                *ngIf="
+                                        !workflowModel['responsiblePerson'] ||
+                                        workflowModel['responsiblePerson']
+                                            ?.length === 0
+                                    "
+                                class="p-2"
+                            >
+                                {{
+                                "label.select_responsibility_user"
+                                    | translate
+                                }}
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-user pTemplate="item">
+                        <div
+                            class="flex align-items-center justify-content-start"
+                        >
+                            <img
+                                class="h-2rem w-2rem mr-3"
+                                [src]="user['avatar']"
+                                alt=""
+                            />
+                            <p>{{ user.fullName }}</p>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            <div class="col-12 md:col-6 flex pr-0 pt-2 md:pt-0">
+                <p-avatar class="flex align-items-center"
+                          [image]="serverImage + authService.user['avatar']"
+                          shape="circle"
+                          [title]="authService.user.fullname"
+                ></p-avatar>
+                <p-selectButton
+                    [options]="userTypeOptions"
+                    [(ngModel)]="userTypesSelected"
+                    multiple="multiple"
+                    [disabled]="readonly"
+                    optionLabel="name"
+                    optionValue="value"
+                    class="w-full ml-3"
+                ></p-selectButton>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="userTypesSelected?.includes(4)" class="field grid">
+    <label for="createdBy" class="col-12 md:col-2">{{
+        "label.workflow_created_by" | translate
+        }}</label>
+    <div class="col-12 md:col-10">
+        <input
+            id="createdBy"
+            type="text"
+            [readonly]="readonly"
+            class="w-full"
+            [disabled]="true"
+            pInputText
+            [(ngModel)]="workflowModel['userCreateName']"
+        />
+    </div>
+</div>
+<div *ngIf="userTypesSelected?.includes(2)" class="field grid mb-2">
+    <label for="joined" class="col-12 md:col-2">{{
+        "label.workflow_join" | translate
+        }}</label>
+    <div class="col-12 md:col-10">
+        <p-multiSelect
+            id="joined"
+            [options]="users"
+            [(ngModel)]="workflowModel['joinedPersons']"
+            [defaultLabel]="'label.select_responsibility_user' | translate"
+            optionLabel="fullName"
+            [disabled]="readonly"
+            showClear="true"
+            class="multiselect-custom"
+            [filter]="true"
+            (onFilter)="onFilterUser($event)"
+        >
+            <ng-template let-value pTemplate="selectedItems">
+                <div class="w-full h-full">
+                    <p-avatarGroup styleClass="mb-0">
+                        <!--                            {{value | json}}-->
+                        <p-avatar
+                            class="mx-2"
+                            *ngFor="
+                                    let selectedUser of workflowModel[
+                                        'joinedPersons'
+                                    ]
+                                "
+                            [image]="selectedUser['avatar']"
+                            shape="circle"
+                            [title]="selectedUser.fullName"
+                        ></p-avatar>
+                    </p-avatarGroup>
+                    <div
+                        *ngIf="
+                                !workflowModel['joinedPersons'] ||
+                                workflowModel['joinedPersons'].length === 0
+                            "
+                        class="p-2"
+                    >
+                        {{ "label.select_join_user" | translate }}
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-user pTemplate="item">
+                <div class="flex align-items-center justify-content-start">
+                    <img
+                        class="h-2rem w-2rem mr-3"
+                        [src]="user['avatar']"
+                        alt=""
+                    />
+                    <p>{{ user.fullName }}</p>
+                </div>
+            </ng-template>
+        </p-multiSelect>
+    </div>
+</div>
+<div *ngIf="userTypesSelected?.includes(3)" class="field grid mb-2">
+    <label for="viewedBy" class="col-12 md:col-2">{{
+        "label.workflow_view" | translate
+        }}</label>
+    <div class="col-12 md:col-10">
+        <p-multiSelect
+            id="viewedBy"
+            [options]="users"
+            [(ngModel)]="workflowModel['viewedPersons']"
+            [defaultLabel]="'label.select_responsibility_user' | translate"
+            optionLabel="fullName"
+            [disabled]="readonly"
+            showClear="true"
+            class="multiselect-custom"
+            [filter]="true"
+            (onFilter)="onFilterUser($event)"
+        >
+            <ng-template let-value pTemplate="selectedItems">
+                <div class="w-full h-full">
+                    <p-avatarGroup styleClass="mb-0">
+                        <p-avatar
+                            *ngFor="
+                                    let selectedUser of workflowModel[
+                                        'viewedPersons'
+                                    ]
+                                "
+                            [image]="selectedUser['avatar']"
+                            class="mx-2"
+                            shape="circle"
+                            [title]="selectedUser.fullName"
+                        ></p-avatar>
+                    </p-avatarGroup>
+                    <div
+                        *ngIf="
+                                !workflowModel['viewedPersons'] ||
+                                workflowModel['viewedPersons'].length === 0
+                            "
+                        class="p-2"
+                    >
+                        {{ "label.select_viewer" | translate }}
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template let-user pTemplate="item">
+                <div class="flex align-items-center justify-content-start">
+                    <img
+                        class="h-2rem w-2rem mr-3"
+                        [src]="user['avatar']"
+                        alt=""
+                    />
+                    <p>{{ user.fullName }}</p>
+                </div>
+            </ng-template>
+        </p-multiSelect>
+    </div>
+</div>
+<div class="field grid mb-2">
+    <label for="parentProject" class="col-12 md:col-2">
+        {{ "label.workflow_parent_project" | translate }}
+    </label>
+    <div class="col-12 md:col-10">
+        <p-dropdown
+            id="parentProject"
+            [disabled]="readonly"
+            [options]="parentProjects"
+            [(ngModel)]="workflowModel.parentId"
+            [placeholder]="'label.select_parent' | translate"
+            optionLabel="name"
+            optionValue="id"
+            [filter]="true"
+            filterBy="name"
+            showClear="true"
+        >
+        </p-dropdown>
+    </div>
+</div>
+<div class="field grid mb-2">
+    <label for="department" class="col-12 md:col-2">{{
+        "label.workflow_viewer" | translate
+        }}</label>
+    <div class="col-12 md:col-10">
+        <p-dropdown
+            id="department"
+            [disabled]="readonly"
+            [options]="departments"
+            [(ngModel)]="workflowModel['departmentId']"
+            [placeholder]="'label.select_viewer_permission' | translate"
+            optionLabel="name"
+            optionValue="id"
+            [filter]="true"
+            (onFilter)="onFilterDepartment($event)"
+        ></p-dropdown>
+    </div>
+</div>
+<div class="grid my-2">
+    <div class="field col-8 md:col-6 grid p-0 m-0">
+        <label for="deadline" class="col-12 md:col-4 md:mt-2">{{
+            "label.workflow_work_type" | translate
+            }}</label>
+        <div class="col-12 md:col-8">
+            <p-dropdown
+                class="w-full"
+                id="workType"
+                [disabled]="readonly"
+                [options]="workTypes"
+                [(ngModel)]="workflowModel['typeWorkId']"
+                [placeholder]="'label.select_type_job' | translate"
+                optionLabel="name"
+                optionValue="id"
+                showClear="true"
+                (onChange)="onChangeWorkTypes($event)"
+                [filter]="false"
+            ></p-dropdown>
+        </div>
+    </div>
+    <div class="field col-4 md:col-6 grid p-0 m-0">
+        <label
+            for="deadline"
+            class="col-12 md:col-4 md:mt-2 md:justify-content-end"
+        >{{ "label.workflow_point" | translate }}</label
+        >
+        <div class="col-12 md:col-8">
+            <p-inputNumber
+                id="point"
+                [disabled]="readonly"
+                class="w-full"
+                [(ngModel)]="workflowModel['point']"
+            ></p-inputNumber>
+        </div>
+    </div>
+</div>
+<div class="field grid">
+    <label for="deadline" class="col-12 md:col-2 md:-mt-2">{{
+        "label.workflow_expired" | translate
+        }}</label>
+    <div class="col-8 md:col-6 mb-2">
+        <p-calendar
+            #deadline
+            [disabled]="readonly"
+            id="deadline"
+            [(ngModel)]="workflowModel['dueDate']"
+            dateFormat="dd/mm/yy"
+            showIcon="true"
+            [showTime]="false"
+            touchUI="true"
+            class="w-full"
+            [hideOnDateTimeSelect]="false"
+        >
+            <p-footer>
+                <div class="flex justify-content-between">
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        (click)="
+                                workflowModel.dueDate = undefined;
+                                deadline.hideOverlay()
+                            "
+                        class="w-auto p-button-danger"
+                        [label]="'button.clear' | translate"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        type="button"
+                        (click)="deadline.hideOverlay()"
+                        class="w-auto"
+                        [label]="'button.apply' | translate"
+                    ></button>
+                </div>
+            </p-footer>
+        </p-calendar>
+    </div>
+    <div class="col-4">
+        <p-calendar
+            [disabled]="readonly"
+            [(ngModel)]="workflowModel['dueTime']"
+            [timeOnly]="true"
+            placeholder="hh:mm"
+        ></p-calendar>
+    </div>
+</div>
+<div class="w-full flex align-items-center mt-3 md:mt-0 justify-content-center md:justify-content-end">
+    <button
+        icon="pi pi-times"
+        pButton
+        class="w-auto p-button-outlined mr-2"
+        (click)="onCancel.emit({})"
+        [label]="'button.backF6' | translate"
+    ></button>
+    <button
+        *ngIf="!readonly"
+        icon="pi pi-check"
+        class="w-auto"
+        pButton
+        (click)="onSave()"
+        [label]="'button.saveF8' | translate"
+    ></button>
+</div>
+</div>

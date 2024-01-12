@@ -1,0 +1,119 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="isEdit ? 'label.edit_room_table' : 'label.add_room_table'"
+    ></h5>
+    <form [formGroup]="roomTableForm">
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="code"
+                    >{{ "label.code_room_table" | translate }}
+                    <span class="text-pink-400">*</span></label
+                >
+                <input
+                    pInputText
+                    id="code"
+                    [(ngModel)]="roomTableForm.value.code"
+                    formControlName="code"
+                    [ngClass]="checkValidValidator('code')"
+                />
+                <small
+                    *ngIf="checkValidValidator('code')"
+                    class="p-error"
+                    [innerHTML]="'info.code' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="name"
+                    >{{ "label.name_room_table" | translate }}
+                    <span class="text-pink-400">*</span>
+                </label>
+                <input
+                    pInputText
+                    id="name"
+                    [(ngModel)]="roomTableForm.value.name"
+                    formControlName="name"
+                    [ngClass]="checkValidValidator('name')"
+                />
+                <small
+                    *ngIf="checkValidValidator('name')"
+                    class="p-error"
+                    [innerHTML]="'info.name' | translate"
+                ></small>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="floorId">{{ "label.group" | translate }}</label>
+                <p-dropdown
+                    id="floorId"
+                    [options]="dataDropdown"
+                    [optionLabel]="'name'"
+                    [optionValue]="'id'"
+                    showClear="true"
+                    [formControlName]="'floorId'"
+                    [appendTo]="'body'"
+                    class="w-full"
+                    [placeholder]="'label.empty' | translate"
+                    [filter]="true"
+                    filterBy="name"
+                ></p-dropdown>
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="position">{{
+                    "label.number_ordinal" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="position"
+                    [(ngModel)]="roomTableForm.value.position"
+                    formControlName="position"
+                />
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="numberSeat">{{
+                    "label.number_or_seats" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="numberSeat"
+                    [(ngModel)]="roomTableForm.value.numberSeat"
+                    formControlName="numberSeat"
+                />
+            </div>
+        </div>
+        <div class="p-fluid formgrid grid mt-4">
+            <div class="field col">
+                <label htmlFor="description">{{
+                    "label.description" | translate
+                }}</label>
+                <input
+                    pInputText
+                    id="description"
+                    [(ngModel)]="roomTableForm.value.description"
+                    formControlName="description"
+                />
+            </div>
+        </div>
+        <div
+            class="w-full col-12 flex align-items-center justify-content-end mt-5 gap-8"
+        >
+            <p-button
+                icon="pi pi-times"
+                (click)="onCancel.emit({})"
+                [label]="'button.backF6' | translate"
+                styleClass="p-button-outlined"
+            ></p-button>
+            <p-button
+                icon="pi pi-check"
+                (click)="onSubmit()"
+                [label]="'button.saveF8' | translate"
+            ></p-button>
+        </div>
+    </form>
+</div>

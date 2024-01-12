@@ -1,0 +1,78 @@
+:host ::ng-deep {
+    #account-detail-first-module {
+        display: flex;
+        flex-direction: column;
+
+        .table-header-filter {
+            display: flex;
+
+            .table-header-filter-right {
+                display: flex;
+                flex: auto;
+                justify-content: flex-end;
+            }
+
+            button {
+                height: 25px;
+            }
+
+            .p-input-icon-left {
+                height: 25px;
+                input {
+                    padding-top: 0;
+                    padding-bottom: 0;
+                    height: 25px;
+                }
+            }
+
+            .p-dropdown {
+                height: 25px;
+                .p-dropdown-label {
+                    padding-top: 3px;
+                    padding-bottom: 0px;
+                }
+            }
+        }
+
+        .account-table {
+            flex: auto;
+        }
+
+        tbody {
+            tr {
+                &:hover {
+                    background-color: #e9ecef;
+                }
+            }
+        }
+
+        .p-datatable-table {
+            height: auto !important;
+        }
+
+        .p-scroller-content {
+            min-height: auto !important;
+        }
+
+        .p-datatable-scrollable .p-datatable-thead > tr > th,
+        .p-datatable-scrollable .p-datatable-tbody > tr > td,
+        .p-datatable-scrollable .p-datatable-tfoot > tr > td {
+            flex: auto !important;
+            min-height: 32px !important;
+            line-height: 32px !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+            display: block !important;
+        }
+
+        .item-action {
+            display: flex;
+            padding-top: 3px;
+            button {
+                padding: 0;
+                height: 25px;
+                width: 25px;
+            }
+        }
+    }
+}

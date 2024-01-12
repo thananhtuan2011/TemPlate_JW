@@ -1,0 +1,40 @@
+<ng-container *ngIf="data">
+    <div
+        class="is-funnel-chart"
+        [ngStyle]="{ height: height ? height : 'auto' }"
+    >
+        <div class="list flex flex-column align-items-center">
+            <div
+                class="list__item"
+                [ngStyle]="{
+                    'background-color': data.backgroundColors[index],
+                    height: widthPerItem,
+                    width: 100 - (100 / (data.data.length + 1)) * index + '%',
+                    'margin-bottom': last ? '1%' : marginBottomPerItem
+                }"
+                *ngFor="
+                    let item of data.data;
+                    let index = index;
+                    let last = last
+                "
+            >
+                {{ item }}
+            </div>
+        </div>
+
+        <div class="labels flex flex-wrap mb-1">
+            <div
+                class="label flex align-items-center w--50"
+                *ngFor="let label of data.labels; let index = index"
+            >
+                <p
+                    class="label__box-color mr-1 mb-0"
+                    [ngStyle]="{
+                        'background-color': data.backgroundColors[index]
+                    }"
+                ></p>
+                <p class="mb-0 label__text">{{ label }}</p>
+            </div>
+        </div>
+    </div>
+</ng-container>

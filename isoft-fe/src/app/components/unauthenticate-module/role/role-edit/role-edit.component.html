@@ -1,0 +1,278 @@
+<div *ngIf="display" class="card card-table">
+    <h5 [translate]="isEdit ? 'label.role_edit' : 'label.role_add'"></h5>
+    <div class="p-fluid formgrid grid">
+        <div class="field col-12 md:col-4">
+            <label for="code">{{ "label.role_code" | translate }}</label>
+            <input
+                pInputText
+                id="code"
+                type="text"
+                class="w-full"
+                placeholder="Nhập mã nhóm quyền"
+                [(ngModel)]="menuRoleModel.code"
+                autocomplete="off"
+            />
+        </div>
+        <div class="field col-12 md:col-4">
+            <label>{{ "label.role_parent_code" | translate }}</label>
+            <p-dropdown
+                [options]="codeParents"
+                [(ngModel)]="menuRoleModel.codeParent"
+                placeholder="Chọn nhóm cha"
+                optionLabel="name"
+                optionValue="code"
+                [filter]="true"
+                [showClear]="true"
+            ></p-dropdown>
+        </div>
+        <div class="field col-12 md:col-2">
+            <label for="code">{{ "label.numerical_order" | translate }}</label>
+            <input
+                pInputText
+                id="order"
+                type="text"
+                class="w-full"
+                [placeholder]="'label.numerical_order' | translate"
+                [(ngModel)]="menuRoleModel.order"
+            />
+        </div>
+        <div class="field col-12 md:col-2">
+            <label for="name">{{
+                "label.is_role_menu_parent" | translate
+            }}</label>
+            <div class="flex align-items-center mt-2">
+                <p-inputSwitch
+                    (click)="getMenuRole()"
+                    [(ngModel)]="menuRoleModel.isParent"
+                ></p-inputSwitch>
+            </div>
+        </div>
+        <div class="field col-12 md:col-4">
+            <label for="name">{{ "label.role_name" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên nhóm quyền"
+                [(ngModel)]="menuRoleModel.name"
+                autocomplete="off"
+            />
+        </div>
+        <div class="field col-12 md:col-4">
+            <label for="name">{{ "label.role_name_en" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên nhóm quyền"
+                [(ngModel)]="menuRoleModel.nameEn"
+                autocomplete="off"
+            />
+        </div>
+        <div class="field col-12 md:col-4">
+            <label for="name">{{ "label.role_name_ko" | translate }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên nhóm quyền"
+                [(ngModel)]="menuRoleModel.nameKo"
+                autocomplete="off"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="note">{{ "label.role_note" | translate }}</label>
+            <textarea
+                pInputTextarea
+                id="note"
+                [(ngModel)]="menuRoleModel.note"
+                rows="4"
+                placeholder="Nhập ghi chú"
+            ></textarea>
+        </div>
+    </div>
+    <div class="w-full px-1">
+        <p-table
+            [value]="menuRoleModel.listItem"
+            dataKey="id"
+            [rows]="10"
+            [rowHover]="false"
+            styleClass="p-datatable-gridlines sidebar-custom"
+            responsiveLayout="scroll"
+            scrollable="true"
+            scrollDirection="both"
+        >
+            <ng-template pTemplate="caption">
+                <div class="w-full flex justify-content-between">
+                    <div class="formgroup-inline">
+                        <div class="field h-full pt-4">
+                            <label>{{ "label.role" | translate }}</label>
+                        </div>
+                        <div class="field w-15rem">
+                            <p-dropdown
+                                class="w-14rem"
+                                id="role"
+                                [options]="roles"
+                                optionLabel="title"
+                                optionValue="id"
+                                [(ngModel)]="roleItem.userRoleId"
+                                placeholder="Chọn quyền"
+                                [showClear]="true"
+                            ></p-dropdown>
+                        </div>
+                        <div class="field w-16rem">
+                            <p-multiSelect
+                                [options]="actions"
+                                [(ngModel)]="roleItem.actions"
+                                [showHeader]="false"
+                                optionLabel="name"
+                                placeholder="Chọn hành động"
+                                [showClear]="true"
+                            ></p-multiSelect>
+                        </div>
+                    </div>
+                    <button
+                        [disabled]="!roleItem.userRoleId"
+                        pButton
+                        [label]="'button.add' | translate"
+                        style="height: 37px"
+                        icon="pi pi-plus"
+                        (click)="onAddRoleItem()"
+                    ></button>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-6">
+                        <div class="flex align-items-center">
+                            <span [translate]="'label.role'"></span>
+                        </div>
+                    </th>
+                    <th class="w-1">
+                        <div
+                            class="flex justify-content-center align-items-center"
+                        >
+                            <span
+                                [translate]="'label.role_permission_all'"
+                            ></span>
+                        </div>
+                    </th>
+                    <th class="w-1">
+                        <div class="text-center">
+                            <span
+                                [translate]="'label.role_permission_add'"
+                            ></span>
+                        </div>
+                    </th>
+                    <th class="w-1">
+                        <div
+                            class="flex justify-content-center align-items-center"
+                        >
+                            <span
+                                [translate]="'label.role_permission_edit'"
+                            ></span>
+                        </div>
+                    </th>
+                    <th class="w-1">
+                        <div
+                            class="flex justify-content-center align-items-center"
+                        >
+                            <span
+                                [translate]="'label.role_permission_delete'"
+                            ></span>
+                        </div>
+                    </th>
+                    <th class="w-1">
+                        <div
+                            class="flex justify-content-center align-items-center"
+                        >
+                            <span
+                                [translate]="'label.role_permission_view'"
+                            ></span>
+                        </div>
+                    </th>
+                    <th class="w-1 justify-content-center"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-role>
+                <tr>
+                    <td class="w-6 py-2">{{ role.userRoleName }}</td>
+                    <td class="w-1 py-2 text-center">
+                        <p-checkbox
+                            (click)="onChangeRole(role, true)"
+                            [ngModel]="getRoleAll(role)"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-1 py-2 text-center">
+                        <p-checkbox
+                            (click)="onChangeRole(role)"
+                            [(ngModel)]="role.add"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-1 py-2 text-center">
+                        <p-checkbox
+                            (click)="onChangeRole(role)"
+                            [(ngModel)]="role.edit"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-1 py-2 text-center">
+                        <p-checkbox
+                            (click)="onChangeRole(role)"
+                            [(ngModel)]="role.delete"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-1 py-2 text-center">
+                        <p-checkbox
+                            (click)="onChangeRole(role)"
+                            [(ngModel)]="role.view"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td
+                        alignFrozen="right"
+                        pFrozenColumn
+                        [frozen]="true"
+                        class="w-1 flex justify-content-start md:justify-content-center"
+                    >
+                        <button
+                            pButton
+                            class="p-button-danger"
+                            icon="pi pi-trash"
+                            (click)="onDeleteRoleItem(role)"
+                        ></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onBack()"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

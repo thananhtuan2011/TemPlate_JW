@@ -1,0 +1,19 @@
+<div class="field flex flex-column w--100">
+    <ng-container [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'text'">
+            <input
+                uppercase
+                [type]="type"
+                [disabled]="disabled"
+                [placeholder]="placeholder | translate"
+                pInputText
+                [formControl]="formControl"
+                (blur)="onBlur()"
+            />
+        </ng-container>
+    </ng-container>
+
+    <small *ngIf="formControl?.touched && formControl?.invalid" class="p-error">
+        {{ error }}
+    </small>
+</div>

@@ -1,0 +1,35 @@
+<p-tabMenu [model]="tabs" [activeItem]="activeItem"> </p-tabMenu>
+
+<div [ngClass]="activeTabId == '0' ? 'block' : 'hidden'">
+    <app-arise-crud-import-product
+        #ariseCrudProductComponent
+        (onActionRow)="onActionRowProduct($event)"
+        [chartOfAccounts]="chartOfAccounts"
+        [listConfig]="listConfig"
+    ></app-arise-crud-import-product>
+</div>
+<div [ngClass]="activeTabId == '1' ? 'block' : 'hidden'">
+    <app-arise-crud-vat
+        #ariseCrudVatComponent
+        [chartOfAccounts]="chartOfAccounts"
+    ></app-arise-crud-vat>
+</div>
+<div [ngClass]="activeTabId == '2' ? 'block' : 'hidden'">
+    <app-arise-crud-tax
+        #ariseCrudTaxComponent
+        [chartOfAccounts]="chartOfAccounts"
+    ></app-arise-crud-tax>
+</div>
+<div [ngClass]="activeTabId == '3' ? 'block' : 'hidden'">
+    <app-arise-crud-delivery
+        #ariseCrudDeliveryComponent
+        [chartOfAccounts]="chartOfAccounts"
+        [listConfig]="listConfig"
+    ></app-arise-crud-delivery>
+</div>
+<div [ngClass]="activeTabId == '4' ? 'block' : 'hidden'">
+    <app-arise-crud-stock
+        #ariseCrudStockComponent
+        [chartOfAccounts]="chartOfAccounts"
+    ></app-arise-crud-stock>
+</div>

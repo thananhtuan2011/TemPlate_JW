@@ -1,0 +1,42 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card card-table">
+            <h5 [translate]="'left_menu.odd_decimal'"></h5>
+            <app-begin-declare-form
+                #beginDeclareForm
+                (onCancel)="this.isEdit = false; getCompanies()"
+                [isEdit]="isEdit"
+            ></app-begin-declare-form>
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.delete_company_log_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

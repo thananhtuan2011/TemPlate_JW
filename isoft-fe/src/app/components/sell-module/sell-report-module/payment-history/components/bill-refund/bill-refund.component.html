@@ -1,0 +1,123 @@
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="display"
+    [style]="{ 'min-width': '85vw' }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white" [translate]="'label.adjust_bill'"></h6>
+    </ng-template>
+    <p-table
+        #dt1
+        [value]="billDetails"
+        dataKey="id"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        [resizableColumns]="true"
+        [autoLayout]="true"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <span [translate]="'label.id'"></span>
+                </th>
+                <th class="w-2">
+                    <span [translate]="'label.goods_code'"></span>
+                </th>
+                <th class="w-4">
+                    <span [translate]="'label.goods_name'"></span>
+                </th>
+                <th class="w-1">
+                    <div style="display: flex; width: 100%; line-height: 26px">
+                        <div style="flex: auto">
+                            <span [translate]="'label.SL'"></span>
+                        </div>
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div style="display: flex; width: 100%; line-height: 26px">
+                        <div style="flex: auto">
+                            <span>SL trả lại</span>
+                        </div>
+                    </div>
+                </th>
+                <th class="w-3">
+                    <span [translate]="'label.note'"></span>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-billDetail>
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.id'"
+                    ></span>
+                    {{ billDetail.id }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.goods_code'"
+                    ></span>
+                    {{ billDetail.goodsCode }}
+                </td>
+                <td class="w-4">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.goods_name'"
+                    ></span>
+                    <span [title]="billDetail.GoodsName">{{
+                        billDetail.goodsName
+                    }}</span>
+                </td>
+                <td
+                    class="w-1 flex md:justify-content-end"
+                    style="padding: 5px; width: 100px"
+                >
+                    <span [title]="billDetail.quantity">{{
+                        billDetail.quantity
+                    }}</span>
+                </td>
+                <td
+                    class="w-1 flex md:justify-content-end"
+                    style="padding: 5px; width: 100px"
+                >
+                    <p-inputNumber
+                        [(ngModel)]="billDetail.quantityRefund"
+                        class="p-inputtext-sm w-full"
+                    ></p-inputNumber>
+                </td>
+                <td
+                    class="w-3 flex md:justify-content-end"
+                    style="width: 100px"
+                >
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.unit_price'"
+                    ></span>
+                    <textarea
+                        rows="1"
+                        class="w-full"
+                        cols="30"
+                        [(ngModel)]="billDetail.noteRefund"
+                        pInputTextarea
+                        autoResize="autoResize"
+                    ></textarea>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-check"
+            label="{{ 'button.save' | translate }}"
+            styleClass="p-button-text"
+            (click)="onSubmit()"
+        ></p-button>
+    </ng-template>
+</p-dialog>

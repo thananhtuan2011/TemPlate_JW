@@ -1,0 +1,198 @@
+<div class="wrapper">
+    <div class="bill-content">
+        <div id="bill-title" style="text-transform: uppercase; margin: 0!important; font-size: 30px !important; font-weight: bold !important;">Phiếu xuất kho</div>
+        <div id="bill-title" style="text-transform: capitalize !important; margin: 0!important; font-size: 16px !important; font-weight: bold !important; font-style: italic !important;">
+            Ngày {{ getDateType(dataPrint?.bill?.createdDate, 'day') }} tháng {{ getDateType(dataPrint?.bill?.createdDate, 'month') }} năm {{ getDateType(dataPrint?.bill?.createdDate, 'year') }}
+        </div>
+        <div id="bill-title" style="text-transform: capitalize !important; margin: 0!important; font-size: 13px !important; font-weight: normal !important;">
+            Số: {{ dataPrint?.bill?.billNumber }}
+        </div>
+        <div style="text-align: center; position: absolute; right: 0; top: 0; margin-right: 100px; margin-top: 12px;">
+            <div style="font-size: 13px; border-bottom: 1px dotted black; width: 100px;">Nợ: {{ dataPrint?.bill?.debitCode }}</div>
+            <div style="margin-top: 4px; font-size: 13px; border-bottom: 1px dotted black; width: 100px;">Có: 1561</div>
+            <div style="margin-top: 4px; font-size: 13px;">LOẠI TIỀN: VND</div>
+        </div>
+        <table class="customer-info mt-2">
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 120px">Người mua:</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 120px">Khách hàng:</span>
+                    <span style="text-transform: uppercase; margin-left: 5px">{{
+                        dataPrint?.bill?.customerName
+                    }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex">
+                    <span style="min-width: 60px">Địa chỉ:</span>
+                    <span style="margin-left: 5px">{{
+                        dataPrint?.bill?.customerAddress
+                    }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Điện thoại: {{ dataPrint?.bill?.phone }}
+                </td>
+            </tr>
+            <tr>
+                <td>Mã số thuế: {{ dataPrint?.bill?.customerTaxCode }}</td>
+            </tr>
+            <tr>
+                <td>Diễn giải: {{ dataPrint?.bill?.descriptionForLedger }}</td>
+            </tr>
+            <tr>
+                <td>Nhân viên bán hàng: {{ dataPrint?.bill?.userCode }}</td>
+            </tr>
+            <tr>
+                <td>Xuất tại kho:</td>
+            </tr>
+        </table>
+
+        <table class="detail-table mt-4">
+            <tr>
+                <th>Diễn giải</th>
+                <th style="width: 80px">Đơn vị</th>
+                <th style="width: 80px">Số lượng</th>
+                <th style="width: 90px">Đơn giá</th>
+                <th style="width: 120px">Thành tiền</th>
+                <th style="width: 100px">Ghi chú</th>
+            </tr>
+            <tr *ngFor="let item of products; let i = index" class="prod-info">
+                <td style="padding: 0px 2px">{{ item?.goodsName }}</td>
+                <td style="padding: 10px 5px">{{ item?.unitName }}</td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.quantity | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.salePrice | number: "1.0-0" }}
+                </td>
+                <td style="padding: 10px 5px; text-align: right">
+                    {{ item?.amount | number: "1.0-0" }}
+                </td>
+                <td>{{ item?.note }}</td>
+            </tr>
+            <tr class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cộng
+                    tiền hàng:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.originalAmount | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr class="total-info">
+                <td style="padding: 0px 2px">
+                    <span
+                        >Thuế suất thuế GTGT:</span
+                    >
+                </td>
+
+                <td colspan="4">
+                    <strong
+                        >{{ dataPrint.taxPercentage || 0 }} %</strong
+                    >
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tiền thuế GTGT:
+                </td>
+
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint?.bill?.vat | number }}
+                </td>
+            </tr>
+            <tr *ngIf="dataPrint.discountPriceBill > 0" class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Giảm
+                    giá:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.discountPriceBill | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr *ngIf="dataPrint.surchargeBill > 0" class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phụ
+                    thu:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.surchargeBill | number: "1.0-0" }}
+                </td>
+            </tr>
+            <tr class="total-info">
+                <td></td>
+                <td colspan="4">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tổng
+                    tiền thanh toán:
+                </td>
+                <td
+                    style="
+                        padding: 2px 5px;
+                        text-align: right;
+                        font-weight: bold;
+                    "
+                >
+                    {{ dataPrint.totalAmount | number: "1.0-0" }}
+                </td>
+            </tr>
+        </table>
+
+        <p>
+            <i
+                ><strong>Số tiền viết bằng chữ:</strong> {{ totalAmountInWord }}
+            </i>
+        </p>
+    </div>
+    <div class="bill-footer">
+        <div class="item">
+            <p><strong>Người lập phiếu</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Người nhận hàng</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Thủ kho</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Kế toán trưởng</strong></p>
+            <p><strong>(Hoặc bộ phận có nhu cầu nhập)</strong></p>
+            <p><i>(Ký, họ tên)</i></p>
+        </div>
+        <div class="item">
+            <p><strong>Giám đốc</strong></p>
+            <p><i>(Ký, họ tên, đóng dấu)</i></p>
+        </div>
+    </div>
+</div>

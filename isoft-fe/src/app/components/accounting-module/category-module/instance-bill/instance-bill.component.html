@@ -1,0 +1,416 @@
+<div class="card card-table">
+    <h5 [translate]="'label.instance_bill'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        editMode="row"
+        [responsiveLayout]="'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+        (onLazyLoad)="getInvoices($event)"
+        scrollDirection="both"
+    >
+        <ng-template pTemplate="caption"> </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-3" rowspan="4">
+                    <div>
+                        <span [translate]="'label.month'"></span>
+                    </div>
+                </th>
+                <th class="w-2" rowspan="4">
+                    <div class="w-150">
+                        <span
+                            [translate]="'label.instance_bill_type_name'"
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-2" rowspan="4">
+                    <div class="w-11rem">
+                        <span
+                            [translate]="'label.instance_bill_symbol_template'"
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-1" rowspan="4">
+                    <div class="w-10rem">
+                        <span [translate]="'label.instance_bill_symbol'"></span>
+                    </div>
+                </th>
+                <th class="w-5" colspan="5">
+                    <div class="w-30rem">
+                        <span
+                            [translate]="
+                                'label.instance_bill_release_or_opening_stock'
+                            "
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-5" colspan="6">
+                    <div class="w-30rem">
+                        <span
+                            [translate]="
+                                'label.number_deletion_loss_cancellation_in_the_period'
+                            "
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-5" rowspan="3" colspan="3">
+                    <div>
+                        <span [translate]="'label.ending_stocks'"></span>
+                    </div>
+                </th>
+                <th rowspan="4"></th>
+            </tr>
+            <tr>
+                <th class="w-1" rowspan="3">
+                    <div>
+                        <span [translate]="'label.instance_bill_total'"></span>
+                    </div>
+                </th>
+                <th class="w-2" rowspan="2" colspan="2">
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_opening_stock'"
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-2" rowspan="2" colspan="2">
+                    <div>
+                        <span
+                            [translate]="
+                                'label.instance_bill_release_in_period'
+                            "
+                        ></span>
+                    </div>
+                </th>
+                <th class="white-space-nowrap" rowspan="2" colspan="3">
+                    <div>
+                        <span
+                            [translate]="
+                                'label.total_usage_deletion_loss_cancellation'
+                            "
+                        ></span>
+                    </div>
+                </th>
+                <th class="w-2" rowspan="1" colspan="3">
+                    <div>
+                        <span [translate]="'label.in_there'"></span>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th rowspan="2" colspan="1">
+                    <div class="w-100">
+                        <span [translate]="'label.amount_used'"></span>
+                    </div>
+                </th>
+                <th colspan="2">
+                    <div>
+                        <span
+                            [translate]="'label.delete_invoice_declaration'"
+                        ></span>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_from_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_end_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_from_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_end_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_from_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.instance_bill_end_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span
+                            [translate]="'label.add_invoice_declaration'"
+                        ></span>
+                    </div>
+                </th>
+                <th rowspan="2" colspan="1">
+                    <div>
+                        <span [translate]="'label.stock_quantity'"></span>
+                    </div>
+                </th>
+                <th rowspan="2" colspan="1">
+                    <div>
+                        <span
+                            [translate]="'label.number_invoice_declaration'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div class="white-space-nowrap">
+                        <span
+                            [translate]="'label.instance_bill_from_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div class="white-space-nowrap">
+                        <span
+                            [translate]="'label.instance_bill_end_of_number'"
+                        ></span>
+                    </div>
+                </th>
+                <th>
+                    <div>
+                        <span [translate]="'label.stock_quantity'"></span>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template
+            pTemplate="body"
+            let-rowData
+            let-editing="editing"
+            let-ri="rowIndex"
+        >
+            <tr [pEditableRow]="rowData">
+                <td>
+                    {{ rowData.month }}
+                </td>
+                <td>
+                    {{ rowData.name }}
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="text"
+                                [(ngModel)]="rowData.templateSymbol"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ rowData.templateSymbol }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="text"
+                                [(ngModel)]="rowData.invoiceSymbol"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ rowData.invoiceSymbol }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.totalRelease || 0) }}
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="number"
+                                [(ngModel)]="rowData.fromOpening"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ numberWithCommas(rowData.fromOpening || 0) }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="number"
+                                [(ngModel)]="rowData.toOpening"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ numberWithCommas(rowData.toOpening || 0) }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="number"
+                                [(ngModel)]="rowData.fromArising"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ numberWithCommas(rowData.fromArising || 0) }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input
+                                class="w--100"
+                                pInputText
+                                type="number"
+                                [(ngModel)]="rowData.toArising"
+                            />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ numberWithCommas(rowData.toArising || 0) }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.fromUsed || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.toUsed || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.totalUsed || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.usedNumber || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.deleteNumberItem || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.deleteNumber || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.fromClosing || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.toClosing || 0) }}
+                </td>
+                <td>
+                    {{ numberWithCommas(rowData.closingNumber || 0) }}
+                </td>
+                <td>
+                    <div
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.KHAIBAOHOADON,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        class="flex align-items-center justify-content-center gap-2"
+                    >
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-trash"
+                            (click)="onRetsetData(rowData, ri)"
+                            class="p-button-rounded p-button-text"
+                            title="Reset dữ liệu"
+                        ></button>
+                        <button
+                            *ngIf="!editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pInitEditableRow
+                            icon="pi pi-pencil"
+                            (click)="onRowEditInit(rowData)"
+                            class="p-button-rounded p-button-text"
+                        ></button>
+                        <button
+                            *ngIf="editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pSaveEditableRow
+                            icon="pi pi-check"
+                            (click)="onRowEditSave(rowData, ri)"
+                            class="p-button-rounded p-button-text p-button-success mr-2"
+                        ></button>
+                        <button
+                            *ngIf="editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pCancelEditableRow
+                            icon="pi pi-times"
+                            (click)="onRowEditCancel(rowData, ri)"
+                            class="p-button-rounded p-button-text p-button-danger"
+                        ></button>
+                        <button
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-sync"
+                            (click)="onSyncData(rowData, ri)"
+                            class="p-button-rounded p-button-text"
+                            title="Đồng bộ kế toán"
+                        ></button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

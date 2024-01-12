@@ -1,0 +1,67 @@
+<div *ngIf="contractDepartmentList" id="print-contract-module">
+    <div class="print-contract-table">
+        <p-table
+            styleClass="p-datatable-gridlines"
+            [value]="contractDepartmentList"
+            [scrollable]="true"
+        >
+            <ng-template pTemplate="header">
+                <ng-container *ngTemplateOutlet="headerTableTmp"></ng-container>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData>
+                <ng-container
+                    *ngTemplateOutlet="
+                        bodyTableTmp;
+                        context: { rowData: rowData }
+                    "
+                ></ng-container>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<ng-template #headerTableTmp>
+    <tr>
+        <th style="max-width: 150px">
+            <span>Mã hợp đồng</span>
+        </th>
+        <th>
+            <span>Tên hợp đồng</span>
+        </th>
+        <th style="max-width: 350px">
+            <span>Phòng ban</span>
+        </th>
+        <th style="max-width: 100px">
+            <span>Hợp đồng</span>
+        </th>
+    </tr>
+</ng-template>
+
+<ng-template #bodyTableTmp let-rowData="rowData">
+    <tr>
+        <td style="max-width: 150px">
+            <span>{{ rowData.code }}</span>
+        </td>
+        <td>
+            <span>{{ rowData.name }}</span>
+        </td>
+        <td style="max-width: 350px">
+            <span>{{ rowData.department?.name }}</span>
+        </td>
+        <td align="center" style="max-width: 100px">
+            <div class="item-action">
+                <!-- <button pButton [pTooltip]="'In hợp đồng'" type="button" icon="pi pi-print" class="p-button p-button-success mr-1">
+                </button> -->
+                <button
+                    pButton
+                    [pTooltip]="'Tải hợp đồng'"
+                    (click)="downloadContract(rowData)"
+                    type="button"
+                    icon="pi pi-download"
+                    class="p-button mr-1 p-button-warning"
+                ></button>
+            </div>
+        </td>
+    </tr>
+</ng-template>

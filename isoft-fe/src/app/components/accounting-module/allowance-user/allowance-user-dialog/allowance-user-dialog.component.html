@@ -1,0 +1,75 @@
+<div class="w-full grid">
+    <div class="col-6">
+        <p>Loại phụ cấp</p>
+    </div>
+    <div class="col-2">
+        <p>Giá trị</p>
+    </div>
+    <div class="col-3">
+        <p>Ghi chú</p>
+    </div>
+    <div class="col-1"></div>
+</div>
+<form [formGroup]="allowanceForm">
+    <div class="w-full max-h-30rem overflow-auto py-2">
+        <ng-container formArrayName="items">
+            <ng-container
+                *ngFor="let item of items.controls; index as i"
+                [formGroupName]="i"
+            >
+                <div class="w-full grid">
+                    <div class="col-6">
+                        <p-dropdown
+                            [options]="allowances"
+                            formControlName="allowanceId"
+                            optionValue="id"
+                            optionLabel="name"
+                            [filter]="true"
+                            (onFilter)="onSearchAllowance($event)"
+                            appendTo="body"
+                            placeholder="Chọn loại phụ cấp"
+                        ></p-dropdown>
+                    </div>
+                    <div class="col-2">
+                        <p-inputNumber
+                            formControlName="allowanceValue"
+                        ></p-inputNumber>
+                    </div>
+                    <div class="col-3">
+                        <input
+                            pInputText
+                            formControlName="allowanceNote"
+                            class="w-full"
+                        />
+                    </div>
+                    <div class="col-1">
+                        <button
+                            *ngIf="i < items.controls.length - 1"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-times"
+                            class="p-button-rounded p-button-outlined"
+                            (click)="onRemoveAllowance(i)"
+                        ></button>
+                        <button
+                            *ngIf="i === items.controls.length - 1"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-plus"
+                            class="p-button-rounded p-button-outlined text-blue-600"
+                            (click)="onAddAllowance()"
+                        ></button>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+</form>
+<div class="w-full flex align-items-center justify-content-end mt-3">
+    <button pButton (click)="onSave()" class="mr-2">Lưu (F8)</button>
+    <button pButton (click)="onClose()" class="bg-transparent text-orange-500">
+        Quay lại (F6)
+    </button>
+</div>

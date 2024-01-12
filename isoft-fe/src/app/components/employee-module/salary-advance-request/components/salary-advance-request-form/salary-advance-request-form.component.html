@@ -1,0 +1,71 @@
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5
+                [translate]="
+                    isEdit
+                        ? 'label.edit_salary_advance_request'
+                        : 'label.add_salary_advance_request'
+                "
+            ></h5>
+            <form [formGroup]="salaryAdvanceRequestForm" autocomplete="off">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label
+                            >{{ "label.amount_number" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <p-inputNumber
+                            [formControlName]="'value'"
+                            step="1000000"
+                            mode="decimal"
+                            [showButtons]="true"
+                            [min]="0"
+                            [ngClass]="checkValidValidator('value')"
+                        >
+                        </p-inputNumber>
+                        <small
+                            *ngIf="checkValidValidator('value')"
+                            class="p-error"
+                            [innerHTML]="'info.amount' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label>{{ "label.note" | translate }}</label>
+                        <input
+                            type="text"
+                            pInputText
+                            [formControlName]="'note'"
+                            [ngClass]="checkValidValidator('note')"
+                        />
+                        <small
+                            *ngIf="checkValidValidator('note')"
+                            class="p-error"
+                            [innerHTML]="'info.note' | translate"
+                        ></small>
+                    </div>
+                    <div class="field col-12 md:col-12 flex flex-column">
+                        <div class="p-fluid p-formgrid grid mt-2">
+                            <div
+                                class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                            >
+                                <p-button
+                                    icon="pi pi-times"
+                                    (click)="onCancel.emit({})"
+                                    [label]="'button.backF6' | translate"
+                                    styleClass="p-button-outlined"
+                                ></p-button>
+                                <p-button
+                                    icon="pi pi-check"
+                                    (click)="onSubmit()"
+                                    [label]="'button.saveF8' | translate"
+                                >
+                                </p-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

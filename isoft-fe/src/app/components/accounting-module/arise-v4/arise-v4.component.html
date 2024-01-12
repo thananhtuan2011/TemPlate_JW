@@ -1,0 +1,260 @@
+<div class="card card-table">
+    <app-arise-list-v4
+        #ariseListV2Component
+        (onViewDetail)="onViewDetail($event)"
+        (onFilterTable)="onFilterTable($event)"
+        (onBackHomePage)="onBackHomePage()"
+    ></app-arise-list-v4>
+    <app-arise-crud-v4
+        #ariseCrudV2Component
+        [chartOfAccounts]="chartOfAccounts"
+        [orginalDescriptionList]="orginalDescriptionList"
+        [buttonMenus]="buttonMenus"
+        [invoiceCodeList]="invoiceCodeList"
+        [payerList]="payerList"
+        (onDisplayCURSAccount)="onDisplayCURSAccount($event)"
+        (onDisplayCURSAccountDetailFirst)="
+            onDisplayCURSAccountDetailFirst($event)
+        "
+        (onDisplayCURSAccountDetailSecond)="
+            onDisplayCURSAccountDetailSecond($event)
+        "
+        (onSavePayerName)="onSavePayerName($event)"
+        (onSaveTaxCode)="onSaveTaxCode($event)"
+        (onSaveDescription)="onSaveDescription($event)"
+        (onReloadTableAfterCrud)="onReloadTableAfterCrud($event)"
+        (onResetTableViewDetail)="onResetTableViewDetail()"
+    >
+    </app-arise-crud-v4>
+</div>
+<p-confirmDialog
+    key="confirmBackHomePageTmp"
+    #confirmBackHomePageTmp
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '30vw' }"
+>
+    <ng-template pTemplate="header">
+        <h4
+            class="m-0 text-white"
+            [translate]="'question.go_home_arise_header'"
+        ></h4>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            class="p-button-danger"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.no' | translate"
+            (click)="confirmBackHomePageTmp.reject()"
+        ></button>
+        <button
+            #yesButtonElm
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.yes' | translate"
+            (click)="confirmBackHomePageTmp.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="display"
+    (onHide)="selectedDisplay = -1"
+    [style]="{
+        'min-width': [4, 5, 6, 1].includes(selectedDisplay) ? '98vw' : '45vw'
+    }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white" [translate]="selectedHeader"></h6>
+    </ng-template>
+
+    <!--remove payer-->
+    <app-remove-payer
+        #removePayer
+        *ngIf="selectedDisplay === 1"
+        (onCancel)="display = false"
+        (onRemove)="onGetPayers()"
+    ></app-remove-payer>
+
+    <!--remove desc-->
+    <app-remove-description
+        #removeDescription
+        *ngIf="selectedDisplay === 2"
+        (onCancel)="display = false"
+        (onRemove)="onGetDescriptions()"
+    ></app-remove-description>
+
+    <!--edit display order-->
+    <app-edit-order
+        *ngIf="selectedDisplay === 3"
+        (onCancel)="onCancelEditOrder()"
+        [paramToGetLedgers]="ariseCrudV2Component.dataTable"
+    ></app-edit-order>
+
+    <!--ccdc-->
+    <app-ccdc
+        #ccdcComponent
+        *ngIf="selectedDisplay === 4"
+        [paramToGetLedgers]="ariseCrudV2Component.dataTable"
+        (onCancel)="onCancelCCDC()"
+    ></app-ccdc>
+
+    <!--tscd-->
+    <app-ccdc-tscd
+        *ngIf="selectedDisplay === 5"
+        [paramToGetLedgers]="ariseCrudV2Component.dataTable"
+        [type]="'TSCD'"
+        [typeValue]="5"
+        (onCancel)="onCancelTSCD()"
+    ></app-ccdc-tscd>
+
+    <!--cost entry-->
+    <app-cost-entry
+        *ngIf="selectedDisplay === 6"
+        [paramToGetLedgers]="ariseCrudV2Component.dataTable"
+        (onCancel)="onCancelCostEntry()"
+    ></app-cost-entry>
+
+    <!--end of term-->
+    <app-end-of-term
+        #endOfTerm
+        *ngIf="selectedDisplay === 7"
+        (onCancel)="display = false"
+    ></app-end-of-term>
+
+    <!--convert overreach-->
+    <app-convert-overreach
+        *ngIf="selectedDisplay === 8"
+        (onCancel)="display = false"
+    ></app-convert-overreach>
+
+    <!--convert internal-->
+    <app-convert-internal
+        *ngIf="selectedDisplay === 9"
+        (onCancel)="onCancelConvertInternal()"
+        [paramToGetLedgers]="ariseListV2Component.dataTable"
+    ></app-convert-internal>
+
+    <!--convert internal-->
+    <app-salary-tranfer
+        *ngIf="selectedDisplay === 13"
+        (onCancel)="display = false"
+    ></app-salary-tranfer>
+</p-dialog>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="displayCURSAccount"
+    (onHide)="onAfterAddEditAccountItem()"
+    [style]="{ 'min-width': true ? '98vw' : '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white">Danh sách tài khoản</h6>
+    </ng-template>
+    <app-account-v2
+        #accountV2Component
+        *ngIf="displayCURSAccount"
+        [scrolHeight]="'50vh'"
+        [displayHasChildButton]="false"
+        [displayTitleText]="false"
+        [displayDeleteButton]="false"
+        [displayAddItemButton]="false"
+        [displayCongCuButton]="false"
+        [displayGoHomeButton]="false"
+        [displayHoachToanNoiBoButton]="false"
+        [displaySelectButton]="true"
+        (onSelectItem)="onSelectAccountItem($event)"
+    ></app-account-v2>
+</p-dialog>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="displayCURSAccountDetailFirst"
+    (onHide)="onAfterAddEditAccountDetailFirstItem()"
+    [style]="{ 'min-width': true ? '98vw' : '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h5 class="m-0 text-white">
+            Danh sách chi tiết 1 của tài khoản "{{ accountParent?.code }}:
+            {{ accountParent?.name }}"
+        </h5>
+    </ng-template>
+    <app-account-detail-first-v2
+        #accountDetailFirstV2Component
+        *ngIf="displayCURSAccountDetailFirst"
+        [isDip]="true"
+        [scrolHeight]="'50vh'"
+        [account]="accountParent"
+        [displayHasChildButton]="false"
+        [displayTitleText]="false"
+        [displayDeleteButton]="false"
+        [displayAddItemButton]="false"
+        [displayCongCuButton]="false"
+        [displayGoHomeButton]="false"
+        [displayHoachToanNoiBoButton]="false"
+        [displaySelectButton]="true"
+        (onSelectItem)="onSelectAccountItem($event)"
+    >
+    </app-account-detail-first-v2>
+</p-dialog>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="displayCURSAccountDetailSecond"
+    (onHide)="onAfterAddEditAccountDetailSecondItem()"
+    [style]="{ 'min-width': true ? '98vw' : '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h5 class="m-0 text-white">
+            Danh sách chi tiết 2 của chi tiết 1 "{{ accountParent.code }}:
+            {{ accountParent.name }}", tài khoản "{{ accountParent.code }}:
+            {{ accountParent.name }}"
+        </h5>
+    </ng-template>
+    <app-account-detail-second-v2
+        #accountDetailSecondV2Component
+        *ngIf="displayCURSAccountDetailSecond"
+        [isDip]="true"
+        [scrolHeight]="'50vh'"
+        [account]="accountParent"
+        [accountDetail1]="accountDetail1"
+        [displayTitleText]="false"
+        [displayDeleteButton]="false"
+        [displayAddItemButton]="false"
+        [displayCongCuButton]="false"
+        [displayGoHomeButton]="false"
+        [displayHoachToanNoiBoButton]="false"
+        [displaySelectButton]="true"
+        (onSelectItem)="onSelectAccountItem($event)"
+    >
+    </app-account-detail-second-v2>
+</p-dialog>
+
+<p-dialog
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [(visible)]="displayCrudProject"
+    (onHide)="onDisplayCrudProject(false)"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="header">
+        <h6 class="m-0 text-white">Danh sách dự án</h6>
+    </ng-template>
+    <app-project
+        *ngIf="displayCrudProject"
+        [projectList]="projectList"
+        (onGetListProject)="getListProject($event)"
+    ></app-project>
+</p-dialog>

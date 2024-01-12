@@ -1,0 +1,161 @@
+<p-toast></p-toast>
+<div *ngIf="display" class="grid">
+    <div class="col-12 p-0">
+        <div class="card card-table">
+            <h5 [translate]="title"></h5>
+            <form [formGroup]="accountLinkForm">
+                <div class="grid w-full">
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.name" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <input
+                            pInputText
+                            id="name"
+                            [(ngModel)]="accountLinkForm.value.name"
+                            formControlName="name"
+                            [ngClass]="checkValidValidator('name')"
+                        />
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="name"
+                            >{{ "label.account" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <!-- <input pInputText id="account" [(ngModel)]="accountLinkForm.value.account"
+                            formControlName="account" [ngClass]="checkValidValidator('account')" /> -->
+                        <p-dropdown
+                            [placeholder]="'label.goods' | translate"
+                            [formControlName]="'account'"
+                            [options]="creditAccounts"
+                            [optionValue]="'code'"
+                            showClear="true"
+                            (onChange)="chooseCreditCode($event)"
+                            (onClear)="clearCreditCode($event)"
+                        >
+                            <ng-template
+                                let-creditAccounts
+                                pTemplate="creditAccounts"
+                                pTemplate="selectedItem"
+                            >
+                                <span
+                                    >{{ creditAccounts.code }} -
+                                    {{ creditAccounts.name }}</span
+                                >
+                            </ng-template>
+                            <ng-template
+                                let-creditAccounts
+                                pTemplate="creditAccounts"
+                                pTemplate="item"
+                            >
+                                <span
+                                    >{{ creditAccounts.code }} -
+                                    {{ creditAccounts.name }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="detail1"
+                            >{{ "label.detail_1" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <!-- <input pInputText id="detail1" [(ngModel)]="accountLinkForm.value.detail1"
+                            formControlName="detail1" [ngClass]="checkValidValidator('detail1')" /> -->
+                        <p-dropdown
+                            #creditDetailCodeFirst
+                            [placeholder]="'label.detail_1' | translate"
+                            [formControlName]="'detail1'"
+                            [options]="listDetail1"
+                            [optionValue]="'code'"
+                            showClear="true"
+                            [disabled]="listDetail1.length == 0"
+                            (onChange)="chooseDetail1($event)"
+                        >
+                            <ng-template
+                                let-listDetail1
+                                pTemplate="listDetail1"
+                                pTemplate="selectedItem"
+                            >
+                                <span
+                                    >{{ listDetail1.code }} -
+                                    {{ listDetail1.name }}</span
+                                >
+                            </ng-template>
+                            <ng-template
+                                let-listDetail1
+                                pTemplate="listDetail1"
+                                pTemplate="item"
+                            >
+                                <span
+                                    >{{ listDetail1.code }} -
+                                    {{ listDetail1.name }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-6 flex flex-column">
+                        <label htmlFor="detail2"
+                            >{{ "label.detail_2" | translate
+                            }}<span class="text-pink-400">*</span></label
+                        >
+                        <!-- <input pInputText id="detail2" [(ngModel)]="accountLinkForm.value.detail2"
+                            formControlName="detail2" [ngClass]="checkValidValidator('detail2')" /> -->
+                        <p-dropdown
+                            #creditDetailCodeFirst
+                            [placeholder]="'label.detail_2' | translate"
+                            [formControlName]="'detail2'"
+                            [options]="listDetail2"
+                            [optionValue]="'code'"
+                            showClear="true"
+                            [disabled]="listDetail2.length == 0"
+                            (onChange)="chooseDetail1($event)"
+                        >
+                            <ng-template
+                                let-listDetail2
+                                pTemplate="listDetail2"
+                                pTemplate="selectedItem"
+                            >
+                                <span
+                                    >{{ listDetail2.code }} -
+                                    {{ listDetail2.name }}</span
+                                >
+                            </ng-template>
+                            <ng-template
+                                let-listDetail2
+                                pTemplate="listDetail2"
+                                pTemplate="item"
+                            >
+                                <span
+                                    >{{ listDetail2.code }} -
+                                    {{ listDetail2.name }}</span
+                                >
+                            </ng-template>
+                        </p-dropdown>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-fluid p-formgrid grid mt-2">
+                        <div
+                            class="field col-12 gap-8 flex justify-content-end mt-4 p-0"
+                        >
+                            <p-button
+                                icon="pi pi-times"
+                                (click)="onCancel.emit({})"
+                                [label]="'button.backF6' | translate"
+                                styleClass="p-button-outlined"
+                            ></p-button>
+                            <p-button
+                                icon="pi pi-check"
+                                (click)="onSubmit()"
+                                [label]="'button.saveF8' | translate"
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,117 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="
+            isEdit ? 'label.workflow_type_edit' : 'label.workflow_type_add'
+        "
+    ></h5>
+    <div class="p-fluid formgrid grid">
+        <div class="field col-6">
+            <label for="code"
+                >{{ "label.workflow_type_code" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <input
+                pInputText
+                id="code"
+                [(ngModel)]="workTypeModel.code"
+                placeholder="Nhập mã loại công việc"
+            />
+        </div>
+        <div class="field col-6">
+            <label for="name">{{
+                "label.workflow_type_name" | translate
+            }}</label>
+            <input
+                pInputText
+                id="name"
+                type="text"
+                class="w-full"
+                placeholder="Nhập tên loại công việc"
+                [(ngModel)]="workTypeModel.name"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="branch">{{
+                "label.workflow_type_branch" | translate
+            }}</label>
+            <p-dropdown
+                id="branch"
+                [options]="branches"
+                [(ngModel)]="workTypeModel.branchId"
+                placeholder="Chọn chi nhánh"
+                [filter]="true"
+                (onChange)="getDepartments()"
+                optionLabel="name"
+                optionValue="id"
+                (onFilter)="onFilterBranch($event)"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="department">{{
+                "label.workflow_type_department" | translate
+            }}</label>
+            <p-dropdown
+                id="department"
+                [options]="departments"
+                [(ngModel)]="workTypeModel.departmentId"
+                placeholder="Chọn phòng ban"
+                [filter]="true"
+                [disabled]="!workTypeModel.branchId"
+                optionLabel="name"
+                optionValue="id"
+                (onFilter)="onFilterDepartment($event)"
+            ></p-dropdown>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col-12 md:col-6">
+            <label for="point"
+                >{{ "label.workflow_type_point" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <input
+                pInputText
+                id="point"
+                [(ngModel)]="workTypeModel.point"
+                placeholder="Nhập thang điểm"
+            />
+        </div>
+        <div class="field flex flex-column col-12 md:col-2">
+            <label for="color">{{
+                "label.workflow_type_color" | translate
+            }}</label>
+            <div class="flex">
+                <input
+                    pInputText
+                    id="color"
+                    type="text"
+                    class="w-14rem mr-2"
+                    placeholder="Mã màu"
+                    [(ngModel)]="workTypeModel.color"
+                />
+                <p-colorPicker
+                    [(ngModel)]="workTypeModel.color"
+                    class="opacity-100 border-none"
+                ></p-colorPicker>
+            </div>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onBack()"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

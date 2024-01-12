@@ -1,0 +1,395 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        class="px-1"
+        [translate]="
+            formData.id ? 'label.edit_inventory' : 'label.add_inventory'
+        "
+    ></h5>
+    <form [formGroup]="inventoryForm" class="grid w-full">
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label
+                for="inventoryCode"
+                [translate]="'label.inventory_code'"
+            ></label>
+            <input
+                id="inventoryCode"
+                pInputText
+                [placeholder]="'label.inventory_code' | translate"
+                class="w-full"
+                formControlName="procedureNumber"
+            />
+        </div>
+        <div class="field col-12 md:col-6 flex flex-column">
+            <label
+                for="inventoryName"
+                [translate]="'label.inventory_name'"
+            ></label>
+            <input
+                id="inventoryName"
+                pInputText
+                [placeholder]="'label.inventory_name' | translate"
+                class="w-full"
+                formControlName="name"
+            />
+        </div>
+        <div class="field col-12 flex flex-column">
+            <label
+                for="items"
+                class="flex align-items-center justify-content-start"
+            >
+                <h5 class="mr-4 mb-0">
+                    {{ "label.goods_management" | translate }}
+                </h5>
+                <button
+                    *ngIf="!formData?.isFinish"
+                    pButton
+                    style="height: 35px"
+                    type="button"
+                    class="mx-1"
+                    pTooltip="Thêm mới hàng hóa"
+                    (click)="onAddGoods()"
+                >
+                    <i class="pi pi-plus" aria-hidden="true"></i>
+                </button>
+
+                <button
+                    *ngIf="!formData?.isFinish && goodInventories.length !== 0"
+                    pButton
+                    style="height: 35px"
+                    class="mx-1 p-button-warning"
+                    (click)="isQRScannerVisible = true"
+                    pTooltip="Quét mã"
+                >
+                    <i class="pi pi-qrcode" aria-hidden="true"></i>
+                </button>
+
+                <button
+                    *ngIf="!formData?.isFinish && goodInventories.length !== 0"
+                    pButton
+                    style="height: 35px"
+                    class="mx-1 p-button-success"
+                    (click)="onSave()"
+                    pTooltip="Lưu"
+                >
+                    <i class="pi pi-save" aria-hidden="true"></i>
+                </button>
+            </label>
+            <p-table
+                [value]="goodInventories"
+                styleClass="p-datatable-gridlines sidebar-custom"
+                [scrollable]="!isMobile"
+                [paginator]="false"
+                [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+                scrollDirection="both"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="w-1">Mã sản phẩm</th>
+                        <th class="w-3">Tên sản phẩm</th>
+                        <th class="w-1">SL nhập</th>
+                        <th class="w-1">SL xuất</th>
+                        <th class="w-1">SL tồn</th>
+                        <th class="w-2">SL tồn t.tế</th>
+                        <th class="w-2">Ghi chú</th>
+                        <th class="w-1">T.vụ</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-good>
+                    <tr>
+                        <td class="w-1">
+                            <span
+                                class="p-column-title"
+                                [translate]="'Mã sản phẩm'"
+                            ></span
+                            >{{ good.goodsCode }}
+                        </td>
+                        <td class="w-3">
+                            <span
+                                class="p-column-title"
+                                [translate]="'Tên sản phẩm'"
+                            ></span
+                            >{{ good.goodsName }}
+                        </td>
+                        <td class="w-1 md:justify-content-end">
+                            <span
+                                class="p-column-title"
+                                [translate]="'SL nhập'"
+                            ></span
+                            >{{ good.inputQuantity | number }}
+                        </td>
+                        <td class="w-1 md:justify-content-end">
+                            <span
+                                class="p-column-title"
+                                [translate]="'SL xuất'"
+                            ></span
+                            >{{ good.outputQuantity | number }}
+                        </td>
+                        <td class="w-1 md:justify-content-end">
+                            <span
+                                class="p-column-title"
+                                [translate]="'SL tồn'"
+                            ></span>
+                            <span
+                                class="font-bold"
+                                style="color: var(--green-400)"
+                                >{{ good.quantity | number }}</span
+                            >
+                        </td>
+                        <td class="w-2">
+                            <span
+                                class="p-column-title w-8rem"
+                                [translate]="'SL tồn t.tế'"
+                            ></span
+                            ><p-inputNumber
+                                class="w-full"
+                                [(ngModel)]="good.quantityReal"
+                                [ngModelOptions]="{ standalone: true }"
+                                placeholder="Tồn thực tế"
+                                (onInput)="storeCache()"
+                            ></p-inputNumber>
+                        </td>
+                        <td class="w-2">
+                            <span
+                                class="p-column-title w-8rem"
+                                [translate]="'Ghi chú'"
+                            ></span>
+                            <input
+                                pInputText
+                                class="w-full"
+                                [(ngModel)]="good.note"
+                                [ngModelOptions]="{ standalone: true }"
+                                placeholder="Nhập ghi chú"
+                            />
+                        </td>
+                        <td class="w-1" pFrozenColumn [frozen]="true">
+                            <div
+                                class="w-full py-2 md:py-0 flex justify-content-center"
+                            >
+                                <button
+                                    pButton
+                                    pRipple
+                                    type="button"
+                                    icon="pi pi-times"
+                                    class="p-button-rounded p-button-danger text-right md:text-center"
+                                    (click)="onRemoveGood(good)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div
+            class="field col-12 flex align-items-center justify-content-end gap-2"
+        >
+            <button
+                pButton
+                class="p-button-outlined"
+                (click)="onCancel.emit({})"
+            >
+                Quay lại (F6)
+            </button>
+            <button
+                *ngIf="formData?.id && !formData?.isFinish"
+                pButton
+                class="p-button-danger"
+                (click)="onDelete()"
+            >
+                Xóa (F9)
+            </button>
+            <button *ngIf="!formData?.isFinish" pButton (click)="onSave()">
+                Lưu (F8)
+            </button>
+        </div>
+        <app-qr-scanner
+            [isVisible]="isQRScannerVisible"
+            (onScanSuccess)="onQRScanSuccess($event)"
+            (onHide)="isQRScannerVisible = false"
+        >
+        </app-qr-scanner>
+    </form>
+</div>
+<p-dialog
+    [(visible)]="visibleGoodTable"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="w-11 md:w-9 h-auto overflow-auto"
+>
+    <ng-template pTemplate="header">
+        <h4 class="m-0 text-white">Danh sách hàng hóa</h4>
+    </ng-template>
+    <ng-template pTemplate="body">
+        <p-table
+            [value]="goods"
+            styleClass="p-datatable-gridlines sidebar-custom"
+            [scrollable]="!isMobile"
+            [paginator]="false"
+            [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+            scrollDirection="both"
+            [lazy]="true"
+            (onLazyLoad)="getGoodInventory($event)"
+        >
+            <ng-template pTemplate="caption">
+                <div
+                    class="my-2 mx-2 md:mx-0 flex flex-column md:flex-row gap-8"
+                >
+                    <div>
+                        <input
+                            pInputText
+                            class="w-full"
+                            placeholder="Nhập tên kho"
+                            [(ngModel)]="paramGoodInventory.wareHouse"
+                            (change)="getGoodInventory()"
+                        />
+                    </div>
+                    <div>
+                        <!--                        <input pInputText class="w-full" placeholder="Tài khoản"-->
+                        <!--                               [(ngModel)]="paramGoodInventory.account" (change)="getGoodInventory()">-->
+                        <p-dropdown
+                            [(ngModel)]="paramGoodInventory.account"
+                            (onChange)="onChangeAccount($event)"
+                            [filter]="true"
+                            [options]="chartOfAccounts"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            placeholder="Chọn tài khoản"
+                            styleClass="w-full h-full"
+                        ></p-dropdown>
+                    </div>
+                    <div>
+                        <!--                        <input pInputText class="w-full" placeholder="Chi tiết 1"-->
+                        <!--                               [(ngModel)]="paramGoodInventory.detail1" (change)="getGoodInventory()">-->
+                        <p-dropdown
+                            [(ngModel)]="paramGoodInventory.detail1"
+                            (onChange)="getGoodInventory()"
+                            [options]="detail1s"
+                            showClear="true"
+                            [optionLabel]="'name'"
+                            [optionValue]="'code'"
+                            [filter]="true"
+                            placeholder="Chọn C.tiết 1"
+                        >
+                        </p-dropdown>
+                    </div>
+                    <!--                    <div class="col-2">-->
+                    <!--                        <input pInputText class="w-full" placeholder="Chi tết 2"-->
+                    <!--                               [(ngModel)]="paramGoodInventory.detail2" (change)="getGoodInventory()">-->
+                    <!--                    </div>-->
+                    <div class="flex gap-8 w-full justify-content-between">
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-search"
+                            [label]="'label.search' | translate"
+                            (click)="getGoodInventory()"
+                        ></button>
+                        <button
+                            pButton
+                            class="p-2"
+                            icon="pi pi-plus"
+                            (click)="onAddGoodToInventory()"
+                            [label]="'button.addF7' | translate"
+                        ></button>
+                    </div>
+
+                    <td *ngIf="isMobile" class="mt-4">
+                        <p-checkbox
+                            [(ngModel)]="checkAll"
+                            [binary]="true"
+                            inputId="binary"
+                            (onChange)="onCheckAll()"
+                        ></p-checkbox
+                        ><span class="ml-2 text-primary">{{
+                            "label.select_all" | translate
+                        }}</span>
+                    </td>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="w-4rem">
+                        <p-checkbox
+                            [(ngModel)]="checkAll"
+                            [binary]="true"
+                            inputId="binary"
+                            (onChange)="onCheckAll()"
+                        ></p-checkbox>
+                    </th>
+                    <th class="w-2">Mã SP</th>
+                    <th class="w-3">Tên SP</th>
+                    <th class="w-1">SL nhập</th>
+                    <th class="w-1">SL xuất</th>
+                    <th class="w-1">SL tồn</th>
+                    <th class="w-3">Ghi chú</th>
+                    <th class="w-1">QR Code</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-good>
+                <tr>
+                    <td class="w-4rem">
+                        <p-checkbox
+                            [(ngModel)]="good.checked"
+                            [binary]="true"
+                            inputId="binary"
+                        ></p-checkbox>
+                    </td>
+                    <td class="w-2">
+                        <span
+                            class="p-column-title"
+                            [translate]="'Mã SP'"
+                        ></span
+                        >{{ good.goodsCode }}
+                    </td>
+                    <td class="w-3">
+                        <span
+                            class="p-column-title"
+                            [translate]="'Tên SP'"
+                        ></span
+                        >{{ good.goodsName }}
+                    </td>
+                    <td class="w-1 md:justify-content-end">
+                        <span
+                            class="p-column-title"
+                            [translate]="'SL nhập'"
+                        ></span
+                        >{{ good.inputQuantity | number }}
+                    </td>
+                    <td class="w-1 md:justify-content-end">
+                        <span
+                            class="p-column-title"
+                            [translate]="'SL xuất'"
+                        ></span
+                        >{{ good.outputQuantity | number }}
+                    </td>
+                    <td class="w-1 md:justify-content-end">
+                        <span
+                            class="p-column-title"
+                            [translate]="'SL tồn'"
+                        ></span>
+                        <span
+                            class="font-bold"
+                            style="color: var(--green-400)"
+                            >{{ good.quantity | number }}</span
+                        >
+                    </td>
+                    <td class="w-3">
+                        <span
+                            class="p-column-title"
+                            [translate]="'label.note'"
+                        ></span
+                        >{{ good.note }}
+                    </td>
+                    <td class="w-1">
+                        <span
+                            class="p-column-title"
+                            [translate]="'QR Code'"
+                        ></span
+                        >{{ good.qrCode }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-template>
+</p-dialog>

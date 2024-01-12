@@ -1,0 +1,44 @@
+<p-dialog
+    class="70vw crud-project"
+    [(visible)]="display"
+    [modal]="true"
+    [header]="title"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onClose(false)"
+>
+    <ng-container *ngIf="form" [formGroup]="form">
+        <div class="flex flex-column md:flex-row mb-4">
+            <div class="field-custom">
+                <input
+                    [pTooltip]="'Mã dự án'"
+                    [disabled]="!allowChangeCode"
+                    [placeholder]="'label.code' | translate"
+                    autofocus
+                    pInputText
+                    formControlName="code"
+                />
+            </div>
+        </div>
+        <input style="position: fixed; top: -1000px" />
+        <div class="flex flex-column md:flex-row">
+            <div class="field-custom">
+                <input
+                    [pTooltip]="'Tên dự án'"
+                    [placeholder]="'label.name' | translate"
+                    pInputText
+                    formControlName="name"
+                />
+            </div>
+        </div>
+    </ng-container>
+    <ng-template pTemplate="footer">
+        <p-button
+            icon="pi pi-check"
+            [disabled]="!isFormValid"
+            label="{{ 'button.save' | translate }}"
+            styleClass="p-button-text"
+            (click)="onSave()"
+        ></p-button>
+    </ng-template>
+</p-dialog>

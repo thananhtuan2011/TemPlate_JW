@@ -1,0 +1,247 @@
+<div class="card card-table">
+    <h5 class="p-2 m-0">
+        {{ "label.customer_history_management" | translate }} ({{
+        customer.name
+        }})
+    </h5>
+    <div class="pt-2 pb-1 px-2">
+        <p-panel
+            [header]="'label.search_job' | translate"
+            [toggleable]="true"
+            [collapsed]="true"
+            styleClass="w-full"
+        >
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.search_by_name'"
+                    ></label>
+                    <span class="p-input-icon-left mb-2">
+                        <input
+                            #filter
+                            [(ngModel)]="getParams.searchText"
+                            pInputText
+                            type="text"
+                            (keypress)="onSearch($event)"
+                            class="w-full"
+                        />
+                        <i class="pi pi-search"></i>
+                    </span>
+                </div>
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.customer_job'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.jobId"
+                        (onChange)="getDescs()"
+                        [filter]="true"
+                        [options]="customerJobs"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [placeholder]="'label.empty' | translate"
+                    ></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.status'"
+                    ></label>
+                    <p-dropdown
+                        [(ngModel)]="getParams.status"
+                        (onChange)="getDescs()"
+                        [filter]="true"
+                        [options]="customerStatus"
+                        showClear="true"
+                        [optionLabel]="'name'"
+                        [optionValue]="'id'"
+                        [placeholder]="'label.empty' | translate"
+                    ></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.start_date'"
+                    ></label>
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="getParams.fromDate"
+                        (ngModelChange)="getDescs()"
+                        [ngModelOptions]="{ standalone: true }"
+                        dateFormat="dd/mm/yy"
+                    ></p-calendar>
+                </div>
+                <div class="field col-12 md:col-6 lg:col-2">
+                    <label
+                        class="font-bold"
+                        [translate]="'label.end_date'"
+                    ></label>
+                    <p-calendar
+                        inputId="basic"
+                        [(ngModel)]="getParams.toDate"
+                        (ngModelChange)="getDescs()"
+                        [ngModelOptions]="{ standalone: true }"
+                        dateFormat="dd/mm/yy"
+                    ></p-calendar>
+                </div>
+            </div>
+        </p-panel>
+    </div>
+    <p-table
+        #dt1
+        [value]="customers"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom p-2"
+        [paginator]="true"
+        [responsiveLayout]="isMobile ? 'stack' : 'scroll'"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getDescs($event)"
+        scrollDirection="both"
+        [scrollable]="!isMobile"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(first)]="first"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.number_order'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'Tệp tin'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'left_menu.customer_job'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.status'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.time_start'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.time_end'"></span>
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span [translate]="'label.time_next'"></span>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+            <tr>
+                <td class="w-1">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.number_order'"
+                    ></span
+                    >{{ customer.id }}
+                </td>
+                <td class="w-2">
+                    <span class="p-column-title" [translate]="'Tệp tin'"></span>
+                    <a
+                        class="font-bold"
+                        *ngIf="customer.fileLinkPaser"
+                        target="_blank"
+                        [href]="
+                            serverURLImage + '/' + customer.fileLinkPaser[0]
+                        "
+                    >{{ "button.view" | translate }}</a
+                    >
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'left_menu.customer_job'"
+                    ></span>
+                    <p-badge
+                        [style]="{
+                            'background-color': customer.jobColor,
+                            'max-width': '12rem'
+                        }"
+                        [value]="customer.jobsName"
+                        class="white-space-nowrap overflow-hidden text-overflow-ellipsis"
+                    ></p-badge>
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.status'"
+                    ></span>
+                    <p-badge
+                        [style]="{
+                            'background-color': customer.statusColor,
+                            'max-width': '9rem'
+                        }"
+                        [value]="customer.statusName"
+                    >
+                    </p-badge>
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_start'"
+                    ></span
+                    >{{ customer.startTime | date: "dd/MM/YYYY" }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_end'"
+                    ></span
+                    >{{ customer.endTime | date: "dd/MM/YYYY" }}
+                </td>
+                <td class="w-2">
+                    <span
+                        class="p-column-title"
+                        [translate]="'label.time_next'"
+                    ></span
+                    >{{ customer.nextTime | date: "dd/MM/YYYY" }}
+                </td>
+            </tr>
+        </ng-template
+        >
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td class="w-full pt-4 pb-4">No customer histories found.</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td class="w-full pt-4 pb-4">
+                    Loading customer histories data. Please wait.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <div class="flex justify-content-end gap-8 m-4">
+        <p-button
+            icon="pi pi-times"
+            (click)="onCancel.emit({})"
+            [label]="'button.back' | translate"
+            styleClass="p-button-outlined"
+        ></p-button>
+    </div>
+</div>

@@ -1,0 +1,192 @@
+<div *ngIf="display" class="card card-table">
+    <h5
+        [translate]="
+            isEdit ? 'label.incoming_text_edit' : 'label.incoming_text_add'
+        "
+    ></h5>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="documentType"
+                >{{ "label.incoming_text_name" | translate
+                }}<span class="text-pink-400">*</span></label
+            >
+            <p-dropdown
+                id="documentType"
+                [options]="documentTypes"
+                [(ngModel)]="incomingTextModel.documentTypeId"
+                placeholder="Chọn văn bản"
+                [filter]="true"
+                optionLabel="name"
+                optionValue="id"
+                (onFilter)="onFilterDocumentType($event)"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <label for="toDate">{{
+                "label.incoming_text_to_date" | translate
+            }}</label>
+            <p-calendar
+                id="toDate"
+                inputId="toDate"
+                class="w-full"
+                dateFormat="dd/mm/yy"
+                [(ngModel)]="incomingTextModel.toDate"
+            ></p-calendar>
+        </div>
+    </div>
+    <div class="formgrid grid">
+        <div class="field col">
+            <label for="unitName">{{
+                "label.incoming_text_unit_name" | translate
+            }}</label>
+            <input
+                pInputText
+                id="unitName"
+                type="text"
+                class="w-full"
+                placeholder="Nhập đơn vị hành chính"
+                [(ngModel)]="incomingTextModel.unitName"
+            />
+        </div>
+        <div class="field col">
+            <label for="textNo">{{
+                "label.incoming_text_no" | translate
+            }}</label>
+            <input
+                pInputText
+                id="textNo"
+                type="text"
+                class="w-full"
+                placeholder="Nhập số hiệu văn bản"
+                [(ngModel)]="incomingTextModel.textSymbol"
+            />
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="textDate">{{
+                "label.incoming_text_date" | translate
+            }}</label>
+            <p-calendar
+                id="textDate"
+                inputId="textDate"
+                class="w-full"
+                dateFormat="dd/mm/yy"
+                [(ngModel)]="incomingTextModel.dateText"
+            ></p-calendar>
+        </div>
+        <div class="field col">
+            <label for="quote">{{
+                "label.incoming_text_quote" | translate
+            }}</label>
+            <input
+                pInputText
+                id="quote"
+                type="text"
+                class="w-full"
+                placeholder="Nhập nội dung"
+                [(ngModel)]="incomingTextModel.content"
+            />
+        </div>
+    </div>
+    <div class="formgrid grid">
+        <div class="field col">
+            <label for="signer">{{
+                "label.incoming_text_signer" | translate
+            }}</label>
+            <input
+                pInputText
+                id="signer"
+                type="text"
+                class="w-full"
+                placeholder="Nhập người ký tên"
+                [(ngModel)]="incomingTextModel.signer"
+            />
+        </div>
+        <div class="field col">
+            <label for="reveiver">{{
+                "label.incoming_text_receiver" | translate
+            }}</label>
+            <p-dropdown
+                id="reveiver"
+                [options]="users"
+                [(ngModel)]="incomingTextModel.receiverId"
+                placeholder="Chọn người nhận"
+                [filter]="true"
+                optionLabel="fullName"
+                optionValue="id"
+                (onFilter)="onFilterUser($event)"
+            ></p-dropdown>
+        </div>
+    </div>
+    <div class="p-fluid formgrid grid">
+        <div class="field col">
+            <label for="deptReceived">{{
+                "label.incoming_text_receive_dept" | translate
+            }}</label>
+            <p-dropdown
+                id="deptReceived"
+                [options]="departments"
+                [(ngModel)]="incomingTextModel.departmentId"
+                placeholder="Chọn phòng ban"
+                [filter]="true"
+                optionLabel="name"
+                optionValue="id"
+                (onFilter)="onFilterDepartment($event)"
+            ></p-dropdown>
+        </div>
+        <div class="field col">
+            <!-- <label for="branch">{{'label.workflow_type_branch' | translate}}</label>
+            <p-dropdown id="branch" [options]="branches" [(ngModel)]="incomingTextModel.branchId" placeholder="Chọn chi nhánh"
+                [filter]="true" (onChange)="getDepartments()" optionLabel="name" optionValue="id"
+                (onFilter)="onFilterBranch($event)"></p-dropdown> -->
+        </div>
+    </div>
+    <div class="formgrid grid">
+        <div class="field col">
+            <label htmlFor="uploadFile">{{ "Tệp tin" | translate }}</label>
+            <button
+                pButton
+                icon="pi pi-upload"
+                (click)="uploadFile.click()"
+                [label]="'button.import' | translate"
+            ></button>
+            <input
+                #uploadFile
+                class="hidden"
+                type="file"
+                (change)="doAttachFile($event)"
+                multiple
+            />
+            <small
+                *ngIf="selectedFile"
+                (click)="selectedFile = null; uploadFile.value = null"
+                class="p-error"
+                style="cursor: pointer; margin-top: 10px"
+                >{{ selectedFile.name }}
+            </small>
+            <small
+                *ngIf="selectedFile == undefined || selectedFile == null"
+                class="p-error"
+                style="cursor: pointer; margin-top: 10px"
+                >{{ incomingTextModel?.fileName }}
+            </small>
+        </div>
+    </div>
+    <div class="w-full col-12 flex align-items-center justify-content-end">
+        <button
+            icon="pi pi-times"
+            pButton
+            class="w-auto p-button-outlined mr-2"
+            (click)="onBack()"
+            [label]="'button.backF6' | translate"
+        ></button>
+        <button
+            icon="pi pi-check"
+            class="w-auto"
+            pButton
+            (click)="onSave()"
+            [label]="'button.saveF8' | translate"
+        ></button>
+    </div>
+</div>

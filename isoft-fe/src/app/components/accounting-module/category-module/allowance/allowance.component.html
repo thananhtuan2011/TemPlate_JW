@@ -1,0 +1,137 @@
+<div *ngIf="!display" class="card card-table">
+    <h5 [translate]="'label.allowance_management'"></h5>
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        responsiveLayout="scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getAllowances($event)"
+        scrollable="true"
+        scrollDirection="both"
+    >
+        <ng-template pTemplate="caption">
+            <div
+                class="w-full flex flex-column md:flex-row md:justify-content-between"
+            >
+                <div class="flex">
+                    <input
+                        pInputText
+                        placeholder="Nhập tìm kiếm"
+                        [(ngModel)]="param.searchText"
+                        (change)="getAllowances()"
+                    />
+                </div>
+                <button
+                    *appHasAccess="{
+                        menu: appConstant.MENU_TYPE.LOAIPHUCAP,
+                        action: appConstant.PERMISSION_FUNC.ADD
+                    }"
+                    pButton
+                    [label]="'button.addF7' | translate"
+                    con="pi pi-plus"
+                    (click)="onAddAllowance()"
+                ></button>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-2">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.allowance_code" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-8">
+                    <div class="flex align-items-center">
+                        <span>{{ "label.allowance_name" | translate }}</span>
+                    </div>
+                </th>
+                <th class="w-2 justify-content-center"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-allowance>
+            <tr>
+                <td class="w-2 py-2">{{ allowance.code }}</td>
+                <td class="w-8 py-2">{{ allowance.name }}</td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-start md:justify-content-center"
+                >
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.LOAIPHUCAP,
+                            action: appConstant.PERMISSION_FUNC.EDIT
+                        }"
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-pencil"
+                        (click)="getAllowanceDetail(allowance)"
+                    ></button>
+                    <button
+                        *appHasAccess="{
+                            menu: appConstant.MENU_TYPE.LOAIPHUCAP,
+                            action: appConstant.PERMISSION_FUNC.DELETE
+                        }"
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-trash"
+                        (click)="onDeleteAllowance(allowance.id)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-allowance-form
+    [display]="display"
+    [formData]="formData"
+    (onCancel)="onCancelForm($event)"
+></app-allowance-form>
+<p-confirmDialog
+    #cd
+    icon="pi pi-exclamation-triangle"
+    [style]="{ 'min-width': '45vw' }"
+>
+    <ng-template pTemplate="footer">
+        <button
+            type="button"
+            pButton
+            icon="pi pi-times"
+            [label]="'button.back' | translate"
+            class="mr-3"
+            (click)="cd.reject()"
+        ></button>
+        <button
+            class="p-button-danger"
+            type="button"
+            pButton
+            icon="pi pi-check"
+            [label]="'button.remove' | translate"
+            (click)="cd.accept()"
+        ></button>
+    </ng-template>
+</p-confirmDialog>

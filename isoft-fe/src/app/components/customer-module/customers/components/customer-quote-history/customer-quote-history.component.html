@@ -1,0 +1,317 @@
+<div class="card card-table">
+    <div class="w-full flex align-items-center justify-content-between pb-3">
+        <h5>
+            Lịch sử báo giá của khách hàng:
+            <strong class="text-blue-600">{{ customer?.name }}</strong>
+        </h5>
+        <div class="flex flex-1 justify-content-end gap-2"></div>
+    </div>
+
+    <p-table
+        #dt1
+        [value]="result.data"
+        dataKey="id"
+        [rows]="10"
+        [loading]="loading"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="true"
+        [responsiveLayout]="'scroll'"
+        [totalRecords]="result.totalItems"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [lazy]="true"
+        (onLazyLoad)="getCustomerQuoteHistories($event)"
+        scrollDirection="both"
+        [scrollable]="true"
+        currentPageReportTemplate="Hiển thị {first} đến {last} trong tổng số {totalRecords} bản ghi"
+    >
+        <ng-template pTemplate="caption">
+            <div class="grid">
+                <div class="field col-2 mb-0">
+                    <p-calendar
+                        [(ngModel)]="param.fromDate"
+                        dateFormat="dd/mm/yy"
+                        styleClass="w-full"
+                        placeholder="Từ ngày"
+                    ></p-calendar>
+                </div>
+                <div class="field col-2 mb-0">
+                    <p-calendar
+                        [(ngModel)]="param.toDate"
+                        dateFormat="dd/mm/yy"
+                        styleClass="w-full"
+                        placeholder="đến ngày"
+                    ></p-calendar>
+                </div>
+                <div class="field col-3 mb-0">
+                    <input
+                        pInputText
+                        [(ngModel)]="param.searchText"
+                        placeholder="Nhập tìm kiếm"
+                        class="w-full"
+                    />
+                </div>
+                <div class="field col-2 mb-0">
+                    <button
+                        pButton
+                        class="w-auto"
+                        (click)="getCustomerQuoteHistories()"
+                    >
+                        Tìm kiếm
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1 justify-content-center">
+                    <div class="flex align-items-center">STT</div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">Ngày tạo</div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Số SP
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Tổng đơn giá
+                    </div>
+                </th>
+                <th class="w-3">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Ghi chú
+                    </div>
+                </th>
+                <th
+                    class="w-2 justify-content-center"
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                >
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Hành động
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quote>
+            <tr>
+                <td class="w-1 justify-content-center">
+                    {{ quote.no }}
+                </td>
+                <td class="w-3">
+                    {{ quote.createDate | date: "dd/MM/yyyy" }}
+                </td>
+                <td class="w-1 justify-content-end">
+                    {{ quote.quantity | number }}
+                </td>
+                <td class="w-2 justify-content-end">
+                    {{ quote.totalPrice | number }}
+                </td>
+                <td class="w-3">
+                    {{ quote.note }}
+                </td>
+                <td
+                    alignFrozen="right"
+                    pFrozenColumn
+                    [frozen]="true"
+                    class="w-2 flex justify-content-center"
+                >
+                    <button
+                        pButton
+                        class="p-button-warning"
+                        icon="pi pi-info"
+                        pTooltip="Chi tiết"
+                        tooltipPosition="bottom"
+                        (click)="onViewDetail(quote)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-info"
+                        icon="pi pi-eye"
+                        pTooltip="Xem trước"
+                        tooltipPosition="bottom"
+                        (click)="onPreview(quote)"
+                    ></button>
+                    <button
+                        pButton
+                        class="p-button-danger"
+                        icon="pi pi-download"
+                        pTooltip="Tải xuống"
+                        tooltipPosition="bottom"
+                        (click)="onDownload(quote)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-dialog
+    header="Header"
+    [(visible)]="displayDetail"
+    [modal]="true"
+    [style]="{ width: '60vw' }"
+    [draggable]="false"
+    [resizable]="true"
+>
+    <ng-template pTemplate="header">
+        <h3 class="mb-0 text-white">
+            Chi tiết đơn hàng online
+            <strong class="text-blue-600">{{
+                customerDetail?.idCustomerQuote
+            }}</strong>
+        </h3>
+    </ng-template>
+    <p-table
+        #dtDetail
+        [value]="resultDetail"
+        dataKey="id"
+        [loading]="loadingDetail"
+        [rowHover]="true"
+        styleClass="p-datatable-gridlines sidebar-custom"
+        [paginator]="false"
+        [responsiveLayout]="'scroll'"
+        scrollDirection="both"
+        [scrollable]="true"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-1 justify-content-center">
+                    <div class="flex align-items-center">STT</div>
+                </th>
+                <th class="w-3">
+                    <div class="flex align-items-center">Tên sản phẩm</div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Đơn vị
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Đơn giá
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        SL
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        GTGT
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Giảm giá
+                    </div>
+                </th>
+                <th class="w-2">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Thành tiền
+                    </div>
+                </th>
+                <th class="w-1">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        Ghi chú
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quoteDetail>
+            <tr>
+                <td class="w-1 justify-content-center">
+                    {{ quoteDetail.no }}
+                </td>
+                <td class="w-3">
+                    {{ quoteDetail.goodsName }}
+                </td>
+                <td class="w-1">
+                    {{ quoteDetail.stockUnit }}
+                </td>
+                <td class="w-1 justify-content-end">
+                    {{ quoteDetail.quantity | number }}
+                </td>
+                <td class="w-1 justify-content-end">
+                    {{ quoteDetail.unitPrice | number }}
+                </td>
+                <td class="w-1 justify-content-end">
+                    {{ quoteDetail.taxVAT | number }}
+                </td>
+                <td class="w-1 justify-content-end">
+                    {{ quoteDetail.discountPrice | number }}
+                </td>
+                <td class="w-2 justify-content-end">
+                    {{ quoteDetail.totalPrice | number }}
+                </td>
+                <td class="w-1">
+                    {{ quoteDetail.note }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr class="p-rowgroup-footer">
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.no_data" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+            <tr>
+                <td colspan="10" class="w-full pt-4 pb-4">
+                    {{ "info.loading" | translate }}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            class="p-button-outlined"
+            (click)="displayDetail = false"
+        >
+            Đóng
+        </button>
+    </ng-template>
+</p-dialog>
